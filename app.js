@@ -56,7 +56,6 @@ const searchInput = document.getElementById('searchInput');
 const noResults = document.getElementById('noResults');
 const lastUpdatedEl = document.getElementById('lastUpdated');
 const exportBtn = document.getElementById('exportBtn');
-const resetBtn = document.getElementById('resetBtn');
 
 // Summary Elements
 const totalTypesEl = document.getElementById('totalTypes');
@@ -83,12 +82,6 @@ let adjustState = {
     currentVal: 0,
     amount: 0
 };
-
-// Reset Modal Elements
-const resetModal = document.getElementById('resetModal');
-const closeModalBtn = document.getElementById('closeModalBtn');
-const cancelResetBtn = document.getElementById('cancelResetBtn');
-const confirmResetBtn = document.getElementById('confirmResetBtn');
 
 // Quick Edit Modal Elements
 const fabQuickEdit = document.getElementById('fabQuickEdit');
@@ -182,9 +175,15 @@ function renderTable(searchTerm = '') {
     filteredData.forEach(item => {
         const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
         
+        let iconClass = 'ri-file-list-line'; // default
+        if (item.category === 'GLC Books') iconClass = 'ri-book-3-line';
+        if (item.category === 'Booklets & Workbooks') iconClass = 'ri-book-open-line';
+        if (item.category === 'Tracts') iconClass = 'ri-pages-line';
+        if (item.category === 'Materials') iconClass = 'ri-box-3-line';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td data-label="Description"><span class="desc-text">${item.desc}</span></td>
+            <td data-label="Description"><span class="desc-text"><i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}</span></td>
             <td class="col-location" data-label="5th Floor">
                 <div class="qty-control">
                     <button class="qty-btn minus" data-id="${item.id}" data-field="floor5"><i class="ri-subtract-line"></i></button>
@@ -440,46 +439,11 @@ function exportToCSV() {
     document.body.removeChild(link);
 }
 
-// Reset Functionality
-function resetAllQuantities() {
-    inventoryData = inventoryData.map(item => ({
-        ...item,
-        floor5: 0,
-        floor7: 0,
-        booth: 0
-    }));
-    
-    saveData();
-    renderTable(searchInput.value); // Re-render with current search term
-    closeModal();
-}
-
-// Modal Helpers
-function openModal() {
-    resetModal.classList.remove('hidden');
-}
-
-function closeModal() {
-    resetModal.classList.add('hidden');
-}
-
 // Setup Event Listeners
 function setupEventListeners() {
     searchInput.addEventListener('input', handleSearch);
     
     exportBtn.addEventListener('click', exportToCSV);
-    
-    // Reset Modal events
-    resetBtn.addEventListener('click', openModal);
-    closeModalBtn.addEventListener('click', closeModal);
-    cancelResetBtn.addEventListener('click', closeModal);
-    confirmResetBtn.addEventListener('click', resetAllQuantities);
-    
-    resetModal.addEventListener('click', (e) => {
-        if (e.target === resetModal) {
-            closeModal();
-        }
-    });
 
     // Adjust Modal events
     closeAdjustModalBtn.addEventListener('click', closeAdjustModal);

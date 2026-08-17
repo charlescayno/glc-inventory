@@ -16,7 +16,7 @@
             <div class="header-content">
                 <div class="title-section">
                     <div class="logo-placeholder">
-                        <i class="ri-book-3-line"></i>
+                        <img src="https://glc.ccf.org.ph/wp-content/uploads/2020/09/logo.png" alt="GLC Logo" class="header-logo">
                     </div>
                     <div>
                         <h1>Resource Inventory</h1>
@@ -32,10 +32,6 @@
                     <button id="exportBtn" class="btn btn-secondary">
                         <i class="ri-download-2-line"></i>
                         Export CSV
-                    </button>
-                    <button id="resetBtn" class="btn btn-danger">
-                        <i class="ri-restart-line"></i>
-                        Reset All
                     </button>
                 </div>
             </div>
@@ -202,23 +198,6 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelAdjustBtn">Cancel</button>
                 <button class="btn" id="confirmAdjustBtn" style="background: var(--color-primary); color: white; border: none;">Apply Changes</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reset Confirmation Modal -->
-    <div id="resetModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Confirm Reset</h2>
-                <button class="close-modal" id="closeModalBtn"><i class="ri-close-line"></i></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to reset all quantities to zero? This action cannot be undone.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelResetBtn">Cancel</button>
-                <button class="btn btn-danger" id="confirmResetBtn">Yes, Reset to Zero</button>
             </div>
         </div>
     </div>
