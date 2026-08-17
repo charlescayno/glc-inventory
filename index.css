@@ -137,6 +137,41 @@ h1 {
     box-shadow: 0 0 0 3px var(--color-border-focus);
 }
 
+/* --- Category Tabs --- */
+.category-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.category-tabs::-webkit-scrollbar {
+    display: none;
+}
+.tab-btn {
+    padding: 0.5rem 1rem;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-main);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+.tab-btn:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-text-muted);
+}
+.tab-btn.active {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+}
+
 /* --- Buttons --- */
 .btn {
     display: inline-flex;
@@ -298,7 +333,43 @@ tbody tr:hover {
     color: var(--color-text-main);
 }
 
-/* Number Input & Controls Styling */
+/* --- Quick Edit Dropdown --- */
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 10;
+    margin-top: 0.25rem;
+}
+.dropdown-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--color-border);
+}
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+.dropdown-item:hover {
+    background: var(--color-bg-hover);
+}
+.dropdown-item-title {
+    font-weight: 500;
+    color: var(--color-text-main);
+    margin-bottom: 0.1rem;
+}
+.dropdown-item-category {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+/* --- Number Input & Controls Styling --- */
 .qty-control {
     display: inline-flex;
     align-items: center;
@@ -396,6 +467,34 @@ tbody tr:hover {
 }
 .hidden {
     display: none !important;
+}
+
+/* --- Floating Action Button (FAB) --- */
+.fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background-color: var(--color-primary);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+    z-index: 50;
+}
+.fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.3);
+}
+.fab:active {
+    transform: scale(0.95);
 }
 
 /* --- Footer --- */

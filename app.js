@@ -1,52 +1,53 @@
 // Initial Data Extracted from Image
 const initialData = [
-    { id: 1, desc: "GLC Book 1: English One by One (new)", floor5: 750, floor7: 55, booth: 202 },
-    { id: 2, desc: "GLC Book 1: English One by One (old)", floor5: 34, floor7: 0, booth: 0 },
-    { id: 3, desc: "GLC Book 2: English Spiritual Disciplines (new)", floor5: 600, floor7: 56, booth: 158 },
-    { id: 4, desc: "GLC Book 2: English Spiritual Disciplines (old)", floor5: 105, floor7: 0, booth: 0 },
-    { id: 5, desc: "GLC Book 3: English The Holy Spirit", floor5: 750, floor7: 52, booth: 341 },
-    { id: 6, desc: "GLC Book 4: English CCF DNA (old)", floor5: 470, floor7: 0, booth: 0 },
-    { id: 7, desc: "GLC Book 4: English CCF DNA (new)", floor5: 100, floor7: 80, booth: 192 },
-    { id: 8, desc: "GLC Book 5: English Starting Point for small group(new)", floor5: 445, floor7: 50, booth: 45 },
-    { id: 9, desc: "GLC Book 5: English Starting Point for small group (old)", floor5: 75, floor7: 39, booth: 93 },
-    { id: 10, desc: "GLC Book 6: English Basic Doctrine", floor5: 250, floor7: 42, booth: 178 },
-    { id: 11, desc: "GLC Book 7: English The Family Life (new)", floor5: 300, floor7: 15, booth: 147 },
-    { id: 12, desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
-    { id: 13, desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
-    { id: 14, desc: "GLC Book 10: Realiability of the Bible", floor5: 250, floor7: 44, booth: 156 },
-    { id: 15, desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
-    { id: 16, desc: "GLC Book 1: Filipino One by One", floor5: 0, floor7: 18, booth: 40 },
-    { id: 17, desc: "GLC Book 2: Filipino Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
-    { id: 18, desc: "GLC Book 4: Filipino CCF DNA", floor5: 370, floor7: 17, booth: 62 },
-    { id: 19, desc: "Life Goals Magazine", floor5: 325, floor7: 21, booth: 60 },
-    { id: 20, desc: "70X7 Work Books", floor5: 100, floor7: 19, booth: 50 },
-    { id: 21, desc: "70X7 USB", floor5: 0, floor7: 0, booth: 0 },
-    { id: 22, desc: "Superbook Work Book", floor5: 0, floor7: 0, booth: 112 },
-    { id: 23, desc: "Memory Verse Volume 2", floor5: 350, floor7: 31, booth: 78 },
-    { id: 24, desc: "Holy Spirit Booklet", floor5: 200, floor7: 45, booth: 63 },
-    { id: 25, desc: "Real Talk Booklet", floor5: 1000, floor7: 31, booth: 70 },
-    { id: 26, desc: "Motivate English", floor5: 280, floor7: 7, booth: 50 },
-    { id: 27, desc: "Motivate Chinese", floor5: 4, floor7: 0, booth: 0 },
-    { id: 28, desc: "Dare 2 Share", floor5: 19, floor7: 0, booth: 9 },
-    { id: 29, desc: "Dgroup kit", floor5: 0, floor7: 0, booth: 0 },
-    { id: 30, desc: "IDC bag Red", floor5: 0, floor7: 0, booth: 0 },
-    { id: 31, desc: "IDC Bag Blue", floor5: 60, floor7: 0, booth: 7 },
-    { id: 32, desc: "Dj Passport", floor5: 200, floor7: 34, booth: 60 },
-    { id: 33, desc: "Discipleship Covenant", floor5: 0, floor7: 0, booth: 194 },
-    { id: 34, desc: "PCS Card", floor5: 150, floor7: 350, booth: 179 },
-    { id: 35, desc: "Pcs Bookmark", floor5: 0, floor7: 600, booth: 400 },
-    { id: 36, desc: "Accountability Card", floor5: 3400, floor7: 1300, booth: 689 },
-    { id: 37, desc: "Gospel Tracts English (New)", floor5: 45000, floor7: 1955, booth: 2000 },
-    { id: 38, desc: "Gospel Tracts Tagalog (New)", floor5: 45400, floor7: 920, booth: 2400 },
-    { id: 39, desc: "Gospel Tracts Elevate", floor5: 0, floor7: 290, booth: 1100 },
-    { id: 40, desc: "Heart Of A Champion", floor5: 150, floor7: 10, booth: 30 },
-    { id: 41, desc: "True Life Participant Workbook", floor5: 300, floor7: 10, booth: 13 },
-    { id: 42, desc: "True Life Facilitator Workbook", floor5: 220, floor7: 25, booth: 66 },
-    { id: 43, desc: "2be1 Workbook", floor5: 0, floor7: 3, booth: 21 }
+    { id: 1, category: "GLC Books", desc: "GLC Book 1: English One by One (new)", floor5: 750, floor7: 55, booth: 202 },
+    { id: 2, category: "GLC Books", desc: "GLC Book 1: English One by One (old)", floor5: 34, floor7: 0, booth: 0 },
+    { id: 3, category: "GLC Books", desc: "GLC Book 2: English Spiritual Disciplines (new)", floor5: 600, floor7: 56, booth: 158 },
+    { id: 4, category: "GLC Books", desc: "GLC Book 2: English Spiritual Disciplines (old)", floor5: 105, floor7: 0, booth: 0 },
+    { id: 5, category: "GLC Books", desc: "GLC Book 3: English The Holy Spirit", floor5: 750, floor7: 52, booth: 341 },
+    { id: 6, category: "GLC Books", desc: "GLC Book 4: English CCF DNA (old)", floor5: 470, floor7: 0, booth: 0 },
+    { id: 7, category: "GLC Books", desc: "GLC Book 4: English CCF DNA (new)", floor5: 100, floor7: 80, booth: 192 },
+    { id: 8, category: "GLC Books", desc: "GLC Book 5: English Starting Point for small group(new)", floor5: 445, floor7: 50, booth: 45 },
+    { id: 9, category: "GLC Books", desc: "GLC Book 5: English Starting Point for small group (old)", floor5: 75, floor7: 39, booth: 93 },
+    { id: 10, category: "GLC Books", desc: "GLC Book 6: English Basic Doctrine", floor5: 250, floor7: 42, booth: 178 },
+    { id: 11, category: "GLC Books", desc: "GLC Book 7: English The Family Life (new)", floor5: 300, floor7: 15, booth: 147 },
+    { id: 12, category: "GLC Books", desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
+    { id: 13, category: "GLC Books", desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
+    { id: 14, category: "GLC Books", desc: "GLC Book 10: Realiability of the Bible", floor5: 250, floor7: 44, booth: 156 },
+    { id: 15, category: "GLC Books", desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
+    { id: 16, category: "GLC Books", desc: "GLC Book 1: Filipino One by One", floor5: 0, floor7: 18, booth: 40 },
+    { id: 17, category: "GLC Books", desc: "GLC Book 2: Filipino Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
+    { id: 18, category: "GLC Books", desc: "GLC Book 4: Filipino CCF DNA", floor5: 370, floor7: 17, booth: 62 },
+    { id: 19, category: "Booklets & Workbooks", desc: "Life Goals Magazine", floor5: 325, floor7: 21, booth: 60 },
+    { id: 20, category: "Booklets & Workbooks", desc: "70X7 Work Books", floor5: 100, floor7: 19, booth: 50 },
+    { id: 21, category: "Materials", desc: "70X7 USB", floor5: 0, floor7: 0, booth: 0 },
+    { id: 22, category: "Booklets & Workbooks", desc: "Superbook Work Book", floor5: 0, floor7: 0, booth: 112 },
+    { id: 23, category: "Booklets & Workbooks", desc: "Memory Verse Volume 2", floor5: 350, floor7: 31, booth: 78 },
+    { id: 24, category: "Booklets & Workbooks", desc: "Holy Spirit Booklet", floor5: 200, floor7: 45, booth: 63 },
+    { id: 25, category: "Booklets & Workbooks", desc: "Real Talk Booklet", floor5: 1000, floor7: 31, booth: 70 },
+    { id: 26, category: "Materials", desc: "Motivate English", floor5: 280, floor7: 7, booth: 50 },
+    { id: 27, category: "Materials", desc: "Motivate Chinese", floor5: 4, floor7: 0, booth: 0 },
+    { id: 28, category: "Tracts", desc: "Dare 2 Share", floor5: 19, floor7: 0, booth: 9 },
+    { id: 29, category: "Materials", desc: "Dgroup kit", floor5: 0, floor7: 0, booth: 0 },
+    { id: 30, category: "Materials", desc: "IDC bag Red", floor5: 0, floor7: 0, booth: 0 },
+    { id: 31, category: "Materials", desc: "IDC Bag Blue", floor5: 60, floor7: 0, booth: 7 },
+    { id: 32, category: "Materials", desc: "Dj Passport", floor5: 200, floor7: 34, booth: 60 },
+    { id: 33, category: "Materials", desc: "Discipleship Covenant", floor5: 0, floor7: 0, booth: 194 },
+    { id: 34, category: "Materials", desc: "PCS Card", floor5: 150, floor7: 350, booth: 179 },
+    { id: 35, category: "Materials", desc: "Pcs Bookmark", floor5: 0, floor7: 600, booth: 400 },
+    { id: 36, category: "Materials", desc: "Accountability Card", floor5: 3400, floor7: 1300, booth: 689 },
+    { id: 37, category: "Tracts", desc: "Gospel Tracts English (New)", floor5: 45000, floor7: 1955, booth: 2000 },
+    { id: 38, category: "Tracts", desc: "Gospel Tracts Tagalog (New)", floor5: 45400, floor7: 920, booth: 2400 },
+    { id: 39, category: "Tracts", desc: "Gospel Tracts Elevate", floor5: 0, floor7: 290, booth: 1100 },
+    { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", floor5: 150, floor7: 10, booth: 30 },
+    { id: 41, category: "Booklets & Workbooks", desc: "True Life Participant Workbook", floor5: 300, floor7: 10, booth: 13 },
+    { id: 42, category: "Booklets & Workbooks", desc: "True Life Facilitator Workbook", floor5: 220, floor7: 25, booth: 66 },
+    { id: 43, category: "Booklets & Workbooks", desc: "2be1 Workbook", floor5: 0, floor7: 3, booth: 21 }
 ];
 
 // State
 let inventoryData = [];
+let currentCategory = 'All';
 const STORAGE_KEY = 'resource_inventory_data';
 
 // DOM Elements
@@ -88,6 +89,23 @@ const resetModal = document.getElementById('resetModal');
 const closeModalBtn = document.getElementById('closeModalBtn');
 const cancelResetBtn = document.getElementById('cancelResetBtn');
 const confirmResetBtn = document.getElementById('confirmResetBtn');
+
+// Quick Edit Modal Elements
+const fabQuickEdit = document.getElementById('fabQuickEdit');
+const quickEditModal = document.getElementById('quickEditModal');
+const closeQuickEditBtn = document.getElementById('closeQuickEditBtn');
+const cancelQuickEditBtn = document.getElementById('cancelQuickEditBtn');
+const saveQuickEditBtn = document.getElementById('saveQuickEditBtn');
+const quickEditSearch = document.getElementById('quickEditSearch');
+const quickEditDropdown = document.getElementById('quickEditDropdown');
+const quickEditForm = document.getElementById('quickEditForm');
+const qeItemDesc = document.getElementById('qeItemDesc');
+const qeItemCategory = document.getElementById('qeItemCategory');
+const qeFloor5 = document.getElementById('qeFloor5');
+const qeFloor7 = document.getElementById('qeFloor7');
+const qeBooth = document.getElementById('qeBooth');
+const qeQtyBtns = document.querySelectorAll('.modal-body .qty-btn'); // For +/- inside Quick Edit
+let currentQuickEditItem = null;
 
 // Initialize Application
 function init() {
@@ -146,9 +164,11 @@ function renderTable(searchTerm = '') {
     inventoryBody.innerHTML = '';
     
     const term = searchTerm.toLowerCase();
-    const filteredData = inventoryData.filter(item => 
-        item.desc.toLowerCase().includes(term)
-    );
+    const filteredData = inventoryData.filter(item => {
+        const matchesSearch = item.desc.toLowerCase().includes(term);
+        const matchesCategory = currentCategory === 'All' || item.category === currentCategory;
+        return matchesSearch && matchesCategory;
+    });
 
     if (filteredData.length === 0) {
         inventoryBody.parentElement.classList.add('hidden');
@@ -491,6 +511,121 @@ function setupEventListeners() {
     adjustModal.addEventListener('click', (e) => {
         if (e.target === adjustModal) {
             closeAdjustModal();
+        }
+    });
+
+    // --- Category Tabs Setup ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentCategory = e.target.getAttribute('data-category');
+            renderTable(searchInput.value);
+        });
+    });
+
+    // --- Quick Edit Setup ---
+    fabQuickEdit.addEventListener('click', () => {
+        quickEditModal.classList.remove('hidden');
+        quickEditSearch.value = '';
+        quickEditSearch.focus();
+        quickEditDropdown.classList.add('hidden');
+        quickEditForm.classList.add('hidden');
+        saveQuickEditBtn.disabled = true;
+        currentQuickEditItem = null;
+    });
+
+    const closeQE = () => quickEditModal.classList.add('hidden');
+    closeQuickEditBtn.addEventListener('click', closeQE);
+    cancelQuickEditBtn.addEventListener('click', closeQE);
+    
+    quickEditSearch.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        quickEditDropdown.innerHTML = '';
+        
+        if (term.trim() === '') {
+            quickEditDropdown.classList.add('hidden');
+            return;
+        }
+
+        const matches = inventoryData.filter(item => item.desc.toLowerCase().includes(term)).slice(0, 10);
+        
+        if (matches.length > 0) {
+            matches.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.innerHTML = `
+                    <div class="dropdown-item-title">${item.desc}</div>
+                    <div class="dropdown-item-category">${item.category}</div>
+                `;
+                div.addEventListener('click', () => selectQuickEditItem(item));
+                quickEditDropdown.appendChild(div);
+            });
+            quickEditDropdown.classList.remove('hidden');
+        } else {
+            quickEditDropdown.classList.add('hidden');
+        }
+    });
+
+    function selectQuickEditItem(item) {
+        currentQuickEditItem = JSON.parse(JSON.stringify(item));
+        quickEditSearch.value = item.desc;
+        quickEditDropdown.classList.add('hidden');
+        qeItemDesc.textContent = item.desc;
+        qeItemCategory.textContent = item.category;
+        qeFloor5.value = item.floor5;
+        qeFloor7.value = item.floor7;
+        qeBooth.value = item.booth;
+        quickEditForm.classList.remove('hidden');
+        saveQuickEditBtn.disabled = false;
+    }
+
+    qeQtyBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const button = e.target.closest('.qty-btn');
+            const field = button.getAttribute('data-qe-field');
+            let input;
+            if (field === 'floor5') input = qeFloor5;
+            if (field === 'floor7') input = qeFloor7;
+            if (field === 'booth') input = qeBooth;
+
+            let val = parseInt(input.value) || 0;
+            if (button.classList.contains('plus')) val++;
+            if (button.classList.contains('minus')) val = Math.max(0, val - 1);
+            
+            input.value = val;
+            currentQuickEditItem[field] = val;
+        });
+    });
+
+    [qeFloor5, qeFloor7, qeBooth].forEach(input => {
+        input.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value) || 0;
+            const field = e.target.id === 'qeFloor5' ? 'floor5' : (e.target.id === 'qeFloor7' ? 'floor7' : 'booth');
+            currentQuickEditItem[field] = Math.max(0, val);
+        });
+        input.addEventListener('focus', function() { this.select(); });
+    });
+
+    saveQuickEditBtn.addEventListener('click', () => {
+        if (!currentQuickEditItem) return;
+
+        currentQuickEditItem.floor5 = Math.max(0, parseInt(qeFloor5.value) || 0);
+        currentQuickEditItem.floor7 = Math.max(0, parseInt(qeFloor7.value) || 0);
+        currentQuickEditItem.booth = Math.max(0, parseInt(qeBooth.value) || 0);
+
+        const itemIndex = inventoryData.findIndex(item => item.id === currentQuickEditItem.id);
+        if (itemIndex !== -1) {
+            inventoryData[itemIndex] = currentQuickEditItem;
+            saveData();
+            renderTable(searchInput.value);
+            closeQE();
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!quickEditSearch.contains(e.target) && !quickEditDropdown.contains(e.target)) {
+            quickEditDropdown.classList.add('hidden');
         }
     });
 }

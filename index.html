@@ -59,6 +59,14 @@
                 </div>
             </div>
 
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="All">All Resources</button>
+                <button class="tab-btn" data-category="GLC Books">GLC Books</button>
+                <button class="tab-btn" data-category="Booklets & Workbooks">Booklets & Workbooks</button>
+                <button class="tab-btn" data-category="Tracts">Tracts</button>
+                <button class="tab-btn" data-category="Materials">Materials</button>
+            </div>
+
             <div class="table-container">
                 <table id="inventoryTable">
                     <thead>
@@ -85,6 +93,71 @@
             <p>Last updated: <span id="lastUpdated">Never</span></p>
             <p class="autosave-notice"><i class="ri-check-line"></i> All changes auto-saved to browser</p>
         </footer>
+    </div>
+
+    <!-- Floating Action Button for Quick Edit -->
+    <button class="fab" id="fabQuickEdit" title="Quick Edit Item">
+        <i class="ri-edit-2-line"></i>
+    </button>
+
+    <!-- Quick Edit Modal -->
+    <div id="quickEditModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Quick Edit</h2>
+                <button class="close-modal" id="closeQuickEditBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.5rem;">Search Resource</label>
+                    <div class="search-bar" style="width: 100%;">
+                        <i class="ri-search-line search-icon"></i>
+                        <input type="text" id="quickEditSearch" placeholder="Type to search..." autocomplete="off">
+                        <div id="quickEditDropdown" class="dropdown-list hidden">
+                            <!-- Options injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="quickEditForm" class="hidden">
+                    <div style="background: var(--color-bg-hover); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                        <h3 id="qeItemDesc" style="font-size: 1.1rem; color: var(--color-text-main); margin-bottom: 0.25rem;"></h3>
+                        <p id="qeItemCategory" style="font-size: 0.85rem; color: var(--color-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"></p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                        <label style="font-weight: 500; color: var(--color-text-main);">5th Floor</label>
+                        <div class="qty-control">
+                            <button class="qty-btn minus" data-qe-field="floor5"><i class="ri-subtract-line"></i></button>
+                            <input type="number" class="qty-input" id="qeFloor5" min="0">
+                            <button class="qty-btn plus" data-qe-field="floor5"><i class="ri-add-line"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                        <label style="font-weight: 500; color: var(--color-text-main);">7th Floor</label>
+                        <div class="qty-control">
+                            <button class="qty-btn minus" data-qe-field="floor7"><i class="ri-subtract-line"></i></button>
+                            <input type="number" class="qty-input" id="qeFloor7" min="0">
+                            <button class="qty-btn plus" data-qe-field="floor7"><i class="ri-add-line"></i></button>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
+                        <label style="font-weight: 500; color: var(--color-text-main);">GLC Booth</label>
+                        <div class="qty-control">
+                            <button class="qty-btn minus" data-qe-field="booth"><i class="ri-subtract-line"></i></button>
+                            <input type="number" class="qty-input" id="qeBooth" min="0">
+                            <button class="qty-btn plus" data-qe-field="booth"><i class="ri-add-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelQuickEditBtn">Close</button>
+                <button class="btn" id="saveQuickEditBtn" style="background: var(--color-primary); color: white; border: none;" disabled>Save Changes</button>
+            </div>
+        </div>
     </div>
 
     <!-- Adjust Quantity Modal -->
