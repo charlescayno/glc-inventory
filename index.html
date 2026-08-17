@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Inventory System</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <div class="title-section">
+                    <div class="logo-placeholder">
+                        <i class="ri-book-3-line"></i>
+                    </div>
+                    <div>
+                        <h1>Resource Inventory</h1>
+                        <p class="subtitle">Manage book and material quantities across locations</p>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <i class="ri-search-line search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search resources...">
+                    </div>
+                    <button id="exportBtn" class="btn btn-secondary">
+                        <i class="ri-download-2-line"></i>
+                        Export CSV
+                    </button>
+                    <button id="resetBtn" class="btn btn-danger">
+                        <i class="ri-restart-line"></i>
+                        Reset All
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="ri-book-mark-line"></i></div>
+                    <div class="summary-info">
+                        <h3>Total Resource Types</h3>
+                        <p id="totalTypes">0</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="ri-stack-line"></i></div>
+                    <div class="summary-info">
+                        <h3>Grand Total Inventory</h3>
+                        <p id="grandTotal">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th class="col-description">Description</th>
+                            <th class="col-location">5th Floor</th>
+                            <th class="col-location">7th Floor</th>
+                            <th class="col-location">GLC Booth</th>
+                            <th class="col-total">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryBody">
+                        <!-- Rows will be injected here by app.js -->
+                    </tbody>
+                </table>
+                <div id="noResults" class="no-results hidden">
+                    <i class="ri-search-eye-line"></i>
+                    <p>No resources found matching your search.</p>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="app-footer">
+            <p>Last updated: <span id="lastUpdated">Never</span></p>
+            <p class="autosave-notice"><i class="ri-check-line"></i> All changes auto-saved to browser</p>
+        </footer>
+    </div>
+
+    <!-- Adjust Quantity Modal -->
+    <div id="adjustModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Adjust Quantity</h2>
+                <button class="close-modal" id="closeAdjustModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <p id="adjustItemDesc" style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.1rem; line-height: 1.3;"></p>
+                <p id="adjustLocationText" style="color: var(--color-primary); font-weight: 500; margin-bottom: 1.5rem;"></p>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--color-bg-hover); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.5rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.85rem; color: var(--color-text-muted); text-transform: uppercase;">Current</div>
+                        <div id="adjustCurrentVal" style="font-size: 1.5rem; font-weight: 700;">0</div>
+                    </div>
+                    <i class="ri-arrow-right-line" style="font-size: 1.5rem; color: var(--color-text-light);"></i>
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.85rem; color: var(--color-text-muted); text-transform: uppercase;">New</div>
+                        <div id="adjustNewVal" style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">0</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <button class="btn adjust-op-btn active" data-op="add" style="flex: 1; justify-content: center; background: #dbeafe; color: var(--color-primary); border-color: #bfdbfe;">Add</button>
+                    <button class="btn adjust-op-btn" data-op="sub" style="flex: 1; justify-content: center; background: var(--color-bg-surface); color: var(--color-text-muted); border-color: var(--color-border);">Subtract</button>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <input type="number" id="adjustAmountInput" class="qty-input" style="width: 100%; text-align: center; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 1.25rem;" placeholder="Enter amount to adjust..." min="0">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.5rem;">
+                    <button class="btn btn-secondary quick-amt-btn" style="justify-content: center; padding: 0.5rem;" data-amt="5">+5</button>
+                    <button class="btn btn-secondary quick-amt-btn" style="justify-content: center; padding: 0.5rem;" data-amt="10">+10</button>
+                    <button class="btn btn-secondary quick-amt-btn" style="justify-content: center; padding: 0.5rem;" data-amt="50">+50</button>
+                    <button class="btn btn-secondary quick-amt-btn" style="justify-content: center; padding: 0.5rem;" data-amt="100">+100</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelAdjustBtn">Cancel</button>
+                <button class="btn" id="confirmAdjustBtn" style="background: var(--color-primary); color: white; border: none;">Apply Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reset Confirmation Modal -->
+    <div id="resetModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Reset</h2>
+                <button class="close-modal" id="closeModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to reset all quantities to zero? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelResetBtn">Cancel</button>
+                <button class="btn btn-danger" id="confirmResetBtn">Yes, Reset to Zero</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
