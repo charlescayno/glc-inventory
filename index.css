@@ -316,6 +316,22 @@ th {
     top: 0;
     z-index: 10;
 }
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+th.sortable:hover {
+    background: var(--color-bg-hover);
+}
+th.sortable i {
+    margin-left: 0.25rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
+}
+th.sortable.active i {
+    color: var(--color-primary);
+}
 
 tbody tr:last-child td {
     border-bottom: none;

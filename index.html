@@ -25,6 +25,7 @@
                 </div>
                 
                 <div class="header-actions">
+                    <div class="current-date" id="currentDateDisplay" style="font-size: 0.9rem; font-weight: 500; color: var(--color-text-main); margin-right: 1rem;"></div>
                     <div class="search-bar">
                         <i class="ri-search-line search-icon"></i>
                         <input type="text" id="searchInput" placeholder="Search resources...">
@@ -67,11 +68,11 @@
                 <table id="inventoryTable">
                     <thead>
                         <tr>
-                            <th class="col-description">Description</th>
-                            <th class="col-location">5th Floor</th>
-                            <th class="col-location">7th Floor</th>
-                            <th class="col-location">GLC Booth</th>
-                            <th class="col-total">Total</th>
+                            <th class="col-description sortable" data-sort="desc">Description <i class="ri-arrow-up-down-line"></i></th>
+                            <th class="col-location sortable" data-sort="floor5">5th Floor <i class="ri-arrow-up-down-line"></i></th>
+                            <th class="col-location sortable" data-sort="floor7">7th Floor <i class="ri-arrow-up-down-line"></i></th>
+                            <th class="col-location sortable" data-sort="booth">GLC Booth <i class="ri-arrow-up-down-line"></i></th>
+                            <th class="col-total sortable" data-sort="total">Total <i class="ri-arrow-up-down-line"></i></th>
                         </tr>
                     </thead>
                     <tbody id="inventoryBody">

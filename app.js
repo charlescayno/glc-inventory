@@ -100,6 +100,10 @@ const qeBooth = document.getElementById('qeBooth');
 const qeQtyBtns = document.querySelectorAll('.modal-body .qty-btn'); // For +/- inside Quick Edit
 let currentQuickEditItem = null;
 
+// Sorting State
+let sortColumn = 'desc';
+let sortDirection = 'asc'; // 'asc' or 'desc'
+
 // Initialize Application
 function init() {
     loadData();
@@ -107,6 +111,10 @@ function init() {
     updateSummaries();
     setupEventListeners();
     updateLastSavedTime();
+    
+    // Display Current Date
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString(undefined, dateOptions);
 }
 
 // Data Management
@@ -157,10 +165,40 @@ function renderTable(searchTerm = '') {
     inventoryBody.innerHTML = '';
     
     const term = searchTerm.toLowerCase();
-    const filteredData = inventoryData.filter(item => {
+    let filteredData = inventoryData.filter(item => {
         const matchesSearch = item.desc.toLowerCase().includes(term);
         const matchesCategory = currentCategory === 'All' || item.category === currentCategory;
         return matchesSearch && matchesCategory;
+    });
+
+    // Apply Sorting
+    filteredData.sort((a, b) => {
+        let valA, valB;
+        if (sortColumn === 'desc') {
+            valA = a.desc.toLowerCase();
+            valB = b.desc.toLowerCase();
+        } else if (sortColumn === 'total') {
+            valA = (a.floor5 || 0) + (a.floor7 || 0) + (a.booth || 0);
+            valB = (b.floor5 || 0) + (b.floor7 || 0) + (b.booth || 0);
+        } else {
+            valA = a[sortColumn] || 0;
+            valB = b[sortColumn] || 0;
+        }
+
+        if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+        if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+        return 0;
+    });
+
+    // Update Sorting UI
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.classList.remove('active');
+        const icon = th.querySelector('i');
+        icon.className = 'ri-arrow-up-down-line';
+        if (th.dataset.sort === sortColumn) {
+            th.classList.add('active');
+            icon.className = sortDirection === 'asc' ? 'ri-arrow-up-line' : 'ri-arrow-down-line';
+        }
     });
 
     if (filteredData.length === 0) {
@@ -416,8 +454,13 @@ function applyAdjustment() {
 
 // Export to CSV
 function exportToCSV() {
+    // Current date
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateString = new Date().toLocaleDateString(undefined, dateOptions);
+
     // CSV Header
     let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += `GLC Resource Inventory Report - ${dateString}\r\n\r\n`;
     csvContent += "Description,5th Floor,7th Floor,GLC Booth,Total\r\n";
     
     // Data rows
@@ -444,6 +487,20 @@ function setupEventListeners() {
     searchInput.addEventListener('input', handleSearch);
     
     exportBtn.addEventListener('click', exportToCSV);
+
+    // Sorting headers
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+            const field = th.dataset.sort;
+            if (sortColumn === field) {
+                sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                sortColumn = field;
+                sortDirection = 'asc';
+            }
+            renderTable(searchInput.value);
+        });
+    });
 
     // Adjust Modal events
     closeAdjustModalBtn.addEventListener('click', closeAdjustModal);
