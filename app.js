@@ -134,7 +134,7 @@ function loadData() {
 
         // Migrate existing GLC Books categories dynamically
         inventoryData.forEach(item => {
-            if (item.category === "GLC Books" || item.category === "GLC 1 Books") {
+            if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
                 const desc = item.desc;
                 if (desc.includes("GLC Book 1:") || desc.includes("GLC Book 2:") || desc.includes("GLC Book 3:") || desc.includes("GLC Book 4:")) {
                     if (desc.toLowerCase().includes("filipino")) {
@@ -142,8 +142,10 @@ function loadData() {
                     } else {
                         item.category = "GLC 1 Books (English)";
                     }
-                } else if (desc.includes("GLC Book 5:") || desc.includes("GLC Book 6:") || desc.includes("GLC Book 7:") || desc.includes("GLC Book 8:") || desc.includes("GLC Book 9:")) {
+                } else if (desc.includes("GLC Book 5:") || desc.includes("GLC Book 6:") || desc.includes("GLC Book 7:") || desc.includes("GLC Book 8:")) {
                     item.category = "GLC 2 Books";
+                } else if (desc.includes("GLC Book 9:") || desc.includes("GLC Book 10:") || desc.includes("GLC Book 11:") || desc.includes("GLC Book 12:")) {
+                    item.category = "GLC 3 Books";
                 } else {
                     item.category = "Other GLC Books";
                 }
@@ -233,7 +235,7 @@ function renderTable(searchTerm = '') {
         const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
         
         let iconClass = 'ri-file-list-line'; // default
-        if (item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
+        if (item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'GLC 3 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
         if (item.category === 'Booklets & Workbooks') iconClass = 'ri-book-open-line';
         if (item.category === 'Tracts') iconClass = 'ri-pages-line';
         if (item.category === 'Materials') iconClass = 'ri-box-3-line';
