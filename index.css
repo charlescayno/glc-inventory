@@ -653,6 +653,9 @@ tbody tr:hover {
         display: block;
         width: 100%;
     }
+    .col-description, .col-location, .col-total {
+        width: 100%;
+    }
     thead tr {
         position: absolute;
         top: -9999px;
