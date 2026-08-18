@@ -671,11 +671,13 @@ tbody tr:hover {
     }
     td {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
         padding: 0.75rem 0;
         border-bottom: 1px solid var(--color-bg-hover);
         text-align: right;
+        gap: 0.5rem;
     }
     td:last-child {
         border-bottom: none;
@@ -702,6 +704,7 @@ tbody tr:hover {
     }
     .qty-control {
         margin: 0;
+        flex-shrink: 0;
     }
     .total-value {
         text-align: right;
