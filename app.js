@@ -1,23 +1,23 @@
 // Initial Data Extracted from Image
 const initialData = [
-    { id: 1, category: "GLC Books", desc: "GLC Book 1: English One by One (new)", floor5: 750, floor7: 55, booth: 202 },
-    { id: 2, category: "GLC Books", desc: "GLC Book 1: English One by One (old)", floor5: 34, floor7: 0, booth: 0 },
-    { id: 3, category: "GLC Books", desc: "GLC Book 2: English Spiritual Disciplines (new)", floor5: 600, floor7: 56, booth: 158 },
-    { id: 4, category: "GLC Books", desc: "GLC Book 2: English Spiritual Disciplines (old)", floor5: 105, floor7: 0, booth: 0 },
-    { id: 5, category: "GLC Books", desc: "GLC Book 3: English The Holy Spirit", floor5: 750, floor7: 52, booth: 341 },
-    { id: 6, category: "GLC Books", desc: "GLC Book 4: English CCF DNA (old)", floor5: 470, floor7: 0, booth: 0 },
-    { id: 7, category: "GLC Books", desc: "GLC Book 4: English CCF DNA (new)", floor5: 100, floor7: 80, booth: 192 },
-    { id: 8, category: "GLC Books", desc: "GLC Book 5: English Starting Point for small group(new)", floor5: 445, floor7: 50, booth: 45 },
-    { id: 9, category: "GLC Books", desc: "GLC Book 5: English Starting Point for small group (old)", floor5: 75, floor7: 39, booth: 93 },
-    { id: 10, category: "GLC Books", desc: "GLC Book 6: English Basic Doctrine", floor5: 250, floor7: 42, booth: 178 },
-    { id: 11, category: "GLC Books", desc: "GLC Book 7: English The Family Life (new)", floor5: 300, floor7: 15, booth: 147 },
-    { id: 12, category: "GLC Books", desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
-    { id: 13, category: "GLC Books", desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
-    { id: 14, category: "GLC Books", desc: "GLC Book 10: Realiability of the Bible", floor5: 250, floor7: 44, booth: 156 },
-    { id: 15, category: "GLC Books", desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
-    { id: 16, category: "GLC Books", desc: "GLC Book 1: Filipino One by One", floor5: 0, floor7: 18, booth: 40 },
-    { id: 17, category: "GLC Books", desc: "GLC Book 2: Filipino Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
-    { id: 18, category: "GLC Books", desc: "GLC Book 4: Filipino CCF DNA", floor5: 370, floor7: 17, booth: 62 },
+    { id: 1, category: "GLC 1 Books", desc: "GLC Book 1: English One by One (new)", floor5: 750, floor7: 55, booth: 202 },
+    { id: 2, category: "GLC 1 Books", desc: "GLC Book 1: English One by One (old)", floor5: 34, floor7: 0, booth: 0 },
+    { id: 3, category: "GLC 1 Books", desc: "GLC Book 2: English Spiritual Disciplines (new)", floor5: 600, floor7: 56, booth: 158 },
+    { id: 4, category: "GLC 1 Books", desc: "GLC Book 2: English Spiritual Disciplines (old)", floor5: 105, floor7: 0, booth: 0 },
+    { id: 5, category: "GLC 1 Books", desc: "GLC Book 3: English The Holy Spirit", floor5: 750, floor7: 52, booth: 341 },
+    { id: 6, category: "GLC 1 Books", desc: "GLC Book 4: English CCF DNA (old)", floor5: 470, floor7: 0, booth: 0 },
+    { id: 7, category: "GLC 1 Books", desc: "GLC Book 4: English CCF DNA (new)", floor5: 100, floor7: 80, booth: 192 },
+    { id: 8, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group(new)", floor5: 445, floor7: 50, booth: 45 },
+    { id: 9, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group (old)", floor5: 75, floor7: 39, booth: 93 },
+    { id: 10, category: "GLC 2 Books", desc: "GLC Book 6: English Basic Doctrine", floor5: 250, floor7: 42, booth: 178 },
+    { id: 11, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life (new)", floor5: 300, floor7: 15, booth: 147 },
+    { id: 12, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
+    { id: 13, category: "GLC 2 Books", desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
+    { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Realiability of the Bible", floor5: 250, floor7: 44, booth: 156 },
+    { id: 15, category: "Other GLC Books", desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
+    { id: 16, category: "GLC 1 Books", desc: "GLC Book 1: Filipino One by One", floor5: 0, floor7: 18, booth: 40 },
+    { id: 17, category: "GLC 1 Books", desc: "GLC Book 2: Filipino Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
+    { id: 18, category: "GLC 1 Books", desc: "GLC Book 4: Filipino CCF DNA", floor5: 370, floor7: 17, booth: 62 },
     { id: 19, category: "Booklets & Workbooks", desc: "Life Goals Magazine", floor5: 325, floor7: 21, booth: 60 },
     { id: 20, category: "Booklets & Workbooks", desc: "70X7 Work Books", floor5: 100, floor7: 19, booth: 50 },
     { id: 21, category: "Materials", desc: "70X7 USB", floor5: 0, floor7: 0, booth: 0 },
@@ -131,6 +131,21 @@ function loadData() {
             console.error('Error parsing saved data, falling back to default', e);
             inventoryData = JSON.parse(JSON.stringify(initialData));
         }
+
+        // Migrate existing GLC Books categories dynamically
+        inventoryData.forEach(item => {
+            if (item.category === "GLC Books") {
+                const desc = item.desc;
+                if (desc.includes("GLC Book 1:") || desc.includes("GLC Book 2:") || desc.includes("GLC Book 3:") || desc.includes("GLC Book 4:")) {
+                    item.category = "GLC 1 Books";
+                } else if (desc.includes("GLC Book 5:") || desc.includes("GLC Book 6:") || desc.includes("GLC Book 7:") || desc.includes("GLC Book 8:") || desc.includes("GLC Book 9:")) {
+                    item.category = "GLC 2 Books";
+                } else {
+                    item.category = "Other GLC Books";
+                }
+            }
+        });
+
     } else {
         // Deep copy initial data
         inventoryData = JSON.parse(JSON.stringify(initialData));
@@ -214,7 +229,7 @@ function renderTable(searchTerm = '') {
         const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
         
         let iconClass = 'ri-file-list-line'; // default
-        if (item.category === 'GLC Books') iconClass = 'ri-book-3-line';
+        if (item.category === 'GLC 1 Books' || item.category === 'GLC 2 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
         if (item.category === 'Booklets & Workbooks') iconClass = 'ri-book-open-line';
         if (item.category === 'Tracts') iconClass = 'ri-pages-line';
         if (item.category === 'Materials') iconClass = 'ri-box-3-line';
