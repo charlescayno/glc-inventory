@@ -1,21 +1,22 @@
 /* --- CSS Variables & Design Tokens --- */
 :root {
-    --color-primary: #3b82f6;
-    --color-primary-hover: #2563eb;
+    /* CCF / GLC Brand Colors */
+    --color-primary: #009ee2;
+    --color-primary-hover: #1d60a4;
     --color-danger: #ef4444;
     --color-danger-hover: #dc2626;
     
-    --color-bg-app: #f8fafc;
+    --color-bg-app: #fafafa;
     --color-bg-surface: #ffffff;
-    --color-bg-hover: #f1f5f9;
+    --color-bg-hover: #f0f8ff;
     --color-bg-stripe: #fafafa;
     
-    --color-text-main: #0f172a;
+    --color-text-main: #3a3a3a;
     --color-text-muted: #64748b;
     --color-text-light: #94a3b8;
     
     --color-border: #e2e8f0;
-    --color-border-focus: #93c5fd;
+    --color-border-focus: #60a8d8;
     
     --radius-sm: 4px;
     --radius-md: 8px;
