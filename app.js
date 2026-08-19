@@ -28,21 +28,21 @@ const initialData = [
     { id: 26, category: "Materials", desc: "Motivate Book (English)", price: 250, floor5: 280, floor7: 7, booth: 50 },
     { id: 27, category: "Materials", desc: "Motivate Book (Chinese)", price: 250, floor5: 4, floor7: 0, booth: 0 },
     { id: 28, category: "Tracts", desc: "Dare 2 Share", price: 100, floor5: 19, floor7: 0, booth: 9 },
-    { id: 29, category: "Materials", desc: "Dgroup Kit", price: 0, floor5: 0, floor7: 0, booth: 0 },
+    { id: 29, category: "Materials", desc: "Dgroup Kit", price: 200, floor5: 0, floor7: 0, booth: 0 },
     { id: 30, category: "Materials", desc: "IDC Bag (Color: Red)", price: 100, floor5: 0, floor7: 0, booth: 0 },
     { id: 31, category: "Materials", desc: "IDC Bag (Color: Blue)", price: 100, floor5: 60, floor7: 0, booth: 7 },
     { id: 32, category: "Materials", desc: "DJ Passport", price: 25, floor5: 200, floor7: 34, booth: 60 },
     { id: 33, category: "Materials", desc: "Discipleship Covenant", price: 2, floor5: 0, floor7: 0, booth: 194 },
-    { id: 34, category: "Materials", desc: "PCS Card", price: 0, floor5: 150, floor7: 350, booth: 179 },
-    { id: 35, category: "Materials", desc: "PCS Bookmark", price: 0, floor5: 0, floor7: 600, booth: 400 },
+    { id: 34, category: "Materials", desc: "PCS Card", price: 3, floor5: 150, floor7: 350, booth: 179 },
+    { id: 35, category: "Materials", desc: "PCS Bookmark", price: 1, floor5: 0, floor7: 600, booth: 400 },
     { id: 36, category: "Materials", desc: "Accountability Card", price: 2, floor5: 3400, floor7: 1300, booth: 689 },
     { id: 37, category: "Tracts", desc: "Gospel Tracts English (NEW)", price: 3, floor5: 45000, floor7: 1955, booth: 2000 },
     { id: 38, category: "Tracts", desc: "Gospel Tracts Tagalog (NEW)", price: 3, floor5: 45400, floor7: 920, booth: 2400 },
-    { id: 39, category: "Tracts", desc: "Gospel Tracts Elevate", price: 3, floor5: 0, floor7: 290, booth: 1100 },
+    { id: 39, category: "Tracts", desc: "Gospel Tracts Elevate", price: 7, floor5: 0, floor7: 290, booth: 1100 },
     { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", price: 0, floor5: 150, floor7: 10, booth: 30 },
-    { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", price: 0, floor5: 300, floor7: 10, booth: 13 },
-    { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", price: 0, floor5: 220, floor7: 25, booth: 66 },
-    { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", price: 0, floor5: 0, floor7: 3, booth: 21 }
+    { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", price: 25, floor5: 300, floor7: 10, booth: 13 },
+    { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", price: 25, floor5: 220, floor7: 25, booth: 66 },
+    { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", price: 100, floor5: 0, floor7: 3, booth: 21 }
 ];
 
 // State
