@@ -165,6 +165,8 @@ function loadData() {
                     item.desc = "Dgroup Kit";
                 } else if (item.desc === "2be1 Workbook") {
                     item.desc = "2Be1 Workbook";
+                } else if (item.desc === "GLC Shirt") {
+                    item.desc = "GLC T-Shirt";
                 }
                 
                 // Normalize old formats first
