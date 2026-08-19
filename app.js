@@ -617,6 +617,22 @@ async function exportToExcel() {
         row.getCell(6).alignment = { horizontal: 'center' };
     });
 
+    // Add Summation Row
+    const sumRowData = ["", "Grand Total", 0, 0, 0, 0];
+    sortedData.forEach(item => {
+        sumRowData[2] += (item.floor5 || 0);
+        sumRowData[3] += (item.floor7 || 0);
+        sumRowData[4] += (item.booth || 0);
+        sumRowData[5] += ((item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0));
+    });
+    
+    const sumRow = worksheet.addRow(sumRowData);
+    sumRow.font = { bold: true };
+    sumRow.getCell(3).alignment = { horizontal: 'center' };
+    sumRow.getCell(4).alignment = { horizontal: 'center' };
+    sumRow.getCell(5).alignment = { horizontal: 'center' };
+    sumRow.getCell(6).alignment = { horizontal: 'center' };
+
     // Add borders to the table (Starting from row 3)
     const rowCount = worksheet.rowCount;
     for (let i = 3; i <= rowCount; i++) {
