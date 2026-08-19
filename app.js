@@ -567,30 +567,41 @@ function applyAdjustment() {
     }
 }
 
-// Export to Excel using SheetJS
-function exportToExcel() {
+// Export to Excel using ExcelJS
+async function exportToExcel() {
+    // Current date
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateString = new Date().toLocaleDateString(undefined, dateOptions);
 
-    const wb = XLSX.utils.book_new();
-    const wsData = [];
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Inventory');
+
+    // Title Row (Row 1)
+    const titleRow = worksheet.addRow([`GLC Resource Inventory Report`]);
+    titleRow.font = { bold: true, size: 14 };
+
+    // Date separate at B1 as requested
+    worksheet.getCell('B1').value = dateString;
+    worksheet.getCell('B1').font = { italic: true };
     
-    // Title and empty row
-    wsData.push([`GLC Resource Inventory Report - ${dateString}`]);
-    wsData.push([]); 
-    
-    // Headers
-    wsData.push(["Category", "Description", "5th Floor", "7th Floor", "GLC Booth", "Total"]);
-    
+    // Empty row
+    worksheet.addRow([]); 
+
+    // Header Row (Row 3)
+    const headerRow = worksheet.addRow(["Category", "Description", "5th Floor", "7th Floor", "GLC Booth", "Total"]);
+    headerRow.font = { bold: true };
+    headerRow.alignment = { horizontal: 'center', vertical: 'middle' };
+
     // Sort data for better readability (Category, then Name)
     const sortedData = [...inventoryData].sort((a, b) => {
         if (a.category !== b.category) return a.category.localeCompare(b.category);
         return a.desc.localeCompare(b.desc);
     });
 
+    // Data rows
     sortedData.forEach(item => {
         const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
-        wsData.push([
+        const row = worksheet.addRow([
             item.category,
             item.desc,
             item.floor5 || 0,
@@ -598,24 +609,49 @@ function exportToExcel() {
             item.booth || 0,
             total
         ]);
+        
+        // Center align C to F (5th Floor to Total)
+        row.getCell(3).alignment = { horizontal: 'center' };
+        row.getCell(4).alignment = { horizontal: 'center' };
+        row.getCell(5).alignment = { horizontal: 'center' };
+        row.getCell(6).alignment = { horizontal: 'center' };
     });
-    
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    
+
+    // Add borders to the table (Starting from row 3)
+    const rowCount = worksheet.rowCount;
+    for (let i = 3; i <= rowCount; i++) {
+        const row = worksheet.getRow(i);
+        row.eachCell((cell) => {
+            cell.border = {
+                top: { style: 'thin' },
+                left: { style: 'thin' },
+                bottom: { style: 'thin' },
+                right: { style: 'thin' }
+            };
+        });
+    }
+
     // Set column widths for readability
-    const wscols = [
-        { wch: 25 }, // Category
-        { wch: 55 }, // Description
-        { wch: 12 }, // 5th Floor
-        { wch: 12 }, // 7th Floor
-        { wch: 12 }, // GLC Booth
-        { wch: 12 }  // Total
+    worksheet.columns = [
+        { width: 25 }, // Category
+        { width: 55 }, // Description
+        { width: 12 }, // 5th Floor
+        { width: 12 }, // 7th Floor
+        { width: 12 }, // GLC Booth
+        { width: 12 }  // Total
     ];
-    ws['!cols'] = wscols;
-    
-    XLSX.utils.book_append_sheet(wb, ws, "Inventory");
-    XLSX.writeFile(wb, `GLC_Inventory_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+    // Export the file
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `GLC_Inventory_${new Date().toISOString().split('T')[0]}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
+
 
 // Setup Event Listeners
 function setupEventListeners() {
