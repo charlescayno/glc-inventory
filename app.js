@@ -13,7 +13,7 @@ const initialData = [
     { id: 11, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life (NEW)", floor5: 300, floor7: 15, booth: 147 },
     { id: 12, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
     { id: 13, category: "GLC 2 Books", desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
-    { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Realiability of the Bible", floor5: 250, floor7: 44, booth: 156 },
+    { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Reliability of the Bible", floor5: 250, floor7: 44, booth: 156 },
     { id: 15, category: "Other GLC Books", desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
     { id: 16, category: "GLC 1 Books (Filipino)", desc: "GLC Book 1: Filipino One by One", floor5: 0, floor7: 18, booth: 40 },
     { id: 17, category: "GLC 1 Books (Filipino)", desc: "GLC Book 2: Filipino Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
@@ -31,7 +31,7 @@ const initialData = [
     { id: 29, category: "Materials", desc: "Dgroup kit", floor5: 0, floor7: 0, booth: 0 },
     { id: 30, category: "Materials", desc: "IDC bag Red", floor5: 0, floor7: 0, booth: 0 },
     { id: 31, category: "Materials", desc: "IDC Bag Blue", floor5: 60, floor7: 0, booth: 7 },
-    { id: 32, category: "Materials", desc: "Dj Passport", floor5: 200, floor7: 34, booth: 60 },
+    { id: 32, category: "Materials", desc: "DJ Passport", floor5: 200, floor7: 34, booth: 60 },
     { id: 33, category: "Materials", desc: "Discipleship Covenant", floor5: 0, floor7: 0, booth: 194 },
     { id: 34, category: "Materials", desc: "PCS Card", floor5: 150, floor7: 350, booth: 179 },
     { id: 35, category: "Materials", desc: "PCS Bookmark", floor5: 0, floor7: 600, booth: 400 },
@@ -134,7 +134,7 @@ function loadData() {
 
         // Migrate existing GLC Books categories dynamically
         inventoryData.forEach(item => {
-            // Capitalize (new) and (old) tags and rename True Life/PCS
+            // Capitalize (new) and (old) tags and rename True Life/PCS/DJ/Reliability
             if (item.desc) {
                 item.desc = item.desc.replace(/\(new\)/gi, '(NEW)').replace(/\(old\)/gi, '(OLD)');
                 if (item.desc === "True Life Participant Workbook") {
@@ -143,6 +143,10 @@ function loadData() {
                     item.desc = "TLR Workbook (Facilitator)";
                 } else if (item.desc === "Pcs Bookmark") {
                     item.desc = "PCS Bookmark";
+                } else if (item.desc === "Dj Passport") {
+                    item.desc = "DJ Passport";
+                } else if (item.desc === "GLC Book 10: Realiability of the Bible") {
+                    item.desc = "GLC Book 10: Reliability of the Bible";
                 }
             }
             
