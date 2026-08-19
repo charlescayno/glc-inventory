@@ -28,9 +28,9 @@ const initialData = [
     { id: 26, category: "Materials", desc: "Motivate Book (English)", floor5: 280, floor7: 7, booth: 50 },
     { id: 27, category: "Materials", desc: "Motivate Book (Chinese)", floor5: 4, floor7: 0, booth: 0 },
     { id: 28, category: "Tracts", desc: "Dare 2 Share", floor5: 19, floor7: 0, booth: 9 },
-    { id: 29, category: "Materials", desc: "Dgroup kit", floor5: 0, floor7: 0, booth: 0 },
-    { id: 30, category: "Materials", desc: "IDC bag Red", floor5: 0, floor7: 0, booth: 0 },
-    { id: 31, category: "Materials", desc: "IDC Bag Blue", floor5: 60, floor7: 0, booth: 7 },
+    { id: 29, category: "Materials", desc: "Dgroup Kit", floor5: 0, floor7: 0, booth: 0 },
+    { id: 30, category: "Materials", desc: "IDC Bag (Color: Red)", floor5: 0, floor7: 0, booth: 0 },
+    { id: 31, category: "Materials", desc: "IDC Bag (Color: Blue)", floor5: 60, floor7: 0, booth: 7 },
     { id: 32, category: "Materials", desc: "DJ Passport", floor5: 200, floor7: 34, booth: 60 },
     { id: 33, category: "Materials", desc: "Discipleship Covenant", floor5: 0, floor7: 0, booth: 194 },
     { id: 34, category: "Materials", desc: "PCS Card", floor5: 150, floor7: 350, booth: 179 },
@@ -42,7 +42,7 @@ const initialData = [
     { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", floor5: 150, floor7: 10, booth: 30 },
     { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", floor5: 300, floor7: 10, booth: 13 },
     { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", floor5: 220, floor7: 25, booth: 66 },
-    { id: 43, category: "Booklets & Workbooks", desc: "2be1 Workbook", floor5: 0, floor7: 3, booth: 21 }
+    { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", floor5: 0, floor7: 3, booth: 21 }
 ];
 
 // State
@@ -157,6 +157,14 @@ function loadData() {
                     item.desc = "GLC Book 5 (English): Starting Point for small group (NEW)";
                 } else if (item.desc === "GLC Book 7 (English): The Family Life") {
                     item.desc = "GLC Book 7 (English): The Family Life (OLD)";
+                } else if (item.desc === "IDC Bag Blue") {
+                    item.desc = "IDC Bag (Color: Blue)";
+                } else if (item.desc === "IDC bag Red") {
+                    item.desc = "IDC Bag (Color: Red)";
+                } else if (item.desc === "Dgroup kit") {
+                    item.desc = "Dgroup Kit";
+                } else if (item.desc === "2be1 Workbook") {
+                    item.desc = "2Be1 Workbook";
                 }
                 
                 // Reformat "GLC Book X: Language Title" -> "GLC Book X (Language): Title"
