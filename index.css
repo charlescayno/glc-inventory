@@ -461,7 +461,8 @@ tbody tr:hover {
     background: var(--color-bg-surface);
     border: none;
     color: var(--color-text-muted);
-    padding: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    font-size: 1.25rem; /* Larger icon */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -479,14 +480,14 @@ tbody tr:hover {
 }
 
 .qty-input {
-    width: 50px;
-    padding: 0.5rem 0.25rem;
+    width: 60px; /* Slightly wider for larger numbers */
+    padding: 0.75rem 0.25rem; /* Match button padding */
     text-align: center;
     border: none;
     border-radius: 0;
     font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 1.1rem; /* Larger text */
+    font-weight: 600;
     color: var(--color-text-main);
     background-color: transparent;
     -moz-appearance: textfield;
