@@ -319,6 +319,33 @@ function renderTable(searchTerm = '') {
             }
         });
     });
+
+    updateLocationView();
+}
+
+function updateLocationView() {
+    const filterValue = document.getElementById('locationFilter').value;
+    
+    // Select all location columns headers and cells
+    const locationCols = {
+        'floor5': document.querySelectorAll('th[data-sort="floor5"], td[data-label="5th Floor"]'),
+        'floor7': document.querySelectorAll('th[data-sort="floor7"], td[data-label="7th Floor"]'),
+        'booth': document.querySelectorAll('th[data-sort="booth"], td[data-label="GLC Booth"]')
+    };
+
+    // First reset all to visible
+    Object.values(locationCols).forEach(elements => {
+        elements.forEach(el => el.classList.remove('hidden-column'));
+    });
+
+    // Then hide the ones that don't match if not 'all'
+    if (filterValue !== 'all') {
+        Object.entries(locationCols).forEach(([key, elements]) => {
+            if (key !== filterValue) {
+                elements.forEach(el => el.classList.add('hidden-column'));
+            }
+        });
+    }
 }
 
 // Event Handlers
@@ -533,6 +560,11 @@ function exportToCSV() {
 // Setup Event Listeners
 function setupEventListeners() {
     searchInput.addEventListener('input', handleSearch);
+    
+    const locationFilter = document.getElementById('locationFilter');
+    if (locationFilter) {
+        locationFilter.addEventListener('change', updateLocationView);
+    }
     
     exportBtn.addEventListener('click', exportToCSV);
 
