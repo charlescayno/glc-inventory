@@ -11,7 +11,7 @@ const initialData = [
     { id: 9, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group (OLD)", floor5: 75, floor7: 39, booth: 93 },
     { id: 10, category: "GLC 2 Books", desc: "GLC Book 6: English Basic Doctrine", floor5: 250, floor7: 42, booth: 178 },
     { id: 11, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life (NEW)", floor5: 300, floor7: 15, booth: 147 },
-    { id: 12, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
+    { id: 12, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life (OLD)", floor5: 350, floor7: 21, booth: 33 },
     { id: 13, category: "GLC 2 Books", desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
     { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Reliability of the Bible", floor5: 250, floor7: 44, booth: 156 },
     { id: 15, category: "Other GLC Books", desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
@@ -155,6 +155,8 @@ function loadData() {
                     item.desc = "Motivate Book (Chinese)";
                 } else if (item.desc === "GLC Book 5: English Starting Point for small group(NEW)") {
                     item.desc = "GLC Book 5: English Starting Point for small group (NEW)";
+                } else if (item.desc === "GLC Book 7: English The Family Life") {
+                    item.desc = "GLC Book 7: English The Family Life (OLD)";
                 }
             }
             
