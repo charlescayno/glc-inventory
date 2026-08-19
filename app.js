@@ -158,6 +158,9 @@ function loadData() {
                 } else if (item.desc === "GLC Book 7 (English): The Family Life") {
                     item.desc = "GLC Book 7 (English): The Family Life (OLD)";
                 }
+                
+                // Reformat "GLC Book X: Language Title" -> "GLC Book X (Language): Title"
+                item.desc = item.desc.replace(/GLC Book (\d+):\s+(English|Filipino)\s+([^\"]+)/g, 'GLC Book $1 ($2): $3');
             }
             
             if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
