@@ -236,11 +236,14 @@ function renderTable(searchTerm = '') {
 
     // Apply Sorting
     filteredData.sort((a, b) => {
-        let valA, valB;
         if (sortColumn === 'desc') {
-            valA = a.desc.toLowerCase();
-            valB = b.desc.toLowerCase();
-        } else if (sortColumn === 'total') {
+            return sortDirection === 'asc' 
+                ? a.desc.localeCompare(b.desc, undefined, { numeric: true, sensitivity: 'base' })
+                : b.desc.localeCompare(a.desc, undefined, { numeric: true, sensitivity: 'base' });
+        }
+        
+        let valA, valB;
+        if (sortColumn === 'total') {
             valA = (a.floor5 || 0) + (a.floor7 || 0) + (a.booth || 0);
             valB = (b.floor5 || 0) + (b.floor7 || 0) + (b.booth || 0);
         } else {
