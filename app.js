@@ -567,34 +567,54 @@ function applyAdjustment() {
     }
 }
 
-// Export to CSV
-function exportToCSV() {
-    // Current date
+// Export to Excel using SheetJS
+function exportToExcel() {
     const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const dateString = new Date().toLocaleDateString(undefined, dateOptions);
 
-    // CSV Header
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += `GLC Resource Inventory Report - ${dateString}\r\n\r\n`;
-    csvContent += "Description,5th Floor,7th Floor,GLC Booth,Total\r\n";
+    const wb = XLSX.utils.book_new();
+    const wsData = [];
     
-    // Data rows
-    inventoryData.forEach(item => {
-        const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
-        // Quote description to handle potential commas
-        const desc = `"${item.desc.replace(/"/g, '""')}"`;
-        const row = [desc, item.floor5, item.floor7, item.booth, total].join(",");
-        csvContent += row + "\r\n";
+    // Title and empty row
+    wsData.push([`GLC Resource Inventory Report - ${dateString}`]);
+    wsData.push([]); 
+    
+    // Headers
+    wsData.push(["Category", "Description", "5th Floor", "7th Floor", "GLC Booth", "Total"]);
+    
+    // Sort data for better readability (Category, then Name)
+    const sortedData = [...inventoryData].sort((a, b) => {
+        if (a.category !== b.category) return a.category.localeCompare(b.category);
+        return a.desc.localeCompare(b.desc);
     });
 
-    // Trigger download
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `inventory_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    sortedData.forEach(item => {
+        const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+        wsData.push([
+            item.category,
+            item.desc,
+            item.floor5 || 0,
+            item.floor7 || 0,
+            item.booth || 0,
+            total
+        ]);
+    });
+    
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    
+    // Set column widths for readability
+    const wscols = [
+        { wch: 25 }, // Category
+        { wch: 55 }, // Description
+        { wch: 12 }, // 5th Floor
+        { wch: 12 }, // 7th Floor
+        { wch: 12 }, // GLC Booth
+        { wch: 12 }  // Total
+    ];
+    ws['!cols'] = wscols;
+    
+    XLSX.utils.book_append_sheet(wb, ws, "Inventory");
+    XLSX.writeFile(wb, `GLC_Inventory_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 
 // Setup Event Listeners
@@ -608,7 +628,7 @@ function setupEventListeners() {
     }
     
 
-    exportBtn.addEventListener('click', exportToCSV);
+    exportBtn.addEventListener('click', exportToExcel);
 
     const lockAllBtn = document.getElementById('lockAllBtn');
     const lockAllText = document.getElementById('lockAllText');
