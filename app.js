@@ -15,9 +15,9 @@ const initialData = [
     { id: 13, category: "GLC 2 Books", desc: "GLC Book 9: The Multiplier", floor5: 282, floor7: 16, booth: 102 },
     { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Reliability of the Bible", floor5: 250, floor7: 44, booth: 156 },
     { id: 15, category: "Other GLC Books", desc: "GLC Book 11: Spiritual Warfare", floor5: 400, floor7: 45, booth: 148 },
-    { id: 16, category: "GLC 1 Books (Filipino)", desc: "GLC Book 1: One by One", floor5: 0, floor7: 18, booth: 40 },
-    { id: 17, category: "GLC 1 Books (Filipino)", desc: "GLC Book 2: Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
-    { id: 18, category: "GLC 1 Books (Filipino)", desc: "GLC Book 4: CCF DNA", floor5: 370, floor7: 17, booth: 62 },
+    { id: 16, category: "GLC 1 Books (Filipino)", desc: "GLC Book 1 (Filipino): One by One", floor5: 0, floor7: 18, booth: 40 },
+    { id: 17, category: "GLC 1 Books (Filipino)", desc: "GLC Book 2 (Filipino): Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
+    { id: 18, category: "GLC 1 Books (Filipino)", desc: "GLC Book 4 (Filipino): CCF DNA", floor5: 370, floor7: 17, booth: 62 },
     { id: 19, category: "Booklets & Workbooks", desc: "Life Goals Magazine", floor5: 325, floor7: 21, booth: 60 },
     { id: 20, category: "Booklets & Workbooks", desc: "70X7 Workbook", floor5: 100, floor7: 19, booth: 50 },
     { id: 21, category: "Materials", desc: "70X7 USB", floor5: 0, floor7: 0, booth: 0 },
@@ -167,8 +167,13 @@ function loadData() {
                     item.desc = "2Be1 Workbook";
                 }
                 
-                // Reformat old formats to remove language specifier
+                // Normalize old formats first
                 item.desc = item.desc.replace(/GLC Book (\d+)(?:\s*\((English|Filipino)\)|:\s+(English|Filipino))\s*:?\s*(.+)/g, 'GLC Book $1: $4');
+                
+                // Add (Filipino) back if it belongs to Filipino category
+                if (item.category === "GLC 1 Books (Filipino)" || item.desc.toLowerCase().includes("filipino")) {
+                    item.desc = item.desc.replace(/GLC Book (\d+):\s*(?!Filipino)(.+)/i, 'GLC Book $1 (Filipino): $2');
+                }
             }
             
             if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
