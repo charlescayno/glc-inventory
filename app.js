@@ -569,16 +569,7 @@ function setupEventListeners() {
         locationFilter.addEventListener('change', updateLocationView);
     }
     
-    const mobileSortDropdown = document.getElementById('mobileSortDropdown');
-    if (mobileSortDropdown) {
-        mobileSortDropdown.addEventListener('change', (e) => {
-            const [field, direction] = e.target.value.split('-');
-            sortColumn = field;
-            sortDirection = direction;
-            renderTable(searchInput.value);
-        });
-    }
-    
+
     exportBtn.addEventListener('click', exportToCSV);
 
     const lockAllBtn = document.getElementById('lockAllBtn');
