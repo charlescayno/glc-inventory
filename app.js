@@ -563,6 +563,7 @@ function exportToCSV() {
 // Setup Event Listeners
 function setupEventListeners() {
     searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('keyup', handleSearch);
     
     const locationFilter = document.getElementById('locationFilter');
     if (locationFilter) {
