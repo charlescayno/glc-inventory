@@ -56,7 +56,6 @@
 
         <main class="app-main">
             <div class="category-tabs">
-                <button class="tab-btn" data-category="Overview"><i class="ri-dashboard-line" style="margin-right: 0.25rem;"></i>Overview</button>
                 <button class="tab-btn active" data-category="All">All Resources</button>
                 <button class="tab-btn" data-category="GLC 1 Books (English)">GLC 1 Books (English)</button>
                 <button class="tab-btn" data-category="GLC 1 Books (Filipino)">GLC 1 Books (Filipino)</button>
@@ -66,55 +65,8 @@
                 <button class="tab-btn" data-category="Tracts">Tracts</button>
                 <button class="tab-btn" data-category="Materials">Materials</button>
             </div>
-            </div>
 
-            <!-- Overview Dashboard -->
-            <div id="overviewContainer" class="overview-container hidden">
-                <div class="overview-grid">
-                    <!-- High Level Summaries -->
-                    <div class="summary-card highlight-card">
-                        <div class="summary-icon"><i class="ri-stack-line"></i></div>
-                        <div class="summary-info">
-                            <h3>Grand Total Inventory</h3>
-                            <p id="overviewGrandTotal">0</p>
-                        </div>
-                    </div>
-                    <div class="summary-card highlight-card">
-                        <div class="summary-icon"><i class="ri-book-mark-line"></i></div>
-                        <div class="summary-info">
-                            <h3>Total Resource Types</h3>
-                            <p id="overviewTotalTypes">0</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Location Breakdowns -->
-                    <div class="summary-card">
-                        <div class="summary-icon" style="color: var(--color-success); background: #dcfce7;"><i class="ri-building-line"></i></div>
-                        <div class="summary-info">
-                            <h3>5th Floor Total</h3>
-                            <p id="overviewFloor5">0</p>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-icon" style="color: var(--color-warning); background: #fef9c3;"><i class="ri-store-2-line"></i></div>
-                        <div class="summary-info">
-                            <h3>GLC Booth Total</h3>
-                            <p id="overviewBooth">0</p>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-icon" style="color: var(--color-danger); background: #fee2e2;"><i class="ri-building-2-line"></i></div>
-                        <div class="summary-info">
-                            <h3>7th Floor Total</h3>
-                            <p id="overviewFloor7">0</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Main Table View -->
-            <div id="tableViewContainer">
-                <div class="table-container">
+            <div class="table-container">
                 <table id="inventoryTable">
                     <thead>
                         <tr>
@@ -133,26 +85,25 @@
                     <i class="ri-search-eye-line"></i>
                     <p>No resources found matching your search.</p>
                 </div>
-                </div>
-                
-                <div class="summary-cards" style="margin-top: 2rem; margin-bottom: 0;">
-                    <div class="summary-card">
-                        <div class="summary-icon"><i class="ri-book-mark-line"></i></div>
-                        <div class="summary-info">
-                            <h3>Total Resource Types</h3>
-                            <p id="totalTypes">0</p>
-                        </div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="summary-icon"><i class="ri-stack-line"></i></div>
-                        <div class="summary-info">
-                            <h3>Grand Total Inventory</h3>
-                            <p id="grandTotal">0</p>
-                        </div>
-                    </div>
+        </div>
+
+        <div class="summary-cards" style="margin-top: 2rem; margin-bottom: 0;">
+            <div class="summary-card">
+                <div class="summary-icon"><i class="ri-book-mark-line"></i></div>
+                <div class="summary-info">
+                    <h3>Total Resource Types</h3>
+                    <p id="totalTypes">0</p>
                 </div>
             </div>
-        </main>
+            <div class="summary-card">
+                <div class="summary-icon"><i class="ri-stack-line"></i></div>
+                <div class="summary-info">
+                    <h3>Grand Total Inventory</h3>
+                    <p id="grandTotal">0</p>
+                </div>
+            </div>
+        </div>
+    </main>
         
         <footer class="app-footer">
             <p>Last updated: <span id="lastUpdated">Never</span></p>
