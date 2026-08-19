@@ -177,8 +177,38 @@ function updateSummaries() {
         grandTotal += (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
     });
     
-    totalTypesEl.textContent = inventoryData.length;
-    grandTotalEl.textContent = grandTotal.toLocaleString();
+    // Update main table view summaries
+    if (totalTypesEl) totalTypesEl.textContent = inventoryData.length;
+    if (grandTotalEl) grandTotalEl.textContent = grandTotal.toLocaleString();
+    
+    updateOverview();
+}
+
+function updateOverview() {
+    let grandTotal = 0;
+    let floor5Total = 0;
+    let floor7Total = 0;
+    let boothTotal = 0;
+    
+    inventoryData.forEach(item => {
+        const itemTotal = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+        grandTotal += itemTotal;
+        floor5Total += (item.floor5 || 0);
+        floor7Total += (item.floor7 || 0);
+        boothTotal += (item.booth || 0);
+    });
+    
+    const overviewGrandTotal = document.getElementById('overviewGrandTotal');
+    const overviewTotalTypes = document.getElementById('overviewTotalTypes');
+    const overviewFloor5 = document.getElementById('overviewFloor5');
+    const overviewFloor7 = document.getElementById('overviewFloor7');
+    const overviewBooth = document.getElementById('overviewBooth');
+    
+    if (overviewGrandTotal) overviewGrandTotal.textContent = grandTotal.toLocaleString();
+    if (overviewTotalTypes) overviewTotalTypes.textContent = inventoryData.length;
+    if (overviewFloor5) overviewFloor5.textContent = floor5Total.toLocaleString();
+    if (overviewFloor7) overviewFloor7.textContent = floor7Total.toLocaleString();
+    if (overviewBooth) overviewBooth.textContent = boothTotal.toLocaleString();
 }
 
 // Rendering
@@ -659,7 +689,25 @@ function setupEventListeners() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             e.target.classList.add('active');
             currentCategory = e.target.getAttribute('data-category');
-            renderTable(searchInput.value);
+            
+            const overviewContainer = document.getElementById('overviewContainer');
+            const tableViewContainer = document.getElementById('tableViewContainer');
+            const searchBar = document.querySelector('.search-bar');
+            const utilityBar = document.querySelector('.utility-bar');
+            
+            if (currentCategory === 'Overview') {
+                overviewContainer.classList.remove('hidden');
+                tableViewContainer.classList.add('hidden');
+                if (searchBar) searchBar.classList.add('hidden');
+                if (utilityBar) utilityBar.classList.add('hidden');
+                updateOverview();
+            } else {
+                overviewContainer.classList.add('hidden');
+                tableViewContainer.classList.remove('hidden');
+                if (searchBar) searchBar.classList.remove('hidden');
+                if (utilityBar) utilityBar.classList.remove('hidden');
+                renderTable(searchInput.value);
+            }
         });
     });
 
