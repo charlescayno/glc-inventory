@@ -446,6 +446,41 @@ tbody tr:hover {
     -moz-appearance: textfield;
 }
 
+/* Locking Styles */
+.locked-row {
+    background-color: #f8fafc; /* Very light grey/blue */
+}
+.locked-row:hover {
+    background-color: #f1f5f9;
+}
+.locked-row td {
+    opacity: 0.8;
+}
+.qty-control.locked {
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+}
+.qty-control.locked .qty-btn {
+    color: #94a3b8;
+    pointer-events: none;
+}
+.qty-control.locked .qty-input {
+    color: #94a3b8;
+    pointer-events: none;
+}
+.lock-toggle-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0;
+    margin-right: 0.5rem;
+    transition: transform var(--transition-fast);
+}
+.lock-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
 .qty-input:focus {
     outline: none;
 }

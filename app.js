@@ -240,31 +240,46 @@ function renderTable(searchTerm = '') {
         if (item.category === 'Tracts') iconClass = 'ri-pages-line';
         if (item.category === 'Materials') iconClass = 'ri-box-3-line';
 
+        const isLocked = item.isLocked || false;
+        const lockIcon = isLocked ? 'ri-lock-fill' : 'ri-lock-unlock-line';
+        const lockColor = isLocked ? 'var(--color-primary)' : 'var(--color-text-muted)';
+        const rowClass = isLocked ? 'locked-row' : '';
+        const controlClass = isLocked ? 'qty-control locked' : 'qty-control';
+        const inputDisabled = isLocked ? 'disabled' : '';
+
         const tr = document.createElement('tr');
+        if (isLocked) tr.classList.add('locked-row');
         tr.innerHTML = `
-            <td data-label="Description"><span class="desc-text"><i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}</span></td>
+            <td data-label="Description">
+                <span class="desc-text">
+                    <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
+                        <i class="${lockIcon}" style="color: ${lockColor};"></i>
+                    </button>
+                    <i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}
+                </span>
+            </td>
             <td class="col-location" data-label="5th Floor">
-                <div class="qty-control">
-                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor5"><i class="ri-subtract-line"></i></button>
-                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor5" value="${item.floor5}" min="0">
-                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor5"><i class="ri-add-line"></i></button>
-                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor5" title="Adjust"><i class="ri-calculator-line"></i></button>
+                <div class="${controlClass}">
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor5" value="${item.floor5}" min="0" ${inputDisabled}>
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-add-line"></i></button>
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor5" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
                 </div>
             </td>
             <td class="col-location" data-label="7th Floor">
-                <div class="qty-control">
-                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor7"><i class="ri-subtract-line"></i></button>
-                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor7" value="${item.floor7}" min="0">
-                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor7"><i class="ri-add-line"></i></button>
-                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor7" title="Adjust"><i class="ri-calculator-line"></i></button>
+                <div class="${controlClass}">
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor7" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor7" value="${item.floor7}" min="0" ${inputDisabled}>
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor7" ${inputDisabled}><i class="ri-add-line"></i></button>
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor7" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
                 </div>
             </td>
             <td class="col-location" data-label="GLC Booth">
-                <div class="qty-control">
-                    <button class="qty-btn minus" data-id="${item.id}" data-field="booth"><i class="ri-subtract-line"></i></button>
-                    <input type="number" class="qty-input" data-id="${item.id}" data-field="booth" value="${item.booth}" min="0">
-                    <button class="qty-btn plus" data-id="${item.id}" data-field="booth"><i class="ri-add-line"></i></button>
-                    <button class="qty-btn adjust" data-id="${item.id}" data-field="booth" title="Adjust"><i class="ri-calculator-line"></i></button>
+                <div class="${controlClass}">
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="booth" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="booth" value="${item.booth}" min="0" ${inputDisabled}>
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="booth" ${inputDisabled}><i class="ri-add-line"></i></button>
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="booth" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
                 </div>
             </td>
             <td class="col-total" data-label="Total">
@@ -291,6 +306,18 @@ function renderTable(searchTerm = '') {
     // Attach click listeners for adjust buttons
     document.querySelectorAll('.qty-btn.adjust').forEach(btn => {
         btn.addEventListener('click', openAdjustModal);
+    });
+
+    document.querySelectorAll('.lock-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            const item = inventoryData.find(i => i.id === id);
+            if (item) {
+                item.isLocked = !item.isLocked;
+                saveData();
+                renderTable(searchInput.value);
+            }
+        });
     });
 }
 
@@ -508,6 +535,39 @@ function setupEventListeners() {
     searchInput.addEventListener('input', handleSearch);
     
     exportBtn.addEventListener('click', exportToCSV);
+
+    const lockAllBtn = document.getElementById('lockAllBtn');
+    const lockAllText = document.getElementById('lockAllText');
+    const lockAllIcon = lockAllBtn.querySelector('i');
+    
+    // Determine initial Lock All state based on data
+    let isAllLocked = inventoryData.every(item => item.isLocked);
+    if (isAllLocked) {
+        lockAllText.textContent = "Unlock All";
+        lockAllIcon.className = "ri-lock-unlock-fill";
+    }
+    
+    lockAllBtn.addEventListener('click', () => {
+        // Toggle the global lock state
+        isAllLocked = !isAllLocked;
+        
+        // Update all items in the inventory
+        inventoryData.forEach(item => {
+            item.isLocked = isAllLocked;
+        });
+        
+        saveData();
+        renderTable(searchInput.value);
+        
+        // Update button UI
+        if (isAllLocked) {
+            lockAllText.textContent = "Unlock All";
+            lockAllIcon.className = "ri-lock-unlock-fill";
+        } else {
+            lockAllText.textContent = "Lock All";
+            lockAllIcon.className = "ri-lock-fill";
+        }
+    });
 
     // Sorting headers
     document.querySelectorAll('th.sortable').forEach(th => {
