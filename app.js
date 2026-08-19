@@ -173,15 +173,15 @@ function loadData() {
             
             if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
                 const desc = item.desc;
-                if (desc.includes("GLC Book 1:") || desc.includes("GLC Book 2:") || desc.includes("GLC Book 3:") || desc.includes("GLC Book 4:")) {
+                if (desc.match(/GLC Book [1-4]\b/)) {
                     if (desc.toLowerCase().includes("filipino")) {
                         item.category = "GLC 1 Books (Filipino)";
                     } else {
                         item.category = "GLC 1 Books (English)";
                     }
-                } else if (desc.includes("GLC Book 5:") || desc.includes("GLC Book 6:") || desc.includes("GLC Book 7:") || desc.includes("GLC Book 8:")) {
+                } else if (desc.match(/GLC Book [5-8]\b/)) {
                     item.category = "GLC 2 Books";
-                } else if (desc.includes("GLC Book 9:") || desc.includes("GLC Book 10:") || desc.includes("GLC Book 11:") || desc.includes("GLC Book 12:")) {
+                } else if (desc.match(/GLC Book (9|10|11|12)\b/)) {
                     item.category = "GLC 3 Books";
                 } else {
                     item.category = "Other GLC Books";
