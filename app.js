@@ -1,16 +1,16 @@
 // Initial Data Extracted from Image
 const initialData = [
-    { id: 1, category: "GLC 1 Books (English)", desc: "GLC Book 1: English One by One (new)", floor5: 750, floor7: 55, booth: 202 },
-    { id: 2, category: "GLC 1 Books (English)", desc: "GLC Book 1: English One by One (old)", floor5: 34, floor7: 0, booth: 0 },
-    { id: 3, category: "GLC 1 Books (English)", desc: "GLC Book 2: English Spiritual Disciplines (new)", floor5: 600, floor7: 56, booth: 158 },
-    { id: 4, category: "GLC 1 Books (English)", desc: "GLC Book 2: English Spiritual Disciplines (old)", floor5: 105, floor7: 0, booth: 0 },
+    { id: 1, category: "GLC 1 Books (English)", desc: "GLC Book 1: English One by One (NEW)", floor5: 750, floor7: 55, booth: 202 },
+    { id: 2, category: "GLC 1 Books (English)", desc: "GLC Book 1: English One by One (OLD)", floor5: 34, floor7: 0, booth: 0 },
+    { id: 3, category: "GLC 1 Books (English)", desc: "GLC Book 2: English Spiritual Disciplines (NEW)", floor5: 600, floor7: 56, booth: 158 },
+    { id: 4, category: "GLC 1 Books (English)", desc: "GLC Book 2: English Spiritual Disciplines (OLD)", floor5: 105, floor7: 0, booth: 0 },
     { id: 5, category: "GLC 1 Books (English)", desc: "GLC Book 3: English The Holy Spirit", floor5: 750, floor7: 52, booth: 341 },
-    { id: 6, category: "GLC 1 Books (English)", desc: "GLC Book 4: English CCF DNA (old)", floor5: 470, floor7: 0, booth: 0 },
-    { id: 7, category: "GLC 1 Books (English)", desc: "GLC Book 4: English CCF DNA (new)", floor5: 100, floor7: 80, booth: 192 },
-    { id: 8, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group(new)", floor5: 445, floor7: 50, booth: 45 },
-    { id: 9, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group (old)", floor5: 75, floor7: 39, booth: 93 },
+    { id: 6, category: "GLC 1 Books (English)", desc: "GLC Book 4: English CCF DNA (OLD)", floor5: 470, floor7: 0, booth: 0 },
+    { id: 7, category: "GLC 1 Books (English)", desc: "GLC Book 4: English CCF DNA (NEW)", floor5: 100, floor7: 80, booth: 192 },
+    { id: 8, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group(NEW)", floor5: 445, floor7: 50, booth: 45 },
+    { id: 9, category: "GLC 2 Books", desc: "GLC Book 5: English Starting Point for small group (OLD)", floor5: 75, floor7: 39, booth: 93 },
     { id: 10, category: "GLC 2 Books", desc: "GLC Book 6: English Basic Doctrine", floor5: 250, floor7: 42, booth: 178 },
-    { id: 11, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life (new)", floor5: 300, floor7: 15, booth: 147 },
+    { id: 11, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life (NEW)", floor5: 300, floor7: 15, booth: 147 },
     { id: 12, category: "GLC 2 Books", desc: "GLC Book 7: English The Family Life", floor5: 350, floor7: 21, booth: 33 },
     { id: 13, category: "GLC 2 Books", desc: "GLC Book 9: English The Multiplier", floor5: 282, floor7: 16, booth: 102 },
     { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Realiability of the Bible", floor5: 250, floor7: 44, booth: 156 },
@@ -36,8 +36,8 @@ const initialData = [
     { id: 34, category: "Materials", desc: "PCS Card", floor5: 150, floor7: 350, booth: 179 },
     { id: 35, category: "Materials", desc: "Pcs Bookmark", floor5: 0, floor7: 600, booth: 400 },
     { id: 36, category: "Materials", desc: "Accountability Card", floor5: 3400, floor7: 1300, booth: 689 },
-    { id: 37, category: "Tracts", desc: "Gospel Tracts English (New)", floor5: 45000, floor7: 1955, booth: 2000 },
-    { id: 38, category: "Tracts", desc: "Gospel Tracts Tagalog (New)", floor5: 45400, floor7: 920, booth: 2400 },
+    { id: 37, category: "Tracts", desc: "Gospel Tracts English (NEW)", floor5: 45000, floor7: 1955, booth: 2000 },
+    { id: 38, category: "Tracts", desc: "Gospel Tracts Tagalog (NEW)", floor5: 45400, floor7: 920, booth: 2400 },
     { id: 39, category: "Tracts", desc: "Gospel Tracts Elevate", floor5: 0, floor7: 290, booth: 1100 },
     { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", floor5: 150, floor7: 10, booth: 30 },
     { id: 41, category: "Booklets & Workbooks", desc: "True Life Participant Workbook", floor5: 300, floor7: 10, booth: 13 },
@@ -134,6 +134,11 @@ function loadData() {
 
         // Migrate existing GLC Books categories dynamically
         inventoryData.forEach(item => {
+            // Capitalize (new) and (old) tags
+            if (item.desc) {
+                item.desc = item.desc.replace(/\(new\)/gi, '(NEW)').replace(/\(old\)/gi, '(OLD)');
+            }
+            
             if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
                 const desc = item.desc;
                 if (desc.includes("GLC Book 1:") || desc.includes("GLC Book 2:") || desc.includes("GLC Book 3:") || desc.includes("GLC Book 4:")) {
