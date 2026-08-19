@@ -19,7 +19,7 @@ const initialData = [
     { id: 17, category: "GLC 1 Books (Filipino)", desc: "GLC Book 2: Filipino Spiritual Disciple", floor5: 0, floor7: 1, booth: 6 },
     { id: 18, category: "GLC 1 Books (Filipino)", desc: "GLC Book 4: Filipino CCF DNA", floor5: 370, floor7: 17, booth: 62 },
     { id: 19, category: "Booklets & Workbooks", desc: "Life Goals Magazine", floor5: 325, floor7: 21, booth: 60 },
-    { id: 20, category: "Booklets & Workbooks", desc: "70X7 Work Books", floor5: 100, floor7: 19, booth: 50 },
+    { id: 20, category: "Booklets & Workbooks", desc: "70X7 Workbook", floor5: 100, floor7: 19, booth: 50 },
     { id: 21, category: "Materials", desc: "70X7 USB", floor5: 0, floor7: 0, booth: 0 },
     { id: 22, category: "Booklets & Workbooks", desc: "Superbook Work Book", floor5: 0, floor7: 0, booth: 112 },
     { id: 23, category: "Booklets & Workbooks", desc: "Memory Verse Volume 2", floor5: 350, floor7: 31, booth: 78 },
@@ -147,6 +147,8 @@ function loadData() {
                     item.desc = "DJ Passport";
                 } else if (item.desc === "GLC Book 10: Realiability of the Bible") {
                     item.desc = "GLC Book 10: Reliability of the Bible";
+                } else if (item.desc === "70X7 Work Books") {
+                    item.desc = "70X7 Workbook";
                 }
             }
             
