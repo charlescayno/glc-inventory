@@ -40,8 +40,8 @@ const initialData = [
     { id: 38, category: "Tracts", desc: "Gospel Tracts Tagalog (NEW)", floor5: 45400, floor7: 920, booth: 2400 },
     { id: 39, category: "Tracts", desc: "Gospel Tracts Elevate", floor5: 0, floor7: 290, booth: 1100 },
     { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", floor5: 150, floor7: 10, booth: 30 },
-    { id: 41, category: "Booklets & Workbooks", desc: "True Life Participant Workbook", floor5: 300, floor7: 10, booth: 13 },
-    { id: 42, category: "Booklets & Workbooks", desc: "True Life Facilitator Workbook", floor5: 220, floor7: 25, booth: 66 },
+    { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", floor5: 300, floor7: 10, booth: 13 },
+    { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", floor5: 220, floor7: 25, booth: 66 },
     { id: 43, category: "Booklets & Workbooks", desc: "2be1 Workbook", floor5: 0, floor7: 3, booth: 21 }
 ];
 
@@ -134,9 +134,14 @@ function loadData() {
 
         // Migrate existing GLC Books categories dynamically
         inventoryData.forEach(item => {
-            // Capitalize (new) and (old) tags
+            // Capitalize (new) and (old) tags and rename True Life
             if (item.desc) {
                 item.desc = item.desc.replace(/\(new\)/gi, '(NEW)').replace(/\(old\)/gi, '(OLD)');
+                if (item.desc === "True Life Participant Workbook") {
+                    item.desc = "TLR Workbook (Participant)";
+                } else if (item.desc === "True Life Facilitator Workbook") {
+                    item.desc = "TLR Workbook (Facilitator)";
+                }
             }
             
             if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
