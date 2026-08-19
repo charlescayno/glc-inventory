@@ -110,8 +110,22 @@ h1 {
 
 .header-actions {
     display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+}
+
+.utility-bar {
+    display: flex;
     align-items: center;
     gap: 0.75rem;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.utility-actions {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .location-select {
@@ -161,6 +175,26 @@ h1 {
     outline: none;
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px var(--color-border-focus);
+}
+
+/* --- Mobile Sort --- */
+.mobile-sort-container {
+    display: none;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.mobile-sort-select {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background-color: var(--color-bg-surface);
+    color: var(--color-text-main);
+    cursor: pointer;
+    outline: none;
 }
 
 /* --- Category Tabs --- */
@@ -689,12 +723,29 @@ tbody tr:hover {
     .app-container {
         padding: 1rem;
     }
+    
+    .desktop-only {
+        display: none;
+    }
+    
+    .btn-icon {
+        padding: 0.625rem;
+    }
+    
     .header-actions {
         flex-direction: column;
         align-items: stretch;
     }
-    .header-actions .btn {
-        justify-content: center;
+    .utility-bar {
+        justify-content: space-between;
+    }
+    
+    .mobile-sort-container {
+        display: block;
+    }
+    
+    .app-main {
+        padding-bottom: 80px; /* FAB Clearance */
     }
     
     /* Mobile Table Layout (Cards) */
@@ -711,29 +762,7 @@ tbody tr:hover {
         width: 100%;
     }
     thead {
-        display: block;
-        margin-bottom: 1rem;
-    }
-    thead tr {
-        position: static;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        background: transparent;
-        border: none;
-    }
-    thead th {
-        display: inline-flex;
-        width: auto !important;
-        background: var(--color-bg-surface);
-        border: 1px solid var(--color-border);
-        border-radius: 20px;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-        box-shadow: var(--shadow-sm);
-    }
-    thead th i {
-        margin-left: 0.25rem;
+        display: none;
     }
     tbody tr {
         background-color: var(--color-bg-surface);
@@ -741,50 +770,91 @@ tbody tr:hover {
         border-radius: var(--radius-lg);
         margin-bottom: 1rem;
         box-shadow: var(--shadow-sm);
-        padding: 0.5rem 1rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        position: relative;
     }
     tbody tr:hover {
         background-color: var(--color-bg-surface);
     }
     td {
         display: flex;
-        flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        padding: 0.75rem 0;
-        border-bottom: 1px solid var(--color-bg-hover);
+        padding: 0;
+        border-bottom: none;
         text-align: right;
         gap: 0.5rem;
-    }
-    td:last-child {
-        border-bottom: none;
     }
     td::before {
         content: attr(data-label);
         font-weight: 600;
         color: var(--color-text-muted);
         text-align: left;
-        font-size: 0.875rem;
+        font-size: 0.85rem;
+        flex: 1;
     }
+    
+    /* Hide labels when viewing single location */
+    .viewing-single-location td.col-location::before {
+        display: none;
+    }
+    .viewing-single-location td.col-location {
+        justify-content: flex-start;
+    }
+    
     td[data-label="Description"] {
         flex-direction: column;
         align-items: flex-start;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        padding: 0;
+        margin-bottom: 0.25rem;
     }
     td[data-label="Description"]::before {
         display: none;
     }
     .desc-text {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 600;
+        display: flex;
+        align-items: flex-start;
+        line-height: 1.4;
     }
+    
+    /* Position lock icon top right on mobile */
+    .lock-toggle-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        margin: 0;
+    }
+    
     .qty-control {
         margin: 0;
         flex-shrink: 0;
     }
     .total-value {
         text-align: right;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+    
+    /* Make controls row horizontal if single location */
+    .viewing-single-location .col-location {
+        flex-direction: row;
+        width: auto;
+    }
+    .viewing-single-location .col-total {
+        width: auto;
+    }
+    .viewing-single-location tr {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .viewing-single-location td[data-label="Description"] {
+        width: 100%;
     }
 }
 

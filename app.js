@@ -340,11 +340,14 @@ function updateLocationView() {
 
     // Then hide the ones that don't match if not 'all'
     if (filterValue !== 'all') {
+        document.getElementById('inventoryTable').classList.add('viewing-single-location');
         Object.entries(locationCols).forEach(([key, elements]) => {
             if (key !== filterValue) {
                 elements.forEach(el => el.classList.add('hidden-column'));
             }
         });
+    } else {
+        document.getElementById('inventoryTable').classList.remove('viewing-single-location');
     }
 }
 
@@ -564,6 +567,16 @@ function setupEventListeners() {
     const locationFilter = document.getElementById('locationFilter');
     if (locationFilter) {
         locationFilter.addEventListener('change', updateLocationView);
+    }
+    
+    const mobileSortDropdown = document.getElementById('mobileSortDropdown');
+    if (mobileSortDropdown) {
+        mobileSortDropdown.addEventListener('change', (e) => {
+            const [field, direction] = e.target.value.split('-');
+            sortColumn = field;
+            sortDirection = direction;
+            renderTable(searchInput.value);
+        });
     }
     
     exportBtn.addEventListener('click', exportToCSV);

@@ -26,33 +26,45 @@
                 </div>
                 
                 <div class="header-actions">
-                    <div class="current-date" id="currentDateDisplay" style="font-size: 0.9rem; font-weight: 500; color: var(--color-text-main); margin-right: 1rem;"></div>
-                    <select id="locationFilter" class="location-select">
-                        <option value="all">All Locations</option>
-                        <option value="floor5">5th Floor</option>
-                        <option value="booth">GLC Booth</option>
-                        <option value="floor7">7th Floor</option>
-                    </select>
                     <div class="search-bar">
                         <i class="ri-search-line search-icon"></i>
                         <input type="text" id="searchInput" placeholder="Search resources...">
                     </div>
-                    <button id="lockAllBtn" class="btn btn-secondary">
-                        <i class="ri-lock-fill"></i>
-                        <span id="lockAllText">Lock All</span>
-                    </button>
-                    <button id="exportBtn" class="btn btn-secondary">
-                        <i class="ri-download-2-line"></i>
-                        Export CSV
-                    </button>
+                    
+                    <div class="utility-bar">
+                        <div class="current-date" id="currentDateDisplay" style="display:none;"></div>
+                        <select id="locationFilter" class="location-select">
+                            <option value="all">📍 All Locations</option>
+                            <option value="floor5">📍 5th Floor</option>
+                            <option value="booth">📍 GLC Booth</option>
+                            <option value="floor7">📍 7th Floor</option>
+                        </select>
+                        <div class="utility-actions">
+                            <button id="lockAllBtn" class="btn btn-icon btn-secondary" title="Lock All">
+                                <i class="ri-lock-fill"></i>
+                                <span id="lockAllText" class="desktop-only">Lock All</span>
+                            </button>
+                            <button id="exportBtn" class="btn btn-icon btn-secondary" title="Export CSV">
+                                <i class="ri-download-2-line"></i>
+                                <span class="desktop-only">Export</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
 
         <main class="app-main">
-
-
-            <div class="category-tabs">
+            <div class="mobile-sort-container">
+                <select id="mobileSortDropdown" class="mobile-sort-select">
+                    <option value="desc-asc">Sort By: Name (A-Z)</option>
+                    <option value="desc-desc">Sort By: Name (Z-A)</option>
+                    <option value="floor5-desc">Sort By: 5th Floor (High-Low)</option>
+                    <option value="floor7-desc">Sort By: 7th Floor (High-Low)</option>
+                    <option value="booth-desc">Sort By: GLC Booth (High-Low)</option>
+                    <option value="total-desc">Sort By: Total (High-Low)</option>
+                </select>
+            </div>            <div class="category-tabs">
                 <button class="tab-btn active" data-category="All">All Resources</button>
                 <button class="tab-btn" data-category="GLC 1 Books (English)">GLC 1 Books (English)</button>
                 <button class="tab-btn" data-category="GLC 1 Books (Filipino)">GLC 1 Books (Filipino)</button>
