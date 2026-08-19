@@ -25,8 +25,8 @@ const initialData = [
     { id: 23, category: "Booklets & Workbooks", desc: "Memory Verse Volume 2", floor5: 350, floor7: 31, booth: 78 },
     { id: 24, category: "Booklets & Workbooks", desc: "Holy Spirit Booklet", floor5: 200, floor7: 45, booth: 63 },
     { id: 25, category: "Booklets & Workbooks", desc: "Real Talk Booklet", floor5: 1000, floor7: 31, booth: 70 },
-    { id: 26, category: "Materials", desc: "Motivate English", floor5: 280, floor7: 7, booth: 50 },
-    { id: 27, category: "Materials", desc: "Motivate Chinese", floor5: 4, floor7: 0, booth: 0 },
+    { id: 26, category: "Materials", desc: "Motivate Book (English)", floor5: 280, floor7: 7, booth: 50 },
+    { id: 27, category: "Materials", desc: "Motivate Book (Chinese)", floor5: 4, floor7: 0, booth: 0 },
     { id: 28, category: "Tracts", desc: "Dare 2 Share", floor5: 19, floor7: 0, booth: 9 },
     { id: 29, category: "Materials", desc: "Dgroup kit", floor5: 0, floor7: 0, booth: 0 },
     { id: 30, category: "Materials", desc: "IDC bag Red", floor5: 0, floor7: 0, booth: 0 },
@@ -149,6 +149,10 @@ function loadData() {
                     item.desc = "GLC Book 10: Reliability of the Bible";
                 } else if (item.desc === "70X7 Work Books") {
                     item.desc = "70X7 Workbook";
+                } else if (item.desc === "Motivate English") {
+                    item.desc = "Motivate Book (English)";
+                } else if (item.desc === "Motivate Chinese") {
+                    item.desc = "Motivate Book (Chinese)";
                 }
             }
             
