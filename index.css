@@ -31,6 +31,24 @@
     --font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+[data-theme="dark"] {
+    --color-bg-app: #0f172a;
+    --color-bg-surface: #1e293b;
+    --color-bg-hover: #334155;
+    --color-bg-stripe: #1e293b;
+    
+    --color-text-main: #f8fafc;
+    --color-text-muted: #cbd5e1;
+    --color-text-light: #94a3b8;
+    
+    --color-border: #334155;
+    --color-border-focus: #009ee2;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+}
+
 /* --- Base Reset & Typography --- */
 * {
     box-sizing: border-box;
@@ -282,7 +300,7 @@ h1 {
 .summary-icon {
     width: 48px;
     height: 48px;
-    background-color: #eff6ff; /* Light blue */
+    background-color: var(--color-bg-hover);
     color: var(--color-primary);
     border-radius: var(--radius-md);
     display: flex;
@@ -476,24 +494,24 @@ tbody tr:hover {
 
 /* Locking Styles */
 .locked-row {
-    background-color: #f8fafc; /* Very light grey/blue */
+    background-color: var(--color-bg-stripe);
 }
 .locked-row:hover {
-    background-color: #f1f5f9;
+    background-color: var(--color-bg-app);
 }
 .locked-row td {
     opacity: 0.8;
 }
 .qty-control.locked {
-    background-color: #f1f5f9;
-    border-color: #e2e8f0;
+    background-color: var(--color-bg-app);
+    border-color: var(--color-border);
 }
 .qty-control.locked .qty-btn {
-    color: #94a3b8;
+    color: var(--color-text-light);
     pointer-events: none;
 }
 .qty-control.locked .qty-input {
-    color: #94a3b8;
+    color: var(--color-text-light);
     pointer-events: none;
 }
 .lock-toggle-btn {
@@ -518,7 +536,7 @@ tbody tr:hover {
     color: var(--color-primary);
 }
 .qty-btn.adjust:hover {
-    background-color: #eff6ff;
+    background-color: var(--color-bg-hover);
 }
 
 /* Remove arrows from number input */

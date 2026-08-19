@@ -671,6 +671,33 @@ async function exportToExcel() {
 
 // Setup Event Listeners
 function setupEventListeners() {
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('glc_theme') || 'light';
+    
+    // Set initial theme
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    if (savedTheme === 'dark') {
+        themeIcon.className = 'ri-sun-line';
+    } else {
+        themeIcon.className = 'ri-moon-line';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('glc_theme', newTheme);
+        
+        if (newTheme === 'dark') {
+            themeIcon.className = 'ri-sun-line';
+        } else {
+            themeIcon.className = 'ri-moon-line';
+        }
+    });
+
     searchInput.addEventListener('input', handleSearch);
     searchInput.addEventListener('keyup', handleSearch);
     
