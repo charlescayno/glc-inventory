@@ -396,6 +396,20 @@ tbody tr:hover {
 .col-description { width: 40%; }
 .col-location { width: 15%; text-align: center; }
 .col-total { width: 15%; text-align: center; }
+.col-price { width: 15%; text-align: right; }
+
+.hidden-column {
+    display: none !important;
+}
+
+table.viewing-pricelist .col-location,
+table.viewing-pricelist .col-total {
+    display: none !important;
+}
+
+table.viewing-pricelist .col-price {
+    display: table-cell !important;
+}
 
 /* Table Content Styles */
 .desc-text {
@@ -849,6 +863,24 @@ tbody tr:hover {
     }
     .viewing-single-location td[data-label="Description"] {
         width: 100%;
+    }
+
+    table.viewing-pricelist tr {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+    }
+    table.viewing-pricelist td[data-label="Description"] {
+        flex: 1;
+        width: auto;
+    }
+    table.viewing-pricelist td.col-price {
+        width: auto;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    table.viewing-pricelist td.col-price::before {
+        display: none;
     }
 }
 
