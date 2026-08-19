@@ -21,8 +21,8 @@ const initialData = [
     { id: 19, category: "Booklets & Workbooks", desc: "Life Goals Magazine", price: 100, floor5: 325, floor7: 21, booth: 60 },
     { id: 20, category: "Booklets & Workbooks", desc: "70X7 Workbook", price: 100, floor5: 100, floor7: 19, booth: 50 },
     { id: 21, category: "Materials", desc: "70X7 USB", price: 100, floor5: 0, floor7: 0, booth: 0 },
-    { id: 22, category: "Booklets & Workbooks", desc: "Superbook Work Book", price: 100, floor5: 0, floor7: 0, booth: 112 },
-    { id: 23, category: "Booklets & Workbooks", desc: "Memory Verse Volume 2", price: 25, floor5: 350, floor7: 31, booth: 78 },
+    { id: 22, category: "Booklets & Workbooks", desc: "Superbook Workbook", price: 100, floor5: 0, floor7: 0, booth: 112 },
+    { id: 23, category: "Booklets & Workbooks", desc: "Memory Verse Booklet (Volume 2)", price: 25, floor5: 350, floor7: 31, booth: 78 },
     { id: 24, category: "Booklets & Workbooks", desc: "Holy Spirit Booklet", price: 20, floor5: 200, floor7: 45, booth: 63 },
     { id: 25, category: "Booklets & Workbooks", desc: "Real Talk Booklet", price: 25, floor5: 1000, floor7: 31, booth: 70 },
     { id: 26, category: "Materials", desc: "Motivate Book (English)", price: 250, floor5: 280, floor7: 7, booth: 50 },
@@ -32,13 +32,13 @@ const initialData = [
     { id: 30, category: "Materials", desc: "IDC Bag (Color: Red)", price: 100, floor5: 0, floor7: 0, booth: 0 },
     { id: 31, category: "Materials", desc: "IDC Bag (Color: Blue)", price: 100, floor5: 60, floor7: 0, booth: 7 },
     { id: 32, category: "Materials", desc: "DJ Passport", price: 25, floor5: 200, floor7: 34, booth: 60 },
-    { id: 33, category: "Materials", desc: "Discipleship Covenant", price: 2, floor5: 0, floor7: 0, booth: 194 },
+    { id: 33, category: "Materials", desc: "Discipleship Covenant Card", price: 2, floor5: 0, floor7: 0, booth: 194 },
     { id: 34, category: "Materials", desc: "PCS Card", price: 3, floor5: 150, floor7: 350, booth: 179 },
     { id: 35, category: "Materials", desc: "PCS Bookmark", price: 1, floor5: 0, floor7: 600, booth: 400 },
     { id: 36, category: "Materials", desc: "Accountability Card", price: 2, floor5: 3400, floor7: 1300, booth: 689 },
-    { id: 37, category: "Tracts", desc: "Gospel Tracts English (NEW)", price: 3, floor5: 45000, floor7: 1955, booth: 2000 },
-    { id: 38, category: "Tracts", desc: "Gospel Tracts Tagalog (NEW)", price: 3, floor5: 45400, floor7: 920, booth: 2400 },
-    { id: 39, category: "Tracts", desc: "Gospel Tracts Elevate", price: 7, floor5: 0, floor7: 290, booth: 1100 },
+    { id: 37, category: "Tracts", desc: "Gospel Tract English", price: 3, floor5: 45000, floor7: 1955, booth: 2000 },
+    { id: 38, category: "Tracts", desc: "Gospel Tract Tagalog", price: 3, floor5: 45400, floor7: 920, booth: 2400 },
+    { id: 39, category: "Tracts", desc: "Gospel Tract (Elevate/LMMR)", price: 7, floor5: 0, floor7: 290, booth: 1100 },
     { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", price: 0, floor5: 150, floor7: 10, booth: 30 },
     { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", price: 25, floor5: 300, floor7: 10, booth: 13 },
     { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", price: 25, floor5: 220, floor7: 25, booth: 66 },
@@ -167,6 +167,18 @@ function loadData() {
                     item.desc = "2Be1 Workbook";
                 } else if (item.desc === "GLC Shirt") {
                     item.desc = "GLC T-Shirt";
+                } else if (item.desc === "Superbook Work Book") {
+                    item.desc = "Superbook Workbook";
+                } else if (item.desc === "Memory Verse Volume 2") {
+                    item.desc = "Memory Verse Booklet (Volume 2)";
+                } else if (item.desc === "Discipleship Covenant") {
+                    item.desc = "Discipleship Covenant Card";
+                } else if (item.desc === "Gospel Tracts English (NEW)" || item.desc === "Gospel Tracts English") {
+                    item.desc = "Gospel Tract English";
+                } else if (item.desc === "Gospel Tracts Tagalog (NEW)" || item.desc === "Gospel Tracts Tagalog") {
+                    item.desc = "Gospel Tract Tagalog";
+                } else if (item.desc === "Gospel Tracts Elevate") {
+                    item.desc = "Gospel Tract (Elevate/LMMR)";
                 }
                 
                 // Normalize old formats first
