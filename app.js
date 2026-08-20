@@ -400,7 +400,6 @@ function renderTable(searchTerm = '') {
                     <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
                     <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0" inputmode="numeric">
                     <button class="qty-btn plus cart-qty-btn" data-id="${item.id}" data-cart-action="inc" title="Add to order"><i class="ri-add-line"></i></button>
-                    <button class="qty-btn adjust cart-qty-adjust" data-id="${item.id}" data-field="cart" title="Quick Adjust / Calculator"><i class="ri-calculator-line"></i></button>
                 </div>
             </div>
         ` : '<span class="price-value">-</span>';
