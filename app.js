@@ -398,7 +398,7 @@ function renderTable(searchTerm = '') {
                 </span>
                 <div class="qty-control cart-qty-control">
                     <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
-                    <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0">
+                    <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0" inputmode="numeric">
                     <button class="qty-btn plus cart-qty-btn" data-id="${item.id}" data-cart-action="inc" title="Add to order"><i class="ri-add-line"></i></button>
                     <button class="qty-btn adjust cart-qty-adjust" data-id="${item.id}" data-field="cart" title="Quick Adjust / Calculator"><i class="ri-calculator-line"></i></button>
                 </div>
@@ -454,15 +454,26 @@ function renderTable(searchTerm = '') {
     });
 
     // Re-attach input event listeners to inventory inputs
-    document.querySelectorAll('.qty-input:not(#adjustAmountInput):not(.cart-qty-input)').forEach(input => {
+    document.querySelectorAll('.qty-input:not(#adjustAmountInput):not(.cart-qty-input):not(#cashReceivedInput):not(.cart-modal-qty-input)').forEach(input => {
         input.addEventListener('input', handleQuantityChange);
         input.addEventListener('focus', function() { this.select(); });
+        input.addEventListener('click', function() { this.select(); });
     });
 
-    // Re-attach input event listeners to cart inputs
+    // Re-attach input event listeners to cart inputs (typing support in pricelist mode)
     document.querySelectorAll('.cart-qty-input').forEach(input => {
         input.addEventListener('input', handleCartQuantityChange);
+        input.addEventListener('keyup', handleCartQuantityChange);
+        input.addEventListener('change', handleCartQuantityChange);
         input.addEventListener('focus', function() { this.select(); });
+        input.addEventListener('click', function() { this.select(); });
+        input.addEventListener('blur', function() {
+            if (this.value === '' || isNaN(parseInt(this.value, 10))) {
+                this.value = 0;
+            } else {
+                this.value = parseInt(this.value, 10);
+            }
+        });
     });
     
     // Attach click listeners for inventory plus/minus buttons
@@ -1786,15 +1797,20 @@ function handleCartStepClick(e) {
 function handleCartQuantityChange(e) {
     const input = e.target;
     const id = parseInt(input.getAttribute('data-id'));
-    let val = input.value === '' ? 0 : parseInt(input.value);
-    if (isNaN(val) || val < 0) {
-        val = 0;
-        input.value = 0;
-    }
-    if (val > 0) {
-        cartState[id] = val;
-    } else {
+    const rawVal = input.value.trim();
+    
+    if (rawVal === '') {
         delete cartState[id];
+        updateCartUI();
+        return;
+    }
+    
+    let val = parseInt(rawVal, 10);
+    if (isNaN(val) || val <= 0) {
+        val = 0;
+        delete cartState[id];
+    } else {
+        cartState[id] = val;
     }
     updateCartUI();
 }
@@ -1864,7 +1880,7 @@ function renderCartModal() {
             </div>
             <div class="cart-stepper">
                 <button class="cart-step-btn" data-modal-cart-action="dec" data-id="${item.id}">-</button>
-                <span class="cart-step-qty">${qty}</span>
+                <input type="number" class="qty-input cart-modal-qty-input" data-id="${item.id}" value="${qty}" min="0" inputmode="numeric" style="width: 50px; text-align: center; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0.2rem; font-weight: 700;">
                 <button class="cart-step-btn" data-modal-cart-action="inc" data-id="${item.id}">+</button>
             </div>
             <div class="cart-item-subtotal">₱ ${subtotal.toLocaleString()}</div>
@@ -1888,6 +1904,40 @@ function renderCartModal() {
             }
             updateCartUI();
             renderTable(searchInput.value);
+            renderCartModal();
+        });
+    });
+
+    // Attach typing listeners inside modal
+    cartItemsContainer.querySelectorAll('.cart-modal-qty-input').forEach(input => {
+        input.addEventListener('input', (e) => {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            const rawVal = e.target.value.trim();
+            if (rawVal === '') {
+                delete cartState[id];
+            } else {
+                let val = parseInt(rawVal, 10);
+                if (isNaN(val) || val <= 0) {
+                    delete cartState[id];
+                } else {
+                    cartState[id] = val;
+                }
+            }
+            updateCartUI();
+            renderTable(searchInput.value);
+            
+            // Recompute totals without resetting modal focus
+            let modalTotal = 0;
+            Object.entries(cartState).forEach(([cId, cQty]) => {
+                const cItem = inventoryData.find(i => i.id === parseInt(cId));
+                if (cItem && cQty > 0) modalTotal += cQty * (cItem.price || 0);
+            });
+            cartGrandTotalEl.textContent = '₱ ' + modalTotal.toLocaleString();
+            updateChangeDue();
+        });
+        input.addEventListener('focus', function() { this.select(); });
+        input.addEventListener('click', function() { this.select(); });
+        input.addEventListener('blur', function() {
             renderCartModal();
         });
     });
