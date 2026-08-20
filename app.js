@@ -1294,6 +1294,13 @@ function setupEventListeners() {
 
     checkoutDeductBtn.addEventListener('click', checkoutCartDeduct);
 
+    const checkoutLocationSelect = document.getElementById('checkoutLocationSelect');
+    if (checkoutLocationSelect) {
+        checkoutLocationSelect.addEventListener('change', () => {
+            renderCartModal();
+        });
+    }
+
     cartModal.addEventListener('click', (e) => {
         if (e.target === cartModal) cartModal.classList.add('hidden');
         document.body.classList.remove('modal-open');
@@ -1878,6 +1885,15 @@ function renderCartModal() {
 
     checkoutDeductBtn.disabled = false;
 
+    const locSelect = document.getElementById('checkoutLocationSelect');
+    const checkoutLoc = locSelect ? locSelect.value : 'booth';
+    const locNames = {
+        'floor5': '5th Floor',
+        'floor7': '7th Floor',
+        'booth': 'GLC Booth'
+    };
+    const locName = locNames[checkoutLoc];
+
     activeEntries.forEach(([idStr, qty]) => {
         const id = parseInt(idStr);
         const item = inventoryData.find(i => i.id === id);
@@ -1891,7 +1907,7 @@ function renderCartModal() {
         row.innerHTML = `
             <div class="cart-item-name">
                 <div class="cart-item-title">${item.desc}</div>
-                <div class="cart-item-unit-price">₱ ${item.price} each (Booth stock: ${item.booth || 0})</div>
+                <div class="cart-item-unit-price">₱ ${item.price} each (${locName} stock: ${item[checkoutLoc] || 0})</div>
             </div>
             <div class="cart-stepper">
                 <button class="cart-step-btn" data-modal-cart-action="dec" data-id="${item.id}">-</button>
@@ -2012,13 +2028,16 @@ function checkoutCartDeduct() {
     let itemsSummary = [];
     let totalBill = 0;
 
+    const locSelect = document.getElementById('checkoutLocationSelect');
+    const checkoutLoc = locSelect ? locSelect.value : 'booth';
+
     activeEntries.forEach(([idStr, qty]) => {
         const id = parseInt(idStr);
         const itemIndex = inventoryData.findIndex(i => i.id === id);
         if (itemIndex !== -1) {
             const item = inventoryData[itemIndex];
-            const currentBooth = item.booth || 0;
-            inventoryData[itemIndex].booth = Math.max(0, currentBooth - qty);
+            const currentStock = item[checkoutLoc] || 0;
+            inventoryData[itemIndex][checkoutLoc] = Math.max(0, currentStock - qty);
             totalBill += qty * (item.price || 0);
             itemsSummary.push(`${qty}x ${item.desc}`);
         }
