@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resource Inventory System</title>
-    <link rel="icon" type="image/png" href="./glc-logo.png">
+    <link rel="icon" type="image/png" href="./icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#009ee2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="GLC Inventory">
     <link rel="stylesheet" href="index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,6 +46,10 @@
                             <option value="floor7">📍 7th Floor</option>
                         </select>
                         <div class="utility-actions">
+                            <button id="installPwaBtn" class="btn btn-icon btn-secondary hidden" title="Install as App">
+                                <i class="ri-download-2-line"></i>
+                                <span class="desktop-only">Install App</span>
+                            </button>
                             <button id="themeToggleBtn" class="btn btn-icon btn-secondary" title="Toggle Theme">
                                 <i class="ri-moon-line" id="themeIcon"></i>
                             </button>

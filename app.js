@@ -1829,6 +1829,54 @@ function checkoutCartDeduct() {
     alert('Sale finalized! Quantities have been deducted from GLC Booth stock.');
 }
 
+// ==========================================
+// Progressive Web App (PWA) Registration
+// ==========================================
+let deferredInstallPrompt = null;
+
+function initPWA() {
+    // 1. Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => {
+                    console.log('[PWA] Service Worker registered successfully:', reg.scope);
+                })
+                .catch(err => {
+                    console.warn('[PWA] Service Worker registration failed:', err);
+                });
+        });
+    }
+
+    // 2. Capture install prompt
+    const installBtn = document.getElementById('installPwaBtn');
+    if (installBtn) {
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            installBtn.classList.remove('hidden');
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredInstallPrompt) return;
+            deferredInstallPrompt.prompt();
+            const choiceResult = await deferredInstallPrompt.userChoice;
+            console.log(`[PWA] User install choice: ${choiceResult.outcome}`);
+            deferredInstallPrompt = null;
+            installBtn.classList.add('hidden');
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredInstallPrompt = null;
+            installBtn.classList.add('hidden');
+            console.log('[PWA] GLC Inventory app installed successfully!');
+        });
+    }
+}
+
 // Run app
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    initPWA();
+});
 
