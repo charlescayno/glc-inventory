@@ -555,7 +555,15 @@ function handleQuantityChange(e) {
             
             saveData();
             const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
-            logActivity('adjust', 'Quantity Changed', `Set "${item.desc}" (${locNames[field] || field}): ${oldVal} → ${val}`);
+            logActivity({
+                type: 'adjust',
+                title: 'Quantity Changed',
+                itemDesc: item.desc,
+                field: locNames[field] || field,
+                oldVal: oldVal,
+                newVal: val,
+                qtyDiff: val - oldVal
+            });
         }
     }
 }
@@ -603,7 +611,15 @@ function handleQuantityButtonClick(e) {
         
         saveData();
         const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
-        logActivity('adjust', isPlus ? 'Quantity +1' : 'Quantity -1', `${isPlus ? '+1' : '-1'} on "${item.desc}" (${locNames[field] || field}: ${oldVal} → ${currentVal})`);
+        logActivity({
+            type: 'adjust',
+            title: isPlus ? 'Quantity +1' : 'Quantity -1',
+            itemDesc: item.desc,
+            field: locNames[field] || field,
+            oldVal: oldVal,
+            newVal: currentVal,
+            qtyDiff: isPlus ? 1 : -1
+        });
     }
 }
 
@@ -700,7 +716,16 @@ function applyAdjustment() {
         inventoryData[itemIndex][adjustState.field] = newVal;
         saveData();
         const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
-        logActivity('adjust', 'Adjusted Quantity', `${adjustState.op === 'add' ? '+' : '-'}${adjustState.amount} on "${inventoryData[itemIndex].desc}" (${locNames[adjustState.field] || adjustState.field}: ${oldVal} → ${newVal})`);
+        const diff = adjustState.op === 'add' ? adjustState.amount : -adjustState.amount;
+        logActivity({
+            type: 'adjust',
+            title: adjustState.op === 'add' ? 'Stock Added' : 'Stock Deducted',
+            itemDesc: inventoryData[itemIndex].desc,
+            field: locNames[adjustState.field] || adjustState.field,
+            oldVal: oldVal,
+            newVal: newVal,
+            qtyDiff: diff
+        });
         renderTable(searchInput.value);
         closeAdjustModal();
     }
@@ -1041,7 +1066,14 @@ function setupEventListeners() {
         if (itemIndex !== -1) {
             inventoryData[itemIndex] = currentQuickEditItem;
             saveData();
-            logActivity('adjust', 'Quick Edit Saved', `Updated "${currentQuickEditItem.desc}" (5th: ${currentQuickEditItem.floor5}, 7th: ${currentQuickEditItem.floor7}, Booth: ${currentQuickEditItem.booth})`);
+            logActivity({
+                type: 'quickedit',
+                title: 'Quick Edit',
+                itemDesc: currentQuickEditItem.desc,
+                floor5: currentQuickEditItem.floor5,
+                floor7: currentQuickEditItem.floor7,
+                booth: currentQuickEditItem.booth
+            });
             renderTable(searchInput.value);
             closeQE();
         }
@@ -1174,14 +1206,23 @@ function saveHistory() {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(historyData.slice(0, 100)));
 }
 
-function logActivity(type, title, desc) {
-    const entry = {
-        id: Date.now() + Math.random(),
-        timestamp: new Date().toISOString(),
-        type, // 'transfer', 'adjust', 'sale'
-        title,
-        desc
-    };
+function logActivity(data, legacyTitle, legacyDesc) {
+    let entry;
+    if (typeof data === 'object' && data !== null) {
+        entry = {
+            id: Date.now() + Math.random(),
+            timestamp: new Date().toISOString(),
+            ...data
+        };
+    } else {
+        entry = {
+            id: Date.now() + Math.random(),
+            timestamp: new Date().toISOString(),
+            type: data,
+            title: legacyTitle,
+            desc: legacyDesc
+        };
+    }
     historyData.unshift(entry);
     if (historyData.length > 100) historyData = historyData.slice(0, 100);
     saveHistory();
@@ -1215,32 +1256,105 @@ function renderHistoryModal() {
     historyEmpty.classList.add('hidden');
 
     historyData.forEach(item => {
-        let iconClass = 'ri-history-line';
-        let badgeTypeClass = 'history-icon-adjust';
-        if (item.type === 'transfer') {
-            iconClass = 'ri-arrow-left-right-line';
-            badgeTypeClass = 'history-icon-transfer';
-        } else if (item.type === 'sale') {
-            iconClass = 'ri-shopping-cart-2-line';
-            badgeTypeClass = 'history-icon-sale';
-        }
-
         const date = new Date(item.timestamp);
         const timeFormatted = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' +
             date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         const div = document.createElement('div');
         div.className = 'history-item';
-        div.innerHTML = `
-            <div class="history-icon-badge ${badgeTypeClass}">
-                <i class="${iconClass}"></i>
-            </div>
-            <div class="history-content">
-                <div class="history-title">${item.title}</div>
-                <div class="history-desc">${item.desc}</div>
-                <div class="history-time">${timeFormatted}</div>
-            </div>
-        `;
+
+        if (item.type === 'transfer') {
+            const qty = item.qty || 1;
+            div.innerHTML = `
+                <div class="history-icon-badge history-icon-transfer">
+                    <i class="ri-arrow-left-right-line"></i>
+                </div>
+                <div class="history-content">
+                    <div class="history-header">
+                        <span class="history-title">${item.title || 'Stock Transfer'}</span>
+                        <span class="history-time">${timeFormatted}</span>
+                    </div>
+                    <div class="history-item-desc">${item.itemDesc || ''}</div>
+                    <div class="history-route">
+                        <span class="history-qty-pill">${qty} ${qty === 1 ? 'unit' : 'units'}</span>
+                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.fromLoc || ''}</span>
+                        <i class="ri-arrow-right-line history-arrow-icon"></i>
+                        <span class="history-loc-badge dest"><i class="ri-map-pin-fill"></i> ${item.toLoc || ''}</span>
+                    </div>
+                </div>
+            `;
+        } else if (item.type === 'adjust') {
+            const isPos = item.qtyDiff >= 0;
+            const diffText = item.qtyDiff !== undefined ? (isPos ? `+${item.qtyDiff}` : `${item.qtyDiff}`) : '';
+            div.innerHTML = `
+                <div class="history-icon-badge history-icon-adjust">
+                    <i class="${isPos ? 'ri-add-line' : 'ri-subtract-line'}"></i>
+                </div>
+                <div class="history-content">
+                    <div class="history-header">
+                        <span class="history-title">${item.title || 'Stock Adjustment'}</span>
+                        <span class="history-time">${timeFormatted}</span>
+                    </div>
+                    <div class="history-item-desc">${item.itemDesc || ''}</div>
+                    <div class="history-route">
+                        ${diffText ? `<span class="history-qty-pill ${isPos ? 'pos' : 'neg'}">${diffText}</span>` : ''}
+                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field || ''}</span>
+                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} → <strong>${item.newVal}</strong>)</span>` : ''}
+                    </div>
+                </div>
+            `;
+        } else if (item.type === 'quickedit') {
+            div.innerHTML = `
+                <div class="history-icon-badge history-icon-adjust">
+                    <i class="ri-edit-2-line"></i>
+                </div>
+                <div class="history-content">
+                    <div class="history-header">
+                        <span class="history-title">${item.title || 'Quick Edit'}</span>
+                        <span class="history-time">${timeFormatted}</span>
+                    </div>
+                    <div class="history-item-desc">${item.itemDesc || ''}</div>
+                    <div class="history-route">
+                        <span class="history-loc-badge">5th Floor: <strong>${item.floor5 ?? 0}</strong></span>
+                        <span class="history-loc-badge">7th Floor: <strong>${item.floor7 ?? 0}</strong></span>
+                        <span class="history-loc-badge dest">GLC Booth: <strong>${item.booth ?? 0}</strong></span>
+                    </div>
+                </div>
+            `;
+        } else if (item.type === 'sale') {
+            const saleItems = Array.isArray(item.items) ? item.items.join(', ') : (item.desc || '');
+            div.innerHTML = `
+                <div class="history-icon-badge history-icon-sale">
+                    <i class="ri-shopping-cart-2-line"></i>
+                </div>
+                <div class="history-content">
+                    <div class="history-header">
+                        <span class="history-title">${item.title || 'Booth Sale'}</span>
+                        <span class="history-time">${timeFormatted}</span>
+                    </div>
+                    <div class="history-route" style="margin-bottom: 0.35rem;">
+                        <span class="history-qty-pill sale">₱ ${(item.totalAmount || 0).toLocaleString()}</span>
+                        <span class="history-loc-badge dest"><i class="ri-store-2-line"></i> GLC Booth</span>
+                    </div>
+                    <div class="history-sale-items">${saleItems}</div>
+                </div>
+            `;
+        } else {
+            // Legacy / Fallback entry
+            div.innerHTML = `
+                <div class="history-icon-badge history-icon-adjust">
+                    <i class="ri-history-line"></i>
+                </div>
+                <div class="history-content">
+                    <div class="history-header">
+                        <span class="history-title">${item.title || 'Activity'}</span>
+                        <span class="history-time">${timeFormatted}</span>
+                    </div>
+                    <div class="history-desc-legacy">${item.desc || ''}</div>
+                </div>
+            `;
+        }
+
         historyListContainer.appendChild(div);
     });
 }
@@ -1343,7 +1457,16 @@ function executeTransfer() {
     inventoryData[itemIndex][toLoc] = (inventoryData[itemIndex][toLoc] || 0) + amount;
 
     saveData();
-    logActivity('transfer', 'Stock Transfer', `Moved ${amount}x "${inventoryData[itemIndex].desc}" from ${locNames[fromLoc]} to ${locNames[toLoc]}`);
+    logActivity({
+        type: 'transfer',
+        title: 'Stock Transfer',
+        itemDesc: inventoryData[itemIndex].desc,
+        qty: amount,
+        fromLoc: locNames[fromLoc],
+        toLoc: locNames[toLoc],
+        fromRemaining: available - amount,
+        toNew: (inventoryData[itemIndex][toLoc] || 0) + amount
+    });
     renderTable(searchInput.value);
     closeTransferModal();
 }
@@ -1504,7 +1627,13 @@ function checkoutCartDeduct() {
     });
 
     saveData();
-    logActivity('sale', 'Booth Sale Completed', `Deducted: ${itemsSummary.join(', ')} | Total: ₱${totalBill.toLocaleString()}`);
+    logActivity({
+        type: 'sale',
+        title: 'Booth Sale Completed',
+        items: itemsSummary,
+        totalAmount: totalBill,
+        totalQty: itemsSummary.length
+    });
     clearCart();
     cartModal.classList.add('hidden');
     renderTable(searchInput.value);
