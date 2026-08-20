@@ -445,6 +445,10 @@ tbody tr:hover {
     display: none !important;
 }
 
+table.viewing-pricelist .col-description {
+    width: 55%;
+}
+
 table.viewing-pricelist .col-location,
 table.viewing-pricelist .col-total {
     display: none !important;
@@ -452,6 +456,33 @@ table.viewing-pricelist .col-total {
 
 table.viewing-pricelist .col-price {
     display: table-cell !important;
+    width: 45%;
+    text-align: right;
+}
+
+.pricelist-cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.pricelist-cell-content .price-value {
+    font-weight: 700;
+    color: var(--color-primary);
+    font-size: 1.15rem;
+    white-space: nowrap;
+}
+
+.cart-qty-control {
+    box-shadow: var(--shadow-sm);
+    margin: 0;
+}
+
+.cart-qty-control .qty-input {
+    width: 50px;
+    text-align: center;
 }
 
 /* Table Content Styles */

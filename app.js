@@ -389,15 +389,21 @@ function renderTable(searchTerm = '') {
             badgeHtml = `<span class="badge-stock badge-low-stock" title="Low Stock: ${total} left"><i class="ri-alert-line"></i> Low: ${total}</span>`;
         }
 
-        // Pricelist Cart Controls
+        // Pricelist Cart Controls (Segmented control with -, input, +, calculator)
         const inCartQty = cartState[item.id] || 0;
         const cartControlsHtml = item.price > 0 ? `
-            <div class="cart-stepper" style="margin-top: 0.35rem;">
-                <button class="cart-step-btn" data-cart-action="dec" data-id="${item.id}" title="Decrease in cart">-</button>
-                <span class="cart-step-qty" id="cart-item-qty-${item.id}">${inCartQty}</span>
-                <button class="cart-step-btn" data-cart-action="inc" data-id="${item.id}" title="Add to cart">+</button>
+            <div class="pricelist-cell-content">
+                <span class="price-value">
+                    ₱ ${item.price}
+                </span>
+                <div class="qty-control cart-qty-control">
+                    <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0">
+                    <button class="qty-btn plus cart-qty-btn" data-id="${item.id}" data-cart-action="inc" title="Add to order"><i class="ri-add-line"></i></button>
+                    <button class="qty-btn adjust cart-qty-adjust" data-id="${item.id}" data-field="cart" title="Quick Adjust / Calculator"><i class="ri-calculator-line"></i></button>
+                </div>
             </div>
-        ` : '';
+        ` : '<span class="price-value">-</span>';
 
         const tr = document.createElement('tr');
         if (isLocked) tr.classList.add('locked-row');
@@ -412,12 +418,7 @@ function renderTable(searchTerm = '') {
                 </span>
             </td>
             <td class="col-price hidden-column" data-label="Price">
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                    <span class="price-value" style="font-weight: 700; color: var(--color-text-main); font-size: 1.1rem;">
-                        ${item.price > 0 ? '₱ ' + item.price : '-'}
-                    </span>
-                    ${cartControlsHtml}
-                </div>
+                ${cartControlsHtml}
             </td>
             <td class="col-location" data-label="5th Floor">
                 <div class="${controlClass}">
@@ -452,26 +453,31 @@ function renderTable(searchTerm = '') {
         inventoryBody.appendChild(tr);
     });
 
-    // Re-attach input event listeners to new elements
-    document.querySelectorAll('.qty-input:not(#adjustAmountInput)').forEach(input => {
+    // Re-attach input event listeners to inventory inputs
+    document.querySelectorAll('.qty-input:not(#adjustAmountInput):not(.cart-qty-input)').forEach(input => {
         input.addEventListener('input', handleQuantityChange);
-        // Select all text on focus for easier editing
+        input.addEventListener('focus', function() { this.select(); });
+    });
+
+    // Re-attach input event listeners to cart inputs
+    document.querySelectorAll('.cart-qty-input').forEach(input => {
+        input.addEventListener('input', handleCartQuantityChange);
         input.addEventListener('focus', function() { this.select(); });
     });
     
-    // Attach click listeners for plus/minus buttons
-    document.querySelectorAll('.qty-btn.plus, .qty-btn.minus').forEach(btn => {
+    // Attach click listeners for inventory plus/minus buttons
+    document.querySelectorAll('.qty-btn.plus:not(.cart-qty-btn), .qty-btn.minus:not(.cart-qty-btn)').forEach(btn => {
         btn.addEventListener('click', handleQuantityButtonClick);
     });
 
-    // Attach click listeners for adjust buttons
-    document.querySelectorAll('.qty-btn.adjust').forEach(btn => {
-        btn.addEventListener('click', openAdjustModal);
+    // Attach click listeners for cart plus/minus buttons
+    document.querySelectorAll('.cart-qty-btn').forEach(btn => {
+        btn.addEventListener('click', handleCartStepClick);
     });
 
-    // Attach click listeners for cart steppers in table
-    document.querySelectorAll('.cart-step-btn').forEach(btn => {
-        btn.addEventListener('click', handleCartStepClick);
+    // Attach click listeners for adjust buttons (both inventory and cart)
+    document.querySelectorAll('.qty-btn.adjust').forEach(btn => {
+        btn.addEventListener('click', openAdjustModal);
     });
 
     document.querySelectorAll('.lock-toggle-btn').forEach(btn => {
@@ -639,18 +645,23 @@ function openAdjustModal(e) {
 
     adjustState.id = id;
     adjustState.field = field;
-    adjustState.currentVal = item[field] || 0;
+    if (field === 'cart') {
+        adjustState.currentVal = cartState[id] || 0;
+    } else {
+        adjustState.currentVal = item[field] || 0;
+    }
     adjustState.amount = 0;
     adjustState.op = 'add'; // Default to add
 
     const locationNames = {
         'floor5': '5th Floor',
         'floor7': '7th Floor',
-        'booth': 'GLC Booth'
+        'booth': 'GLC Booth',
+        'cart': 'Order / Cart Quantity'
     };
 
     adjustItemDesc.textContent = item.desc;
-    adjustLocationText.textContent = locationNames[field];
+    adjustLocationText.textContent = locationNames[field] || field;
     adjustCurrentVal.textContent = adjustState.currentVal.toLocaleString();
     adjustAmountInput.value = '';
     
@@ -703,6 +714,27 @@ function closeAdjustModal() {
 }
 
 function applyAdjustment() {
+    if (adjustState.field === 'cart') {
+        let newVal = adjustState.currentVal;
+        if (adjustState.op === 'add') {
+            newVal += adjustState.amount;
+        } else {
+            newVal -= adjustState.amount;
+            if (newVal < 0) newVal = 0;
+        }
+        
+        if (newVal > 0) {
+            cartState[adjustState.id] = newVal;
+        } else {
+            delete cartState[adjustState.id];
+        }
+        
+        updateCartUI();
+        renderTable(searchInput.value);
+        closeAdjustModal();
+        return;
+    }
+
     const itemIndex = inventoryData.findIndex(item => item.id === adjustState.id);
     if (itemIndex !== -1) {
         let newVal = adjustState.currentVal;
@@ -1684,21 +1716,42 @@ function handleCartStepClick(e) {
     const item = inventoryData.find(i => i.id === id);
     if (!item) return;
 
-    if (!cartState[id]) cartState[id] = 0;
+    let cur = cartState[id] || 0;
 
     if (action === 'inc') {
-        cartState[id]++;
+        cur++;
+        cartState[id] = cur;
     } else if (action === 'dec') {
-        cartState[id] = Math.max(0, cartState[id] - 1);
-        if (cartState[id] === 0) delete cartState[id];
+        cur = Math.max(0, cur - 1);
+        if (cur === 0) {
+            delete cartState[id];
+        } else {
+            cartState[id] = cur;
+        }
     }
 
-    // Update cell quantity stepper
-    const qtySpan = document.getElementById(`cart-item-qty-${id}`);
-    if (qtySpan) {
-        qtySpan.textContent = cartState[id] || 0;
+    // Update cell quantity input in DOM
+    const input = document.querySelector(`.cart-qty-input[data-id="${id}"]`);
+    if (input) {
+        input.value = cur;
     }
 
+    updateCartUI();
+}
+
+function handleCartQuantityChange(e) {
+    const input = e.target;
+    const id = parseInt(input.getAttribute('data-id'));
+    let val = input.value === '' ? 0 : parseInt(input.value);
+    if (isNaN(val) || val < 0) {
+        val = 0;
+        input.value = 0;
+    }
+    if (val > 0) {
+        cartState[id] = val;
+    } else {
+        delete cartState[id];
+    }
     updateCartUI();
 }
 
