@@ -143,7 +143,7 @@ const cartBarTotalEl = document.getElementById('cartBarTotal');
 const clearCartQuickBtn = document.getElementById('clearCartQuickBtn');
 const openCartModalBtn = document.getElementById('openCartModalBtn');
 
-const cartModal = document.getElementById(\'cartModal\');
+const cartModal = document.getElementById('cartModal');
 
 const receiptModal = document.getElementById('receiptModal');
 const receiptPaper = document.getElementById('receiptPaper');
@@ -1310,7 +1310,7 @@ function setupEventListeners() {
         });
     });
 
-    checkoutDeductBtn.addEventListener(\'click\', checkoutCartDeduct);
+    checkoutDeductBtn.addEventListener('click', checkoutCartDeduct);
 
     if(closeReceiptModalBtn) closeReceiptModalBtn.addEventListener('click', () => { receiptModal.classList.add('hidden'); document.body.classList.remove('modal-open'); });
     if(doneReceiptBtn) doneReceiptBtn.addEventListener('click', () => { receiptModal.classList.add('hidden'); document.body.classList.remove('modal-open'); });
