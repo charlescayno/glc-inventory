@@ -48,7 +48,7 @@ const initialData = [
 // State
 let inventoryData = [];
 let currentCategory = 'All';
-let isPricelistMode = false;
+let isCashierMode = false;
 const STORAGE_KEY = 'resource_inventory_data';
 
 // DOM Elements
@@ -137,7 +137,7 @@ const historyEmpty = document.getElementById('historyEmpty');
 let historyData = [];
 
 // Cart / Cashier Elements & State
-const pricelistCartBar = document.getElementById('pricelistCartBar');
+const cashierCartBar = document.getElementById('cashierCartBar');
 const cartCountEl = document.getElementById('cartCount');
 const cartBarTotalEl = document.getElementById('cartBarTotal');
 const clearCartQuickBtn = document.getElementById('clearCartQuickBtn');
@@ -316,7 +316,7 @@ function renderTable(searchTerm = '') {
     let filteredData = inventoryData.filter(item => {
         const matchesSearch = item.desc.toLowerCase().includes(term);
         let matchesCategory = false;
-        if (isPricelistMode) {
+        if (isCashierMode) {
             matchesCategory = (currentCategory === 'All' || item.category === currentCategory) && (item.price > 0);
         } else {
             matchesCategory = (currentCategory === 'All' || item.category === currentCategory);
@@ -389,10 +389,10 @@ function renderTable(searchTerm = '') {
             badgeHtml = `<span class="badge-stock badge-low-stock" title="Low Stock: ${total} left"><i class="ri-alert-line"></i> Low: ${total}</span>`;
         }
 
-        // Pricelist Cart Controls (Segmented control with -, input, +, calculator)
+        // Cashier Cart Controls (Segmented control with -, input, +, calculator)
         const inCartQty = cartState[item.id] || 0;
         const cartControlsHtml = item.price > 0 ? `
-            <div class="pricelist-cell-content">
+            <div class="cashier-cell-content">
                 <span class="price-value">
                     ₱ ${item.price}
                 </span>
@@ -459,7 +459,7 @@ function renderTable(searchTerm = '') {
         input.addEventListener('click', function() { this.select(); });
     });
 
-    // Re-attach input event listeners to cart inputs (typing support in pricelist mode)
+    // Re-attach input event listeners to cart inputs (typing support in cashier mode)
     document.querySelectorAll('.cart-qty-input').forEach(input => {
         input.addEventListener('input', handleCartQuantityChange);
         input.addEventListener('keyup', handleCartQuantityChange);
@@ -1008,26 +1008,26 @@ function setupEventListeners() {
         });
     });
 
-    // --- View Mode Toggle Setup (Inventory Mode <-> Pricelist Mode) ---
+    // --- View Mode Toggle Setup (Inventory Mode <-> Cashier Mode) ---
     function setViewMode(mode) {
-        const isPricelist = mode === 'pricelist';
-        isPricelistMode = isPricelist;
+        const isCashier = mode === 'cashier';
+        isCashierMode = isCashier;
 
         const invBtn = document.getElementById('viewInventoryBtn');
-        const priceBtn = document.getElementById('viewPricelistBtn');
+        const priceBtn = document.getElementById('viewCashierBtn');
         const table = document.getElementById('inventoryTable');
         const locationFilter = document.getElementById('locationFilter');
         
         if (invBtn && priceBtn) {
-            if (isPricelist) {
+            if (isCashier) {
                 invBtn.classList.remove('active');
                 priceBtn.classList.add('active');
-                if (table) table.classList.add('viewing-pricelist');
+                if (table) table.classList.add('viewing-cashier');
                 if (locationFilter) locationFilter.disabled = true;
             } else {
                 invBtn.classList.add('active');
                 priceBtn.classList.remove('active');
-                if (table) table.classList.remove('viewing-pricelist');
+                if (table) table.classList.remove('viewing-cashier');
                 if (locationFilter) locationFilter.disabled = false;
             }
         }
@@ -1037,13 +1037,13 @@ function setupEventListeners() {
     }
 
     const viewInventoryBtn = document.getElementById('viewInventoryBtn');
-    const viewPricelistBtn = document.getElementById('viewPricelistBtn');
+    const viewCashierBtn = document.getElementById('viewCashierBtn');
 
     if (viewInventoryBtn) {
         viewInventoryBtn.addEventListener('click', () => setViewMode('inventory'));
     }
-    if (viewPricelistBtn) {
-        viewPricelistBtn.addEventListener('click', () => setViewMode('pricelist'));
+    if (viewCashierBtn) {
+        viewCashierBtn.addEventListener('click', () => setViewMode('cashier'));
     }
 
     // --- Quick Edit Setup ---
@@ -1247,7 +1247,7 @@ function setupEventListeners() {
         if (e.target === transferModal) closeTransferModal();
     });
 
-    // --- Pricelist Cart & Cashier Setup ---
+    // --- Cashier Cart & Cashier Setup ---
     clearCartQuickBtn.addEventListener('click', clearCart);
     openCartModalBtn.addEventListener('click', () => {
         renderCartModal();
@@ -1784,7 +1784,7 @@ function executeTransfer() {
 }
 
 // ==========================================
-// Pricelist Cart / Cashier Functions
+// Cashier Cart / Cashier Functions
 // ==========================================
 function handleCartStepClick(e) {
     const btn = e.currentTarget;
@@ -1853,11 +1853,11 @@ function updateCartUI() {
     cartCountEl.textContent = totalItems;
     cartBarTotalEl.textContent = '₱ ' + totalBill.toLocaleString();
 
-    // Show floating cart bar only if Pricelist mode is active AND totalItems > 0
-    if (isPricelistMode && totalItems > 0) {
-        pricelistCartBar.classList.remove('hidden');
+    // Show floating cart bar only if Cashier mode is active AND totalItems > 0
+    if (isCashierMode && totalItems > 0) {
+        cashierCartBar.classList.remove('hidden');
     } else {
-        pricelistCartBar.classList.add('hidden');
+        cashierCartBar.classList.add('hidden');
     }
 }
 
@@ -1877,7 +1877,7 @@ function renderCartModal() {
     const activeEntries = Object.entries(cartState).filter(([_, qty]) => qty > 0);
 
     if (activeEntries.length === 0) {
-        cartItemsContainer.innerHTML = '<div class="no-results" style="padding: 1.5rem;"><i class="ri-shopping-cart-line" style="font-size: 2rem;"></i><p>Your order is empty. Add items from the pricelist.</p></div>';
+        cartItemsContainer.innerHTML = '<div class="no-results" style="padding: 1.5rem;"><i class="ri-shopping-cart-line" style="font-size: 2rem;"></i><p>Your order is empty. Add items from the cashier.</p></div>';
         cartGrandTotalEl.textContent = '₱ 0';
         checkoutDeductBtn.disabled = true;
         updateChangeDue();

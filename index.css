@@ -271,7 +271,7 @@ h1 {
     color: #ffffff;
     box-shadow: 0 2px 8px rgba(0, 158, 226, 0.35);
 }
-.mode-toggle-btn.active[data-mode="pricelist"] {
+.mode-toggle-btn.active[data-mode="cashier"] {
     background-color: #059669;
     color: #ffffff;
     box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
@@ -456,22 +456,22 @@ tbody tr:hover {
     display: none !important;
 }
 
-table.viewing-pricelist .col-description {
+table.viewing-cashier .col-description {
     width: 55%;
 }
 
-table.viewing-pricelist .col-location,
-table.viewing-pricelist .col-total {
+table.viewing-cashier .col-location,
+table.viewing-cashier .col-total {
     display: none !important;
 }
 
-table.viewing-pricelist .col-price {
+table.viewing-cashier .col-price {
     display: table-cell !important;
     width: 45%;
     text-align: right;
 }
 
-.pricelist-cell-content {
+.cashier-cell-content {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -479,7 +479,7 @@ table.viewing-pricelist .col-price {
     flex-wrap: wrap;
 }
 
-.pricelist-cell-content .price-value {
+.cashier-cell-content .price-value {
     font-weight: 700;
     color: var(--color-primary);
     font-size: 1.15rem;
@@ -950,25 +950,25 @@ table.viewing-pricelist .col-price {
         width: 100%;
     }
 
-    table.viewing-pricelist tr {
+    table.viewing-cashier tr {
         flex-direction: column;
         flex-wrap: nowrap;
         align-items: stretch;
     }
-    table.viewing-pricelist td[data-label="Description"] {
+    table.viewing-cashier td[data-label="Description"] {
         width: 100%;
         padding-bottom: 0.5rem;
     }
-    table.viewing-pricelist td.col-price {
+    table.viewing-cashier td.col-price {
         width: 100%;
         padding-top: 0.5rem;
         padding-bottom: 0;
         justify-content: space-between;
     }
-    table.viewing-pricelist td.col-price::before {
+    table.viewing-cashier td.col-price::before {
         display: none; /* Hide the label to save space */
     }
-    .pricelist-cell-content {
+    .cashier-cell-content {
         flex: 1;
         justify-content: space-between; /* Space out price on left and controls on right */
         width: 100%;
@@ -1182,7 +1182,7 @@ table.viewing-pricelist .col-price {
     gap: 0.25rem;
 }
 
-/* --- Pricelist Cart Floating Bar --- */
+/* --- Cashier Cart Floating Bar --- */
 .cart-floating-bar {
     position: fixed;
     bottom: 1.25rem;
@@ -1395,7 +1395,7 @@ table.viewing-pricelist .col-price {
     flex-shrink: 0;
 }
 
-/* Pricelist Add to Cart Button in Table */
+/* Cashier Add to Cart Button in Table */
 .btn-add-cart {
     padding: 0.35rem 0.65rem;
     background-color: var(--color-bg-hover);
