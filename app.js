@@ -678,6 +678,7 @@ function openAdjustModal(e) {
     
     updateAdjustModalUI();
     adjustModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
     setTimeout(() => adjustAmountInput.focus(), 100);
 }
 
@@ -722,6 +723,7 @@ function updateAdjustModalUI() {
 
 function closeAdjustModal() {
     adjustModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
 }
 
 function applyAdjustment() {
@@ -1048,6 +1050,7 @@ function setupEventListeners() {
     // --- Quick Edit Setup ---
     fabQuickEdit.addEventListener('click', () => {
         quickEditModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
         quickEditSearch.value = '';
         quickEditSearch.focus();
         quickEditDropdown.classList.add('hidden');
@@ -1057,6 +1060,7 @@ function setupEventListeners() {
     });
 
     const closeQE = () => quickEditModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
     closeQuickEditBtn.addEventListener('click', closeQE);
     cancelQuickEditBtn.addEventListener('click', closeQE);
     
@@ -1249,14 +1253,21 @@ function setupEventListeners() {
     openCartModalBtn.addEventListener('click', () => {
         renderCartModal();
         cartModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
         setTimeout(() => {
             cashReceivedInput.focus();
             cashReceivedInput.select();
         }, 150);
     });
 
-    closeCartModalBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
-    closeCartBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
+    closeCartModalBtn.addEventListener('click', () => {
+        cartModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+    });
+    closeCartBtn.addEventListener('click', () => {
+        cartModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+    });
     clearCartModalBtn.addEventListener('click', clearCart);
     
     cashReceivedInput.addEventListener('input', updateChangeDue);
@@ -1286,6 +1297,7 @@ function setupEventListeners() {
 
     cartModal.addEventListener('click', (e) => {
         if (e.target === cartModal) cartModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
     });
 }
 
@@ -1331,10 +1343,12 @@ function logActivity(data, legacyTitle, legacyDesc) {
 function openHistoryModal() {
     renderHistoryModal();
     historyModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
 }
 
 function closeHistoryModal() {
     historyModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
 }
 
 function clearHistory() {
@@ -1649,6 +1663,7 @@ function undoTransfer(historyId) {
 // ==========================================
 function openTransferModal(preselectedId = null) {
     transferModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
     transferSearch.value = '';
     transferDropdown.classList.add('hidden');
     transferAmountInput.value = '1';
@@ -1669,6 +1684,7 @@ function openTransferModal(preselectedId = null) {
 
 function closeTransferModal() {
     transferModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
 }
 
 function selectTransferItem(item) {
@@ -2019,6 +2035,7 @@ function checkoutCartDeduct() {
     });
     clearCart();
     cartModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
     renderTable(searchInput.value);
     alert('Sale finalized! Quantities have been deducted from GLC Booth stock.');
 }

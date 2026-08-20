@@ -1704,3 +1704,6 @@ table.viewing-pricelist .col-price {
     }
 }
 
+
+body.modal-open { overflow: hidden; }
+
