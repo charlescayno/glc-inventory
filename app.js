@@ -1284,8 +1284,9 @@ function setupEventListeners() {
             if (e.currentTarget.getAttribute('data-exact') === 'true') {
                 cashReceivedInput.value = grandTotal;
             } else {
-                const val = parseFloat(e.currentTarget.getAttribute('data-val')) || 0;
-                cashReceivedInput.value = val;
+                const addVal = parseFloat(e.currentTarget.getAttribute('data-val')) || 0;
+                const currentVal = parseFloat(cashReceivedInput.value) || 0;
+                cashReceivedInput.value = currentVal + addVal;
             }
             updateChangeDue();
             cashReceivedInput.focus();
