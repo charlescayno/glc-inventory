@@ -387,53 +387,58 @@
 
     <!-- Quick Total / Cart Calculator Modal -->
     <div id="cartModal" class="modal hidden">
-        <div class="modal-content" style="max-width: 520px;">
+        <div class="modal-content cart-checkout-modal-content">
             <div class="modal-header">
                 <h2><i class="ri-calculator-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Order Calculator</h2>
                 <button class="close-modal" id="closeCartModalBtn"><i class="ri-close-line"></i></button>
             </div>
-            <div class="modal-body" style="max-height: 65vh; overflow-y: auto;">
-                <div id="cartItemsContainer" class="cart-items-list" style="margin-bottom: 1.25rem;">
+            <div class="modal-body cart-modal-body">
+                <div id="cartItemsContainer" class="cart-items-list">
                     <!-- Cart items injected here -->
                 </div>
 
-                <div class="cart-calc-box">
-                    <div class="cart-calc-total-row">
-                        <span class="cart-calc-label">Grand Total:</span>
-                        <span id="cartGrandTotal" class="cart-calc-grand-total">₱ 0</span>
+                <div class="cart-calc-card">
+                    <div class="cart-grand-total-row">
+                        <span class="total-title">Total Amount Due</span>
+                        <span id="cartGrandTotal" class="total-amount-val">₱ 0</span>
                     </div>
 
-                    <div class="cash-calc-grid">
-                        <div class="cash-input-group">
-                            <label for="cashReceivedInput" class="cash-input-label">
-                                <i class="ri-money-dollar-box-line"></i> Cash Received
-                            </label>
-                            <div class="cash-input-wrapper">
-                                <span class="currency-prefix">₱</span>
-                                <input type="number" id="cashReceivedInput" class="cash-received-textbox" placeholder="0" min="0" step="any">
-                            </div>
-                            <div class="quick-cash-chips">
-                                <button type="button" class="quick-cash-btn" data-exact="true">Exact</button>
-                                <button type="button" class="quick-cash-btn" data-val="50">50</button>
-                                <button type="button" class="quick-cash-btn" data-val="100">100</button>
-                                <button type="button" class="quick-cash-btn" data-val="200">200</button>
-                                <button type="button" class="quick-cash-btn" data-val="500">500</button>
-                                <button type="button" class="quick-cash-btn" data-val="1000">1000</button>
-                            </div>
+                    <div class="cart-cash-section">
+                        <label for="cashReceivedInput" class="cart-section-label">
+                            <i class="ri-money-dollar-box-line"></i> Cash Received
+                        </label>
+                        <div class="cash-input-container">
+                            <span class="cash-currency-symbol">₱</span>
+                            <input type="number" id="cashReceivedInput" class="cash-input-control" placeholder="0" min="0" step="any" inputmode="numeric">
                         </div>
-                        <div class="change-display-group">
-                            <span class="change-label" id="changeLabel">Change Due</span>
-                            <div id="changeDueDisplay" class="change-amount-display">₱ 0</div>
-                            <span id="changeStatusBadge" class="change-status-badge">Enter cash received</span>
+                        <div class="cash-quick-chips">
+                            <button type="button" class="quick-cash-btn quick-cash-chip" data-exact="true">Exact</button>
+                            <button type="button" class="quick-cash-btn quick-cash-chip" data-val="50">₱50</button>
+                            <button type="button" class="quick-cash-btn quick-cash-chip" data-val="100">₱100</button>
+                            <button type="button" class="quick-cash-btn quick-cash-chip" data-val="200">₱200</button>
+                            <button type="button" class="quick-cash-btn quick-cash-chip" data-val="500">₱500</button>
+                            <button type="button" class="quick-cash-btn quick-cash-chip" data-val="1000">₱1,000</button>
                         </div>
+                    </div>
+
+                    <div class="cart-change-banner" id="cartChangeBanner">
+                        <div class="change-banner-header">
+                            <span class="change-banner-title" id="changeLabel">Change Due</span>
+                            <span id="changeStatusBadge" class="change-status-pill">Enter cash received</span>
+                        </div>
+                        <div id="changeDueDisplay" class="change-banner-amount">₱ 0</div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                <button class="btn btn-secondary" id="clearCartModalBtn"><i class="ri-delete-bin-line"></i> Clear Order</button>
-                <div style="display: flex; gap: 0.5rem;">
+            <div class="modal-footer cart-modal-footer">
+                <button class="btn btn-secondary btn-clear-cart" id="clearCartModalBtn">
+                    <i class="ri-delete-bin-line"></i> Clear Order
+                </button>
+                <div class="cart-footer-actions">
                     <button class="btn btn-secondary" id="closeCartBtn">Close</button>
-                    <button class="btn" id="checkoutDeductBtn" style="background: #10b981; color: white; border: none;"><i class="ri-checkbox-circle-line"></i> Finalize & Deduct from Booth</button>
+                    <button class="btn btn-checkout-finalize" id="checkoutDeductBtn">
+                        <i class="ri-checkbox-circle-line"></i> Finalize & Deduct
+                    </button>
                 </div>
             </div>
         </div>

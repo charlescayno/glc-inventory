@@ -1875,12 +1875,12 @@ function renderCartModal() {
         row.className = 'cart-item-row';
         row.innerHTML = `
             <div class="cart-item-name">
-                <div>${item.desc}</div>
+                <div class="cart-item-title">${item.desc}</div>
                 <div class="cart-item-unit-price">₱ ${item.price} each (Booth stock: ${item.booth || 0})</div>
             </div>
             <div class="cart-stepper">
                 <button class="cart-step-btn" data-modal-cart-action="dec" data-id="${item.id}">-</button>
-                <input type="number" class="qty-input cart-modal-qty-input" data-id="${item.id}" value="${qty}" min="0" inputmode="numeric" style="width: 50px; text-align: center; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 0.2rem; font-weight: 700;">
+                <input type="number" class="qty-input cart-modal-qty-input" data-id="${item.id}" value="${qty}" min="0" inputmode="numeric">
                 <button class="cart-step-btn" data-modal-cart-action="inc" data-id="${item.id}">+</button>
             </div>
             <div class="cart-item-subtotal">₱ ${subtotal.toLocaleString()}</div>
@@ -1962,7 +1962,7 @@ function updateChangeDue() {
         if (changeLabelEl) changeLabelEl.textContent = 'Change Due';
         if (changeStatusBadge) {
             changeStatusBadge.textContent = 'Enter cash received';
-            changeStatusBadge.className = 'change-status-badge';
+            changeStatusBadge.className = 'change-status-pill';
         }
         return;
     }
@@ -1976,7 +1976,7 @@ function updateChangeDue() {
         if (changeLabelEl) changeLabelEl.textContent = 'Change Due';
         if (changeStatusBadge) {
             changeStatusBadge.textContent = diff === 0 ? '✓ Exact Amount' : '✓ Change Ready';
-            changeStatusBadge.className = 'change-status-badge paid';
+            changeStatusBadge.className = 'change-status-pill paid';
         }
     } else {
         const shortAmt = Math.abs(diff);
@@ -1985,7 +1985,7 @@ function updateChangeDue() {
         if (changeLabelEl) changeLabelEl.textContent = 'Short / Balance';
         if (changeStatusBadge) {
             changeStatusBadge.textContent = `Needs ₱ ${shortAmt.toLocaleString()} more`;
-            changeStatusBadge.className = 'change-status-badge insufficient';
+            changeStatusBadge.className = 'change-status-pill insufficient';
         }
     }
 }
