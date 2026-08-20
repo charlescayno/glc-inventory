@@ -60,6 +60,7 @@ const exportBtn = document.getElementById('exportBtn');
 // Summary Elements
 const totalTypesEl = document.getElementById('totalTypes');
 const grandTotalEl = document.getElementById('grandTotal');
+const totalValuationEl = document.getElementById('totalValuation');
 
 // Adjust Modal Elements
 const adjustModal = document.getElementById('adjustModal');
@@ -100,6 +101,59 @@ const qeBooth = document.getElementById('qeBooth');
 const qeQtyBtns = document.querySelectorAll('.modal-body .qty-btn'); // For +/- inside Quick Edit
 let currentQuickEditItem = null;
 
+// Stock Transfer Modal Elements
+const transferBtn = document.getElementById('transferBtn');
+const transferModal = document.getElementById('transferModal');
+const closeTransferModalBtn = document.getElementById('closeTransferModalBtn');
+const cancelTransferBtn = document.getElementById('cancelTransferBtn');
+const confirmTransferBtn = document.getElementById('confirmTransferBtn');
+const transferSearch = document.getElementById('transferSearch');
+const transferDropdown = document.getElementById('transferDropdown');
+const transferSelectedPreview = document.getElementById('transferSelectedPreview');
+const transferItemTitle = document.getElementById('transferItemTitle');
+const transferItemCategory = document.getElementById('transferItemCategory');
+const transferFromLoc = document.getElementById('transferFromLoc');
+const transferToLoc = document.getElementById('transferToLoc');
+const transferBalancePreview = document.getElementById('transferBalancePreview');
+const transferSourceNew = document.getElementById('transferSourceNew');
+const transferDestNew = document.getElementById('transferDestNew');
+const transferAmountInput = document.getElementById('transferAmountInput');
+const transferMaxQty = document.getElementById('transferMaxQty');
+const transferMaxBtn = document.getElementById('transferMaxBtn');
+const quickTransferBtns = document.querySelectorAll('.quick-transfer-btn:not(#transferMaxBtn)');
+
+let currentTransferItem = null;
+
+// History Modal Elements & Storage
+const HISTORY_STORAGE_KEY = 'resource_inventory_history';
+const historyBtn = document.getElementById('historyBtn');
+const historyModal = document.getElementById('historyModal');
+const closeHistoryModalBtn = document.getElementById('closeHistoryModalBtn');
+const closeHistoryBottomBtn = document.getElementById('closeHistoryBottomBtn');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+const historyListContainer = document.getElementById('historyListContainer');
+const historyEmpty = document.getElementById('historyEmpty');
+let historyData = [];
+
+// Cart / Cashier Elements & State
+const pricelistCartBar = document.getElementById('pricelistCartBar');
+const cartCountEl = document.getElementById('cartCount');
+const cartBarTotalEl = document.getElementById('cartBarTotal');
+const clearCartQuickBtn = document.getElementById('clearCartQuickBtn');
+const openCartModalBtn = document.getElementById('openCartModalBtn');
+
+const cartModal = document.getElementById('cartModal');
+const closeCartModalBtn = document.getElementById('closeCartModalBtn');
+const closeCartBtn = document.getElementById('closeCartBtn');
+const clearCartModalBtn = document.getElementById('clearCartModalBtn');
+const cartItemsContainer = document.getElementById('cartItemsContainer');
+const cartGrandTotalEl = document.getElementById('cartGrandTotal');
+const cashReceivedInput = document.getElementById('cashReceivedInput');
+const changeDueDisplay = document.getElementById('changeDueDisplay');
+const checkoutDeductBtn = document.getElementById('checkoutDeductBtn');
+
+let cartState = {}; // { [itemId]: quantity }
+
 // Sorting State
 let sortColumn = 'desc';
 let sortDirection = 'asc'; // 'asc' or 'desc'
@@ -107,8 +161,10 @@ let sortDirection = 'asc'; // 'asc' or 'desc'
 // Initialize Application
 function init() {
     loadData();
+    loadHistory();
     renderTable();
     updateSummaries();
+    updateCartUI();
     setupEventListeners();
     updateLastSavedTime();
     
@@ -234,13 +290,21 @@ function updateLastSavedTime() {
 // Calculate and update top summaries
 function updateSummaries() {
     let grandTotal = 0;
+    let totalValuation = 0;
     
     inventoryData.forEach(item => {
-        grandTotal += (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+        const itemTotal = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+        grandTotal += itemTotal;
+        if (item.price && item.price > 0) {
+            totalValuation += itemTotal * item.price;
+        }
     });
     
     totalTypesEl.textContent = inventoryData.length;
     grandTotalEl.textContent = grandTotal.toLocaleString();
+    if (totalValuationEl) {
+        totalValuationEl.textContent = '₱ ' + totalValuation.toLocaleString();
+    }
 }
 
 // Rendering
@@ -313,9 +377,26 @@ function renderTable(searchTerm = '') {
         const isLocked = item.isLocked || false;
         const lockIcon = isLocked ? 'ri-lock-fill' : 'ri-lock-unlock-line';
         const lockColor = isLocked ? 'var(--color-primary)' : 'var(--color-text-muted)';
-        const rowClass = isLocked ? 'locked-row' : '';
         const controlClass = isLocked ? 'qty-control locked' : 'qty-control';
         const inputDisabled = isLocked ? 'disabled' : '';
+
+        // Stock Alert Badges
+        let badgeHtml = '';
+        if (total === 0) {
+            badgeHtml = '<span class="badge-stock badge-out-of-stock" title="Out of Stock"><i class="ri-close-circle-line"></i> Out of Stock</span>';
+        } else if (total < 20) {
+            badgeHtml = `<span class="badge-stock badge-low-stock" title="Low Stock: ${total} left"><i class="ri-alert-line"></i> Low: ${total}</span>`;
+        }
+
+        // Pricelist Cart Controls
+        const inCartQty = cartState[item.id] || 0;
+        const cartControlsHtml = item.price > 0 ? `
+            <div class="cart-stepper" style="margin-top: 0.35rem;">
+                <button class="cart-step-btn" data-cart-action="dec" data-id="${item.id}" title="Decrease in cart">-</button>
+                <span class="cart-step-qty" id="cart-item-qty-${item.id}">${inCartQty}</span>
+                <button class="cart-step-btn" data-cart-action="inc" data-id="${item.id}" title="Add to cart">+</button>
+            </div>
+        ` : '';
 
         const tr = document.createElement('tr');
         if (isLocked) tr.classList.add('locked-row');
@@ -326,12 +407,16 @@ function renderTable(searchTerm = '') {
                         <i class="${lockIcon}" style="color: ${lockColor};"></i>
                     </button>
                     <i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}
+                    ${badgeHtml}
                 </span>
             </td>
             <td class="col-price hidden-column" data-label="Price">
-                <span class="price-value" style="font-weight: 600; color: var(--color-text-main); font-size: 1.1rem;">
-                    ${item.price > 0 ? '₱ ' + item.price : '-'}
-                </span>
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <span class="price-value" style="font-weight: 700; color: var(--color-text-main); font-size: 1.1rem;">
+                        ${item.price > 0 ? '₱ ' + item.price : '-'}
+                    </span>
+                    ${cartControlsHtml}
+                </div>
             </td>
             <td class="col-location" data-label="5th Floor">
                 <div class="${controlClass}">
@@ -381,6 +466,11 @@ function renderTable(searchTerm = '') {
     // Attach click listeners for adjust buttons
     document.querySelectorAll('.qty-btn.adjust').forEach(btn => {
         btn.addEventListener('click', openAdjustModal);
+    });
+
+    // Attach click listeners for cart steppers in table
+    document.querySelectorAll('.cart-step-btn').forEach(btn => {
+        btn.addEventListener('click', handleCartStepClick);
     });
 
     document.querySelectorAll('.lock-toggle-btn').forEach(btn => {
@@ -444,24 +534,29 @@ function handleQuantityChange(e) {
     // Update state
     const itemIndex = inventoryData.findIndex(item => item.id === id);
     if (itemIndex !== -1) {
-        inventoryData[itemIndex][field] = val;
-        
-        // Calculate new total
-        const item = inventoryData[itemIndex];
-        const newTotal = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
-        
-        // Update DOM Total visually
-        const totalSpan = document.getElementById(`total-${id}`);
-        if (totalSpan) {
-            totalSpan.textContent = newTotal.toLocaleString();
-            if (newTotal === 0) {
-                totalSpan.classList.add('zero');
-            } else {
-                totalSpan.classList.remove('zero');
+        const oldVal = inventoryData[itemIndex][field] || 0;
+        if (oldVal !== val) {
+            inventoryData[itemIndex][field] = val;
+            
+            // Calculate new total
+            const item = inventoryData[itemIndex];
+            const newTotal = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+            
+            // Update DOM Total visually
+            const totalSpan = document.getElementById(`total-${id}`);
+            if (totalSpan) {
+                totalSpan.textContent = newTotal.toLocaleString();
+                if (newTotal === 0) {
+                    totalSpan.classList.add('zero');
+                } else {
+                    totalSpan.classList.remove('zero');
+                }
             }
+            
+            saveData();
+            const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
+            logActivity('adjust', 'Quantity Changed', `Set "${item.desc}" (${locNames[field] || field}): ${oldVal} → ${val}`);
         }
-        
-        saveData();
     }
 }
 
@@ -474,6 +569,7 @@ function handleQuantityButtonClick(e) {
     const itemIndex = inventoryData.findIndex(item => item.id === id);
     if (itemIndex !== -1) {
         let currentVal = inventoryData[itemIndex][field] || 0;
+        const oldVal = currentVal;
         
         if (isPlus) {
             currentVal += 1;
@@ -506,6 +602,8 @@ function handleQuantityButtonClick(e) {
         }
         
         saveData();
+        const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
+        logActivity('adjust', isPlus ? 'Quantity +1' : 'Quantity -1', `${isPlus ? '+1' : '-1'} on "${item.desc}" (${locNames[field] || field}: ${oldVal} → ${currentVal})`);
     }
 }
 
@@ -598,8 +696,11 @@ function applyAdjustment() {
             if (newVal < 0) newVal = 0;
         }
         
+        const oldVal = inventoryData[itemIndex][adjustState.field];
         inventoryData[itemIndex][adjustState.field] = newVal;
         saveData();
+        const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
+        logActivity('adjust', 'Adjusted Quantity', `${adjustState.op === 'add' ? '+' : '-'}${adjustState.amount} on "${inventoryData[itemIndex].desc}" (${locNames[adjustState.field] || adjustState.field}: ${oldVal} → ${newVal})`);
         renderTable(searchInput.value);
         closeAdjustModal();
     }
@@ -940,6 +1041,7 @@ function setupEventListeners() {
         if (itemIndex !== -1) {
             inventoryData[itemIndex] = currentQuickEditItem;
             saveData();
+            logActivity('adjust', 'Quick Edit Saved', `Updated "${currentQuickEditItem.desc}" (5th: ${currentQuickEditItem.floor5}, 7th: ${currentQuickEditItem.floor7}, Booth: ${currentQuickEditItem.booth})`);
             renderTable(searchInput.value);
             closeQE();
         }
@@ -949,8 +1051,466 @@ function setupEventListeners() {
         if (!quickEditSearch.contains(e.target) && !quickEditDropdown.contains(e.target)) {
             quickEditDropdown.classList.add('hidden');
         }
+        if (!transferSearch.contains(e.target) && !transferDropdown.contains(e.target)) {
+            transferDropdown.classList.add('hidden');
+        }
     });
+
+    // --- History Modal Setup ---
+    historyBtn.addEventListener('click', openHistoryModal);
+    closeHistoryModalBtn.addEventListener('click', closeHistoryModal);
+    closeHistoryBottomBtn.addEventListener('click', closeHistoryModal);
+    clearHistoryBtn.addEventListener('click', clearHistory);
+    historyModal.addEventListener('click', (e) => {
+        if (e.target === historyModal) closeHistoryModal();
+    });
+
+    // --- Stock Transfer Setup ---
+    transferBtn.addEventListener('click', () => openTransferModal());
+    closeTransferModalBtn.addEventListener('click', closeTransferModal);
+    cancelTransferBtn.addEventListener('click', closeTransferModal);
+    confirmTransferBtn.addEventListener('click', executeTransfer);
+
+    transferSearch.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase();
+        transferDropdown.innerHTML = '';
+        
+        if (term.trim() === '') {
+            transferDropdown.classList.add('hidden');
+            return;
+        }
+
+        const matches = inventoryData.filter(item => item.desc.toLowerCase().includes(term)).slice(0, 10);
+        
+        if (matches.length > 0) {
+            matches.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'dropdown-item';
+                div.innerHTML = `
+                    <div class="dropdown-item-title">${item.desc}</div>
+                    <div class="dropdown-item-category">${item.category} (Total: ${((item.floor5||0)+(item.floor7||0)+(item.booth||0)).toLocaleString()})</div>
+                `;
+                div.addEventListener('click', () => selectTransferItem(item));
+                transferDropdown.appendChild(div);
+            });
+            transferDropdown.classList.remove('hidden');
+        } else {
+            transferDropdown.classList.add('hidden');
+        }
+    });
+
+    transferFromLoc.addEventListener('change', () => {
+        if (transferFromLoc.value === transferToLoc.value) {
+            const locs = ['floor5', 'floor7', 'booth'];
+            const alt = locs.find(l => l !== transferFromLoc.value);
+            if (alt) transferToLoc.value = alt;
+        }
+        updateTransferBalancePreview();
+    });
+
+    transferToLoc.addEventListener('change', () => {
+        if (transferFromLoc.value === transferToLoc.value) {
+            const locs = ['floor5', 'floor7', 'booth'];
+            const alt = locs.find(l => l !== transferToLoc.value);
+            if (alt) transferFromLoc.value = alt;
+        }
+        updateTransferBalancePreview();
+    });
+
+    transferAmountInput.addEventListener('input', updateTransferBalancePreview);
+
+    transferMaxBtn.addEventListener('click', () => {
+        if (!currentTransferItem) return;
+        const available = currentTransferItem[transferFromLoc.value] || 0;
+        transferAmountInput.value = available;
+        updateTransferBalancePreview();
+    });
+
+    quickTransferBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const amt = parseInt(e.currentTarget.getAttribute('data-amt'));
+            let current = parseInt(transferAmountInput.value) || 0;
+            transferAmountInput.value = current + amt;
+            updateTransferBalancePreview();
+        });
+    });
+
+    transferModal.addEventListener('click', (e) => {
+        if (e.target === transferModal) closeTransferModal();
+    });
+
+    // --- Pricelist Cart & Cashier Setup ---
+    clearCartQuickBtn.addEventListener('click', clearCart);
+    openCartModalBtn.addEventListener('click', () => {
+        renderCartModal();
+        cartModal.classList.remove('hidden');
+    });
+
+    closeCartModalBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
+    closeCartBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
+    clearCartModalBtn.addEventListener('click', clearCart);
+    cashReceivedInput.addEventListener('input', updateChangeDue);
+    checkoutDeductBtn.addEventListener('click', checkoutCartDeduct);
+
+    cartModal.addEventListener('click', (e) => {
+        if (e.target === cartModal) cartModal.classList.add('hidden');
+    });
+}
+
+// ==========================================
+// History Functions
+// ==========================================
+function loadHistory() {
+    try {
+        const saved = localStorage.getItem(HISTORY_STORAGE_KEY);
+        historyData = saved ? JSON.parse(saved) : [];
+        if (!Array.isArray(historyData)) historyData = [];
+    } catch (e) {
+        historyData = [];
+    }
+}
+
+function saveHistory() {
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(historyData.slice(0, 100)));
+}
+
+function logActivity(type, title, desc) {
+    const entry = {
+        id: Date.now() + Math.random(),
+        timestamp: new Date().toISOString(),
+        type, // 'transfer', 'adjust', 'sale'
+        title,
+        desc
+    };
+    historyData.unshift(entry);
+    if (historyData.length > 100) historyData = historyData.slice(0, 100);
+    saveHistory();
+}
+
+function openHistoryModal() {
+    renderHistoryModal();
+    historyModal.classList.remove('hidden');
+}
+
+function closeHistoryModal() {
+    historyModal.classList.add('hidden');
+}
+
+function clearHistory() {
+    if (confirm("Are you sure you want to clear the activity history?")) {
+        historyData = [];
+        saveHistory();
+        renderHistoryModal();
+    }
+}
+
+function renderHistoryModal() {
+    historyListContainer.innerHTML = '';
+    if (historyData.length === 0) {
+        historyListContainer.classList.add('hidden');
+        historyEmpty.classList.remove('hidden');
+        return;
+    }
+    historyListContainer.classList.remove('hidden');
+    historyEmpty.classList.add('hidden');
+
+    historyData.forEach(item => {
+        let iconClass = 'ri-history-line';
+        let badgeTypeClass = 'history-icon-adjust';
+        if (item.type === 'transfer') {
+            iconClass = 'ri-arrow-left-right-line';
+            badgeTypeClass = 'history-icon-transfer';
+        } else if (item.type === 'sale') {
+            iconClass = 'ri-shopping-cart-2-line';
+            badgeTypeClass = 'history-icon-sale';
+        }
+
+        const date = new Date(item.timestamp);
+        const timeFormatted = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' +
+            date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+            <div class="history-icon-badge ${badgeTypeClass}">
+                <i class="${iconClass}"></i>
+            </div>
+            <div class="history-content">
+                <div class="history-title">${item.title}</div>
+                <div class="history-desc">${item.desc}</div>
+                <div class="history-time">${timeFormatted}</div>
+            </div>
+        `;
+        historyListContainer.appendChild(div);
+    });
+}
+
+// ==========================================
+// Stock Transfer Functions
+// ==========================================
+function openTransferModal(preselectedId = null) {
+    transferModal.classList.remove('hidden');
+    transferSearch.value = '';
+    transferDropdown.classList.add('hidden');
+    transferAmountInput.value = '1';
+
+    if (preselectedId) {
+        const item = inventoryData.find(i => i.id === preselectedId);
+        if (item) selectTransferItem(item);
+    } else {
+        currentTransferItem = null;
+        transferSelectedPreview.classList.add('hidden');
+        transferBalancePreview.classList.add('hidden');
+        confirmTransferBtn.disabled = true;
+        confirmTransferBtn.textContent = 'Transfer Stock';
+        transferMaxQty.textContent = '0';
+        setTimeout(() => transferSearch.focus(), 100);
+    }
+}
+
+function closeTransferModal() {
+    transferModal.classList.add('hidden');
+}
+
+function selectTransferItem(item) {
+    currentTransferItem = JSON.parse(JSON.stringify(item));
+    transferSearch.value = item.desc;
+    transferDropdown.classList.add('hidden');
+    transferItemTitle.textContent = item.desc;
+    transferItemCategory.textContent = item.category;
+    transferSelectedPreview.classList.remove('hidden');
+    transferBalancePreview.classList.remove('hidden');
+    updateTransferBalancePreview();
+}
+
+function updateTransferBalancePreview() {
+    if (!currentTransferItem) {
+        confirmTransferBtn.disabled = true;
+        transferBalancePreview.classList.add('hidden');
+        return;
+    }
+
+    const fromLoc = transferFromLoc.value;
+    const toLoc = transferToLoc.value;
+    const available = currentTransferItem[fromLoc] || 0;
+    transferMaxQty.textContent = available.toLocaleString();
+
+    let amount = parseInt(transferAmountInput.value) || 0;
+    if (amount < 1) amount = 1;
+
+    const sourceRemaining = available - amount;
+    const destCurrent = currentTransferItem[toLoc] || 0;
+    const destNew = destCurrent + amount;
+
+    transferSourceNew.textContent = sourceRemaining.toLocaleString();
+    transferDestNew.textContent = destNew.toLocaleString();
+
+    if (fromLoc === toLoc) {
+        transferSourceNew.style.color = 'var(--color-danger)';
+        confirmTransferBtn.disabled = true;
+        confirmTransferBtn.textContent = 'Choose Different Locations';
+    } else if (sourceRemaining < 0) {
+        transferSourceNew.style.color = 'var(--color-danger)';
+        confirmTransferBtn.disabled = true;
+        confirmTransferBtn.textContent = 'Insufficient Stock';
+    } else {
+        transferSourceNew.style.color = 'var(--color-text-main)';
+        confirmTransferBtn.disabled = false;
+        confirmTransferBtn.textContent = `Transfer ${amount} Units`;
+    }
+}
+
+function executeTransfer() {
+    if (!currentTransferItem) return;
+    const fromLoc = transferFromLoc.value;
+    const toLoc = transferToLoc.value;
+    const amount = parseInt(transferAmountInput.value) || 0;
+
+    if (fromLoc === toLoc || amount <= 0) return;
+
+    const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
+    const itemIndex = inventoryData.findIndex(i => i.id === currentTransferItem.id);
+    if (itemIndex === -1) return;
+
+    const available = inventoryData[itemIndex][fromLoc] || 0;
+    if (amount > available) {
+        alert(`Cannot transfer ${amount} units. Only ${available} units available on ${locNames[fromLoc]}.`);
+        return;
+    }
+
+    // Update balances
+    inventoryData[itemIndex][fromLoc] = available - amount;
+    inventoryData[itemIndex][toLoc] = (inventoryData[itemIndex][toLoc] || 0) + amount;
+
+    saveData();
+    logActivity('transfer', 'Stock Transfer', `Moved ${amount}x "${inventoryData[itemIndex].desc}" from ${locNames[fromLoc]} to ${locNames[toLoc]}`);
+    renderTable(searchInput.value);
+    closeTransferModal();
+}
+
+// ==========================================
+// Pricelist Cart / Cashier Functions
+// ==========================================
+function handleCartStepClick(e) {
+    const btn = e.currentTarget;
+    const id = parseInt(btn.getAttribute('data-id'));
+    const action = btn.getAttribute('data-cart-action');
+
+    const item = inventoryData.find(i => i.id === id);
+    if (!item) return;
+
+    if (!cartState[id]) cartState[id] = 0;
+
+    if (action === 'inc') {
+        cartState[id]++;
+    } else if (action === 'dec') {
+        cartState[id] = Math.max(0, cartState[id] - 1);
+        if (cartState[id] === 0) delete cartState[id];
+    }
+
+    // Update cell quantity stepper
+    const qtySpan = document.getElementById(`cart-item-qty-${id}`);
+    if (qtySpan) {
+        qtySpan.textContent = cartState[id] || 0;
+    }
+
+    updateCartUI();
+}
+
+function updateCartUI() {
+    let totalItems = 0;
+    let totalBill = 0;
+
+    Object.entries(cartState).forEach(([id, qty]) => {
+        const item = inventoryData.find(i => i.id === parseInt(id));
+        if (item && qty > 0) {
+            totalItems += qty;
+            totalBill += qty * (item.price || 0);
+        }
+    });
+
+    cartCountEl.textContent = totalItems;
+    cartBarTotalEl.textContent = '₱ ' + totalBill.toLocaleString();
+
+    // Show floating cart bar only if Pricelist category is active AND totalItems > 0
+    if (currentCategory === 'Pricelist' && totalItems > 0) {
+        pricelistCartBar.classList.remove('hidden');
+    } else {
+        pricelistCartBar.classList.add('hidden');
+    }
+}
+
+function clearCart() {
+    cartState = {};
+    updateCartUI();
+    renderTable(searchInput.value);
+    if (!cartModal.classList.contains('hidden')) {
+        renderCartModal();
+    }
+}
+
+function renderCartModal() {
+    cartItemsContainer.innerHTML = '';
+    let grandTotal = 0;
+    const activeEntries = Object.entries(cartState).filter(([_, qty]) => qty > 0);
+
+    if (activeEntries.length === 0) {
+        cartItemsContainer.innerHTML = '<div class="no-results" style="padding: 1.5rem;"><i class="ri-shopping-cart-line" style="font-size: 2rem;"></i><p>Your order is empty. Add items from the pricelist.</p></div>';
+        cartGrandTotalEl.textContent = '₱ 0';
+        checkoutDeductBtn.disabled = true;
+        updateChangeDue();
+        return;
+    }
+
+    checkoutDeductBtn.disabled = false;
+
+    activeEntries.forEach(([idStr, qty]) => {
+        const id = parseInt(idStr);
+        const item = inventoryData.find(i => i.id === id);
+        if (!item) return;
+
+        const subtotal = qty * (item.price || 0);
+        grandTotal += subtotal;
+
+        const row = document.createElement('div');
+        row.className = 'cart-item-row';
+        row.innerHTML = `
+            <div class="cart-item-name">
+                <div>${item.desc}</div>
+                <div class="cart-item-unit-price">₱ ${item.price} each (Booth stock: ${item.booth || 0})</div>
+            </div>
+            <div class="cart-stepper">
+                <button class="cart-step-btn" data-modal-cart-action="dec" data-id="${item.id}">-</button>
+                <span class="cart-step-qty">${qty}</span>
+                <button class="cart-step-btn" data-modal-cart-action="inc" data-id="${item.id}">+</button>
+            </div>
+            <div class="cart-item-subtotal">₱ ${subtotal.toLocaleString()}</div>
+        `;
+        cartItemsContainer.appendChild(row);
+    });
+
+    cartGrandTotalEl.textContent = '₱ ' + grandTotal.toLocaleString();
+    updateChangeDue();
+
+    // Attach step listeners inside modal
+    cartItemsContainer.querySelectorAll('.cart-step-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.currentTarget.getAttribute('data-id'));
+            const action = e.currentTarget.getAttribute('data-modal-cart-action');
+            if (action === 'inc') {
+                cartState[id] = (cartState[id] || 0) + 1;
+            } else if (action === 'dec') {
+                cartState[id] = Math.max(0, (cartState[id] || 0) - 1);
+                if (cartState[id] === 0) delete cartState[id];
+            }
+            updateCartUI();
+            renderTable(searchInput.value);
+            renderCartModal();
+        });
+    });
+}
+
+function updateChangeDue() {
+    let grandTotal = 0;
+    Object.entries(cartState).forEach(([id, qty]) => {
+        const item = inventoryData.find(i => i.id === parseInt(id));
+        if (item && qty > 0) {
+            grandTotal += qty * (item.price || 0);
+        }
+    });
+
+    const cashReceived = parseFloat(cashReceivedInput.value) || 0;
+    const changeDue = Math.max(0, cashReceived - grandTotal);
+    changeDueDisplay.textContent = '₱ ' + changeDue.toLocaleString();
+}
+
+function checkoutCartDeduct() {
+    const activeEntries = Object.entries(cartState).filter(([_, qty]) => qty > 0);
+    if (activeEntries.length === 0) return;
+
+    let itemsSummary = [];
+    let totalBill = 0;
+
+    activeEntries.forEach(([idStr, qty]) => {
+        const id = parseInt(idStr);
+        const itemIndex = inventoryData.findIndex(i => i.id === id);
+        if (itemIndex !== -1) {
+            const item = inventoryData[itemIndex];
+            const currentBooth = item.booth || 0;
+            inventoryData[itemIndex].booth = Math.max(0, currentBooth - qty);
+            totalBill += qty * (item.price || 0);
+            itemsSummary.push(`${qty}x ${item.desc}`);
+        }
+    });
+
+    saveData();
+    logActivity('sale', 'Booth Sale Completed', `Deducted: ${itemsSummary.join(', ')} | Total: ₱${totalBill.toLocaleString()}`);
+    clearCart();
+    cartModal.classList.add('hidden');
+    renderTable(searchInput.value);
+    alert('Sale finalized! Quantities have been deducted from GLC Booth stock.');
 }
 
 // Run app
 document.addEventListener('DOMContentLoaded', init);
+

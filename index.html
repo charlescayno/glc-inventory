@@ -43,6 +43,14 @@
                             <button id="themeToggleBtn" class="btn btn-icon btn-secondary" title="Toggle Theme">
                                 <i class="ri-moon-line" id="themeIcon"></i>
                             </button>
+                            <button id="transferBtn" class="btn btn-icon btn-secondary" title="Stock Transfer">
+                                <i class="ri-arrow-left-right-line"></i>
+                                <span class="desktop-only">Transfer</span>
+                            </button>
+                            <button id="historyBtn" class="btn btn-icon btn-secondary" title="Activity History">
+                                <i class="ri-history-line"></i>
+                                <span class="desktop-only">History</span>
+                            </button>
                             <button id="lockAllBtn" class="btn btn-icon btn-secondary" title="Lock All">
                                 <i class="ri-lock-fill"></i>
                                 <span id="lockAllText" class="desktop-only">Lock All</span>
@@ -90,25 +98,32 @@
                     <i class="ri-search-eye-line"></i>
                     <p>No resources found matching your search.</p>
                 </div>
-        </div>
+            </div>
 
-        <div class="summary-cards" style="margin-top: 2rem; margin-bottom: 0;">
-            <div class="summary-card">
-                <div class="summary-icon"><i class="ri-book-mark-line"></i></div>
-                <div class="summary-info">
-                    <h3>Total Resource Types</h3>
-                    <p id="totalTypes">0</p>
+            <div class="summary-cards" style="margin-top: 2rem; margin-bottom: 0;">
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="ri-book-mark-line"></i></div>
+                    <div class="summary-info">
+                        <h3>Total Resource Types</h3>
+                        <p id="totalTypes">0</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon"><i class="ri-stack-line"></i></div>
+                    <div class="summary-info">
+                        <h3>Grand Total Inventory</h3>
+                        <p id="grandTotal">0</p>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="ri-money-dollar-circle-line"></i></div>
+                    <div class="summary-info">
+                        <h3>Total Retail Valuation</h3>
+                        <p id="totalValuation">₱ 0</p>
+                    </div>
                 </div>
             </div>
-            <div class="summary-card">
-                <div class="summary-icon"><i class="ri-stack-line"></i></div>
-                <div class="summary-info">
-                    <h3>Grand Total Inventory</h3>
-                    <p id="grandTotal">0</p>
-                </div>
-            </div>
-        </div>
-    </main>
+        </main>
         
         <footer class="app-footer">
             <p>Last updated: <span id="lastUpdated">Never</span></p>
@@ -224,8 +239,166 @@
                 <button class="btn btn-secondary" id="cancelAdjustBtn">Cancel</button>
                 <button class="btn" id="confirmAdjustBtn" style="background: var(--color-primary); color: white; border: none;">Apply Changes</button>
             </div>
+    <!-- Stock Transfer Modal -->
+    <div id="transferModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header">
+                <h2><i class="ri-arrow-left-right-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Stock Transfer</h2>
+                <button class="close-modal" id="closeTransferModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1.25rem;">
+                    <label style="display: block; font-size: 0.875rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.5rem;">Select Resource</label>
+                    <div class="search-bar" style="width: 100%;">
+                        <i class="ri-search-line search-icon"></i>
+                        <input type="text" id="transferSearch" placeholder="Type resource name..." autocomplete="off">
+                        <div id="transferDropdown" class="dropdown-list hidden">
+                            <!-- Injected options -->
+                        </div>
+                    </div>
+                </div>
+
+                <div id="transferSelectedPreview" class="hidden" style="background: var(--color-bg-hover); padding: 0.875rem 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+                    <h4 id="transferItemTitle" style="font-size: 1rem; color: var(--color-text-main); margin-bottom: 0.2rem;"></h4>
+                    <span id="transferItemCategory" style="font-size: 0.75rem; font-weight: 600; color: var(--color-primary); text-transform: uppercase;"></span>
+                </div>
+
+                <div class="transfer-locations-grid" style="display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.75rem; align-items: center; margin-bottom: 1.25rem;">
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.35rem;">From (Source)</label>
+                        <select id="transferFromLoc" class="location-select" style="width: 100%;">
+                            <option value="floor5">5th Floor</option>
+                            <option value="floor7">7th Floor</option>
+                            <option value="booth">GLC Booth</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: center; padding-top: 1.2rem;">
+                        <i class="ri-arrow-right-line" style="font-size: 1.5rem; color: var(--color-primary);"></i>
+                    </div>
+                    <div>
+                        <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.35rem;">To (Destination)</label>
+                        <select id="transferToLoc" class="location-select" style="width: 100%;">
+                            <option value="booth" selected>GLC Booth</option>
+                            <option value="floor5">5th Floor</option>
+                            <option value="floor7">7th Floor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="transferBalancePreview" class="hidden" style="display: flex; justify-content: space-between; gap: 1rem; background: var(--color-bg-surface); border: 1px solid var(--color-border); padding: 0.875rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+                    <div style="flex: 1; text-align: center;">
+                        <span style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase;">Source Remaining</span>
+                        <div id="transferSourceNew" style="font-size: 1.25rem; font-weight: 700; color: var(--color-text-main);">0</div>
+                    </div>
+                    <div style="width: 1px; background: var(--color-border);"></div>
+                    <div style="flex: 1; text-align: center;">
+                        <span style="font-size: 0.75rem; color: var(--color-text-muted); text-transform: uppercase;">Destination New</span>
+                        <div id="transferDestNew" style="font-size: 1.25rem; font-weight: 700; color: #10b981;">0</div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                        <label style="font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted);">Transfer Quantity</label>
+                        <span id="transferAvailableLabel" style="font-size: 0.8rem; color: var(--color-text-muted);">Available: <strong id="transferMaxQty">0</strong></span>
+                    </div>
+                    <input type="number" id="transferAmountInput" class="qty-input" style="width: 100%; text-align: center; padding: 0.75rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-size: 1.25rem;" placeholder="Enter qty to transfer..." min="1" value="1">
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
+                    <button class="btn btn-secondary quick-transfer-btn" data-amt="5">+5</button>
+                    <button class="btn btn-secondary quick-transfer-btn" data-amt="10">+10</button>
+                    <button class="btn btn-secondary quick-transfer-btn" data-amt="25">+25</button>
+                    <button class="btn btn-secondary quick-transfer-btn" id="transferMaxBtn">Max</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelTransferBtn">Cancel</button>
+                <button class="btn" id="confirmTransferBtn" style="background: var(--color-primary); color: white; border: none;" disabled>Transfer Stock</button>
+            </div>
         </div>
     </div>
+
+    <!-- Activity Log / History Modal -->
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 580px;">
+            <div class="modal-header">
+                <h2><i class="ri-history-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Activity History</h2>
+                <button class="close-modal" id="closeHistoryModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <p style="font-size: 0.85rem; color: var(--color-text-muted);">Recent changes & stock movements</p>
+                    <button class="btn btn-secondary" id="clearHistoryBtn" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"><i class="ri-delete-bin-line"></i> Clear Log</button>
+                </div>
+                <div id="historyListContainer" class="history-list">
+                    <!-- History items injected here -->
+                </div>
+                <div id="historyEmpty" class="no-results hidden" style="padding: 2rem 1rem;">
+                    <i class="ri-time-line" style="font-size: 2rem;"></i>
+                    <p>No activity logged yet.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeHistoryBottomBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Pricelist Cart Bar -->
+    <div id="pricelistCartBar" class="cart-floating-bar hidden">
+        <div class="cart-bar-content">
+            <div class="cart-bar-info">
+                <div class="cart-badge"><i class="ri-shopping-cart-2-fill"></i> <span id="cartCount">0</span> items</div>
+                <div class="cart-total-text">Total: <strong id="cartBarTotal">₱ 0</strong></div>
+            </div>
+            <div class="cart-bar-actions">
+                <button class="btn btn-secondary" id="clearCartQuickBtn" title="Clear Cart"><i class="ri-delete-bin-line"></i></button>
+                <button class="btn btn-primary" id="openCartModalBtn"><i class="ri-calculator-line"></i> Checkout / Calculate</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Total / Cart Calculator Modal -->
+    <div id="cartModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2><i class="ri-calculator-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Order Calculator</h2>
+                <button class="close-modal" id="closeCartModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 65vh; overflow-y: auto;">
+                <div id="cartItemsContainer" class="cart-items-list" style="margin-bottom: 1.25rem;">
+                    <!-- Cart items injected here -->
+                </div>
+
+                <div style="background: var(--color-bg-hover); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="font-size: 1.1rem; font-weight: 600; color: var(--color-text-main);">Grand Total:</span>
+                        <span id="cartGrandTotal" style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">₱ 0</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; align-items: center; padding-top: 0.75rem; border-top: 1px dashed var(--color-border);">
+                        <div>
+                            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.25rem;">Cash Received (₱)</label>
+                            <input type="number" id="cashReceivedInput" class="qty-input" style="width: 100%; text-align: right; padding: 0.5rem; font-size: 1.1rem;" placeholder="0" min="0">
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.25rem;">Change Due</span>
+                            <span id="changeDueDisplay" style="font-size: 1.25rem; font-weight: 700; color: #10b981;">₱ 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+                <button class="btn btn-secondary" id="clearCartModalBtn"><i class="ri-delete-bin-line"></i> Clear Order</button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary" id="closeCartBtn">Close</button>
+                    <button class="btn" id="checkoutDeductBtn" style="background: #10b981; color: white; border: none;"><i class="ri-checkbox-circle-line"></i> Finalize & Deduct from Booth</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="app.js"></script>
 </body>
