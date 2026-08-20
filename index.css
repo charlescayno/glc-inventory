@@ -1059,6 +1059,37 @@ table.viewing-pricelist .col-price {
     color: var(--color-text-muted);
     line-height: 1.35;
 }
+.btn-undo-transfer {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.15s ease;
+}
+.btn-undo-transfer:hover {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-color: #fca5a5;
+}
+.history-undone-badge {
+    background-color: var(--color-bg-hover);
+    color: var(--color-text-light);
+    border: 1px dashed var(--color-border);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.72rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
 
 /* --- Pricelist Cart Floating Bar --- */
 .cart-floating-bar {

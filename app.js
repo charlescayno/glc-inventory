@@ -1265,6 +1265,10 @@ function renderHistoryModal() {
 
         if (item.type === 'transfer') {
             const qty = item.qty || 1;
+            const undoButtonHtml = item.isUndone
+                ? `<span class="history-undone-badge"><i class="ri-check-line"></i> Undone</span>`
+                : `<button class="btn-undo-transfer" data-history-id="${item.id}" title="Undo and revert this stock transfer"><i class="ri-arrow-go-back-line"></i> Undo</button>`;
+
             div.innerHTML = `
                 <div class="history-icon-badge history-icon-transfer">
                     <i class="ri-arrow-left-right-line"></i>
@@ -1272,7 +1276,10 @@ function renderHistoryModal() {
                 <div class="history-content">
                     <div class="history-header">
                         <span class="history-title">${item.title || 'Stock Transfer'}</span>
-                        <span class="history-time">${timeFormatted}</span>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            ${undoButtonHtml}
+                            <span class="history-time">${timeFormatted}</span>
+                        </div>
                     </div>
                     <div class="history-item-desc">${item.itemDesc || ''}</div>
                     <div class="history-route">
@@ -1355,8 +1362,86 @@ function renderHistoryModal() {
             `;
         }
 
+        // Bind Undo Transfer buttons
+        div.querySelectorAll('.btn-undo-transfer').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const hid = parseFloat(e.currentTarget.getAttribute('data-history-id')) || e.currentTarget.getAttribute('data-history-id');
+                undoTransfer(hid);
+            });
+        });
+
         historyListContainer.appendChild(div);
     });
+}
+
+function undoTransfer(historyId) {
+    const historyIndex = historyData.findIndex(h => h.id == historyId);
+    if (historyIndex === -1) return;
+
+    const entry = historyData[historyIndex];
+    if (entry.type !== 'transfer' || entry.isUndone) return;
+
+    // Find inventory item
+    let itemIndex = -1;
+    if (entry.itemId) {
+        itemIndex = inventoryData.findIndex(i => i.id === entry.itemId);
+    }
+    if (itemIndex === -1 && entry.itemDesc) {
+        itemIndex = inventoryData.findIndex(i => i.desc.toLowerCase() === entry.itemDesc.toLowerCase());
+    }
+
+    if (itemIndex === -1) {
+        alert("Could not find the original resource item to revert.");
+        return;
+    }
+
+    const locMap = { '5th Floor': 'floor5', '7th Floor': 'floor7', 'GLC Booth': 'booth' };
+    const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
+
+    let fromKey = entry.fromLocKey;
+    let toKey = entry.toLocKey;
+    if (!fromKey && entry.fromLoc) fromKey = locMap[entry.fromLoc];
+    if (!toKey && entry.toLoc) toKey = locMap[entry.toLoc];
+
+    if (!fromKey || !toKey) {
+        alert("Invalid location data for undo.");
+        return;
+    }
+
+    const qty = entry.qty || 1;
+    const destStock = inventoryData[itemIndex][toKey] || 0;
+
+    if (destStock < qty) {
+        if (!confirm(`Destination (${locNames[toKey] || toKey}) currently only has ${destStock} units in stock (transferred was ${qty}). Reverting will set ${locNames[toKey] || toKey} to 0 and restore ${destStock} units to ${locNames[fromKey] || fromKey}. Proceed?`)) {
+            return;
+        }
+    }
+
+    const actualRevertQty = Math.min(destStock, qty);
+    inventoryData[itemIndex][toKey] = Math.max(0, destStock - qty);
+    inventoryData[itemIndex][fromKey] = (inventoryData[itemIndex][fromKey] || 0) + actualRevertQty;
+
+    // Mark original transfer as undone
+    historyData[historyIndex].isUndone = true;
+
+    saveData();
+    logActivity({
+        type: 'transfer',
+        title: 'Transfer Undone (Reverted)',
+        itemId: inventoryData[itemIndex].id,
+        itemDesc: inventoryData[itemIndex].desc,
+        qty: actualRevertQty,
+        fromLocKey: toKey,
+        toLocKey: fromKey,
+        fromLoc: locNames[toKey] || toKey,
+        toLoc: locNames[fromKey] || fromKey,
+        fromRemaining: inventoryData[itemIndex][toKey],
+        toNew: inventoryData[itemIndex][fromKey],
+        isUndone: true // cannot re-undo an undo record
+    });
+
+    renderTable(searchInput.value);
+    renderHistoryModal();
 }
 
 // ==========================================
@@ -1460,12 +1545,16 @@ function executeTransfer() {
     logActivity({
         type: 'transfer',
         title: 'Stock Transfer',
+        itemId: inventoryData[itemIndex].id,
         itemDesc: inventoryData[itemIndex].desc,
         qty: amount,
+        fromLocKey: fromLoc,
+        toLocKey: toLoc,
         fromLoc: locNames[fromLoc],
         toLoc: locNames[toLoc],
         fromRemaining: available - amount,
-        toNew: (inventoryData[itemIndex][toLoc] || 0) + amount
+        toNew: (inventoryData[itemIndex][toLoc] || 0) + amount,
+        isUndone: false
     });
     renderTable(searchInput.value);
     closeTransferModal();
