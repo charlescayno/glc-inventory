@@ -1777,18 +1777,36 @@ body.modal-open { overflow: hidden; }
     body * {
         visibility: hidden;
     }
-    #receiptPrintArea, #receiptPrintArea * {
+    #receiptModal, #receiptModal * {
         visibility: visible;
     }
-    #receiptPrintArea {
+    #receiptModal {
         position: absolute;
         left: 0;
         top: 0;
-        width: 100%;
         margin: 0;
         padding: 0;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        background: white;
+    }
+    .modal-content.receipt-modal-content {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        max-width: 100%;
     }
     .hide-on-print {
         display: none !important;
+    }
+    html, body {
+        height: auto;
+        min-height: auto;
+        overflow: visible;
+    }
+    .app-container {
+        display: none;
     }
 }
