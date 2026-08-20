@@ -391,20 +391,34 @@
                     <!-- Cart items injected here -->
                 </div>
 
-                <div style="background: var(--color-bg-hover); padding: 1.25rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                        <span style="font-size: 1.1rem; font-weight: 600; color: var(--color-text-main);">Grand Total:</span>
-                        <span id="cartGrandTotal" style="font-size: 1.5rem; font-weight: 700; color: var(--color-primary);">₱ 0</span>
+                <div class="cart-calc-box">
+                    <div class="cart-calc-total-row">
+                        <span class="cart-calc-label">Grand Total:</span>
+                        <span id="cartGrandTotal" class="cart-calc-grand-total">₱ 0</span>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; align-items: center; padding-top: 0.75rem; border-top: 1px dashed var(--color-border);">
-                        <div>
-                            <label style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.25rem;">Cash Received (₱)</label>
-                            <input type="number" id="cashReceivedInput" class="qty-input" style="width: 100%; text-align: right; padding: 0.5rem; font-size: 1.1rem;" placeholder="0" min="0">
+                    <div class="cash-calc-grid">
+                        <div class="cash-input-group">
+                            <label for="cashReceivedInput" class="cash-input-label">
+                                <i class="ri-money-dollar-box-line"></i> Cash Received
+                            </label>
+                            <div class="cash-input-wrapper">
+                                <span class="currency-prefix">₱</span>
+                                <input type="number" id="cashReceivedInput" class="cash-received-textbox" placeholder="0" min="0" step="any">
+                            </div>
+                            <div class="quick-cash-chips">
+                                <button type="button" class="quick-cash-btn" data-exact="true">Exact</button>
+                                <button type="button" class="quick-cash-btn" data-val="50">50</button>
+                                <button type="button" class="quick-cash-btn" data-val="100">100</button>
+                                <button type="button" class="quick-cash-btn" data-val="200">200</button>
+                                <button type="button" class="quick-cash-btn" data-val="500">500</button>
+                                <button type="button" class="quick-cash-btn" data-val="1000">1000</button>
+                            </div>
                         </div>
-                        <div style="text-align: right;">
-                            <span style="display: block; font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); margin-bottom: 0.25rem;">Change Due</span>
-                            <span id="changeDueDisplay" style="font-size: 1.25rem; font-weight: 700; color: #10b981;">₱ 0</span>
+                        <div class="change-display-group">
+                            <span class="change-label" id="changeLabel">Change Due</span>
+                            <div id="changeDueDisplay" class="change-amount-display">₱ 0</div>
+                            <span id="changeStatusBadge" class="change-status-badge">Enter cash received</span>
                         </div>
                     </div>
                 </div>

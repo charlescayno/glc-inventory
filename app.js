@@ -1221,12 +1221,39 @@ function setupEventListeners() {
     openCartModalBtn.addEventListener('click', () => {
         renderCartModal();
         cartModal.classList.remove('hidden');
+        setTimeout(() => {
+            cashReceivedInput.focus();
+            cashReceivedInput.select();
+        }, 150);
     });
 
     closeCartModalBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
     closeCartBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
     clearCartModalBtn.addEventListener('click', clearCart);
+    
     cashReceivedInput.addEventListener('input', updateChangeDue);
+    cashReceivedInput.addEventListener('keyup', updateChangeDue);
+    cashReceivedInput.addEventListener('change', updateChangeDue);
+
+    document.querySelectorAll('.quick-cash-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            let grandTotal = 0;
+            Object.entries(cartState).forEach(([id, qty]) => {
+                const item = inventoryData.find(i => i.id === parseInt(id));
+                if (item && qty > 0) grandTotal += qty * (item.price || 0);
+            });
+
+            if (e.currentTarget.getAttribute('data-exact') === 'true') {
+                cashReceivedInput.value = grandTotal;
+            } else {
+                const val = parseFloat(e.currentTarget.getAttribute('data-val')) || 0;
+                cashReceivedInput.value = val;
+            }
+            updateChangeDue();
+            cashReceivedInput.focus();
+        });
+    });
+
     checkoutDeductBtn.addEventListener('click', checkoutCartDeduct);
 
     cartModal.addEventListener('click', (e) => {
@@ -1780,6 +1807,7 @@ function updateCartUI() {
 
 function clearCart() {
     cartState = {};
+    if (cashReceivedInput) cashReceivedInput.value = '';
     updateCartUI();
     renderTable(searchInput.value);
     if (!cartModal.classList.contains('hidden')) {
@@ -1857,9 +1885,42 @@ function updateChangeDue() {
         }
     });
 
-    const cashReceived = parseFloat(cashReceivedInput.value) || 0;
-    const changeDue = Math.max(0, cashReceived - grandTotal);
-    changeDueDisplay.textContent = '₱ ' + changeDue.toLocaleString();
+    const cashInputVal = cashReceivedInput.value.trim();
+    const changeLabelEl = document.getElementById('changeLabel');
+    const changeStatusBadge = document.getElementById('changeStatusBadge');
+
+    if (cashInputVal === '') {
+        changeDueDisplay.textContent = '₱ 0';
+        changeDueDisplay.classList.remove('short');
+        if (changeLabelEl) changeLabelEl.textContent = 'Change Due';
+        if (changeStatusBadge) {
+            changeStatusBadge.textContent = 'Enter cash received';
+            changeStatusBadge.className = 'change-status-badge';
+        }
+        return;
+    }
+
+    const cashReceived = parseFloat(cashInputVal) || 0;
+    const diff = cashReceived - grandTotal;
+
+    if (diff >= 0) {
+        changeDueDisplay.textContent = '₱ ' + diff.toLocaleString();
+        changeDueDisplay.classList.remove('short');
+        if (changeLabelEl) changeLabelEl.textContent = 'Change Due';
+        if (changeStatusBadge) {
+            changeStatusBadge.textContent = diff === 0 ? '✓ Exact Amount' : '✓ Change Ready';
+            changeStatusBadge.className = 'change-status-badge paid';
+        }
+    } else {
+        const shortAmt = Math.abs(diff);
+        changeDueDisplay.textContent = '- ₱ ' + shortAmt.toLocaleString();
+        changeDueDisplay.classList.add('short');
+        if (changeLabelEl) changeLabelEl.textContent = 'Short / Balance';
+        if (changeStatusBadge) {
+            changeStatusBadge.textContent = `Needs ₱ ${shortAmt.toLocaleString()} more`;
+            changeStatusBadge.className = 'change-status-badge insufficient';
+        }
+    }
 }
 
 function checkoutCartDeduct() {
