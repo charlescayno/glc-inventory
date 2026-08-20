@@ -1245,6 +1245,104 @@ function clearHistory() {
     }
 }
 
+function parseHistoryEntry(rawItem) {
+    const item = { ...rawItem };
+    let type = item.type || 'adjust';
+    let title = item.title;
+    let itemDesc = item.itemDesc;
+    let qty = item.qty;
+    let fromLoc = item.fromLoc;
+    let toLoc = item.toLoc;
+    let fromLocKey = item.fromLocKey;
+    let toLocKey = item.toLocKey;
+    let field = item.field;
+    let oldVal = item.oldVal;
+    let newVal = item.newVal;
+    let qtyDiff = item.qtyDiff;
+    let items = item.items;
+    let totalAmount = item.totalAmount;
+    let floor5 = item.floor5;
+    let floor7 = item.floor7;
+    let booth = item.booth;
+
+    // Detect / parse legacy transfer entries
+    if (type === 'transfer' && (!itemDesc || !fromLoc || !toLoc) && item.desc) {
+        const match = item.desc.match(/Moved\s+(\d+)x?\s+"?([^"]+?)"?\s+from\s+(.*?)\s+to\s+(.*)/i);
+        if (match) {
+            qty = qty || parseInt(match[1]);
+            itemDesc = itemDesc || match[2];
+            fromLoc = fromLoc || match[3];
+            toLoc = toLoc || match[4];
+        } else {
+            itemDesc = itemDesc || item.desc;
+        }
+    }
+
+    // Detect / parse legacy adjust entries
+    if (type === 'adjust' && (!itemDesc || field === undefined) && item.desc) {
+        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*→\s*(\d+)/i);
+        if (setMatch) {
+            itemDesc = itemDesc || setMatch[1];
+            field = field || setMatch[2];
+            oldVal = oldVal ?? parseInt(setMatch[3]);
+            newVal = newVal ?? parseInt(setMatch[4]);
+            qtyDiff = qtyDiff ?? (newVal - oldVal);
+        } else {
+            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*→\s*(\d+)\)/i);
+            if (btnMatch) {
+                qtyDiff = qtyDiff ?? parseInt(btnMatch[1]);
+                itemDesc = itemDesc || btnMatch[2];
+                field = field || btnMatch[3];
+                oldVal = oldVal ?? parseInt(btnMatch[4]);
+                newVal = newVal ?? parseInt(btnMatch[5]);
+            } else {
+                itemDesc = itemDesc || item.desc;
+            }
+        }
+    }
+
+    // Detect / parse legacy quickedit
+    if (type === 'quickedit' && (!itemDesc) && item.desc) {
+        const qeMatch = item.desc.match(/Updated\s+"?([^"]+?)"?\s+\(5th:\s*(\d+),\s*7th:\s*(\d+),\s*Booth:\s*(\d+)\)/i);
+        if (qeMatch) {
+            itemDesc = itemDesc || qeMatch[1];
+            floor5 = floor5 ?? parseInt(qeMatch[2]);
+            floor7 = floor7 ?? parseInt(qeMatch[3]);
+            booth = booth ?? parseInt(qeMatch[4]);
+        }
+    }
+
+    // Detect / parse legacy sale
+    if (type === 'sale' && (!items || totalAmount === undefined) && item.desc) {
+        const saleMatch = item.desc.match(/Deducted:\s*(.*?)\s*\|\s*Total:\s*₱?([\d,]+)/i);
+        if (saleMatch) {
+            items = items || saleMatch[1].split(',').map(s => s.trim());
+            totalAmount = totalAmount ?? parseInt(saleMatch[2].replace(/,/g, ''));
+        }
+    }
+
+    return {
+        ...item,
+        type,
+        title: title || (type === 'transfer' ? 'Stock Transfer' : type === 'sale' ? 'Booth Sale' : type === 'quickedit' ? 'Quick Edit' : 'Stock Adjustment'),
+        itemDesc: itemDesc || item.desc || 'Resource Item',
+        qty: qty || 1,
+        fromLoc: fromLoc || '5th Floor',
+        toLoc: toLoc || 'GLC Booth',
+        fromLocKey,
+        toLocKey,
+        field: field || 'Stock',
+        oldVal,
+        newVal,
+        qtyDiff,
+        items,
+        totalAmount: totalAmount || 0,
+        floor5,
+        floor7,
+        booth
+    };
+}
+
 function renderHistoryModal() {
     historyListContainer.innerHTML = '';
     if (historyData.length === 0) {
@@ -1255,7 +1353,8 @@ function renderHistoryModal() {
     historyListContainer.classList.remove('hidden');
     historyEmpty.classList.add('hidden');
 
-    historyData.forEach(item => {
+    historyData.forEach(rawItem => {
+        const item = parseHistoryEntry(rawItem);
         const date = new Date(item.timestamp);
         const timeFormatted = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' +
             date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1281,12 +1380,12 @@ function renderHistoryModal() {
                             <span class="history-time">${timeFormatted}</span>
                         </div>
                     </div>
-                    <div class="history-item-desc">${item.itemDesc || ''}</div>
+                    <div class="history-item-desc">${item.itemDesc}</div>
                     <div class="history-route">
                         <span class="history-qty-pill">${qty} ${qty === 1 ? 'unit' : 'units'}</span>
-                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.fromLoc || ''}</span>
+                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.fromLoc}</span>
                         <i class="ri-arrow-right-line history-arrow-icon"></i>
-                        <span class="history-loc-badge dest"><i class="ri-map-pin-fill"></i> ${item.toLoc || ''}</span>
+                        <span class="history-loc-badge dest"><i class="ri-map-pin-fill"></i> ${item.toLoc}</span>
                     </div>
                 </div>
             `;
@@ -1302,10 +1401,10 @@ function renderHistoryModal() {
                         <span class="history-title">${item.title || 'Stock Adjustment'}</span>
                         <span class="history-time">${timeFormatted}</span>
                     </div>
-                    <div class="history-item-desc">${item.itemDesc || ''}</div>
+                    <div class="history-item-desc">${item.itemDesc}</div>
                     <div class="history-route">
                         ${diffText ? `<span class="history-qty-pill ${isPos ? 'pos' : 'neg'}">${diffText}</span>` : ''}
-                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field || ''}</span>
+                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field}</span>
                         ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} → <strong>${item.newVal}</strong>)</span>` : ''}
                     </div>
                 </div>
@@ -1320,7 +1419,7 @@ function renderHistoryModal() {
                         <span class="history-title">${item.title || 'Quick Edit'}</span>
                         <span class="history-time">${timeFormatted}</span>
                     </div>
-                    <div class="history-item-desc">${item.itemDesc || ''}</div>
+                    <div class="history-item-desc">${item.itemDesc}</div>
                     <div class="history-route">
                         <span class="history-loc-badge">5th Floor: <strong>${item.floor5 ?? 0}</strong></span>
                         <span class="history-loc-badge">7th Floor: <strong>${item.floor7 ?? 0}</strong></span>
@@ -1378,7 +1477,8 @@ function undoTransfer(historyId) {
     const historyIndex = historyData.findIndex(h => h.id == historyId);
     if (historyIndex === -1) return;
 
-    const entry = historyData[historyIndex];
+    const rawEntry = historyData[historyIndex];
+    const entry = parseHistoryEntry(rawEntry);
     if (entry.type !== 'transfer' || entry.isUndone) return;
 
     // Find inventory item
