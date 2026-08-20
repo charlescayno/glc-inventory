@@ -48,6 +48,7 @@ const initialData = [
 // State
 let inventoryData = [];
 let currentCategory = 'All';
+let isPricelistMode = false;
 const STORAGE_KEY = 'resource_inventory_data';
 
 // DOM Elements
@@ -315,10 +316,10 @@ function renderTable(searchTerm = '') {
     let filteredData = inventoryData.filter(item => {
         const matchesSearch = item.desc.toLowerCase().includes(term);
         let matchesCategory = false;
-        if (currentCategory === 'Pricelist') {
-            matchesCategory = item.price > 0;
+        if (isPricelistMode) {
+            matchesCategory = (currentCategory === 'All' || item.category === currentCategory) && (item.price > 0);
         } else {
-            matchesCategory = currentCategory === 'All' || item.category === currentCategory;
+            matchesCategory = (currentCategory === 'All' || item.category === currentCategory);
         }
         return matchesSearch && matchesCategory;
     });
@@ -957,20 +958,32 @@ function setupEventListeners() {
     document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            currentCategory = e.target.getAttribute('data-category');
-            
-            if (currentCategory === 'Pricelist') {
-                document.getElementById('inventoryTable').classList.add('viewing-pricelist');
-                document.getElementById('locationFilter').disabled = true;
-            } else {
-                document.getElementById('inventoryTable').classList.remove('viewing-pricelist');
-                document.getElementById('locationFilter').disabled = false;
-            }
-            
+            e.currentTarget.classList.add('active');
+            currentCategory = e.currentTarget.getAttribute('data-category');
             renderTable(searchInput.value);
         });
     });
+
+    // --- Pricelist View Mode Toggle ---
+    const pricelistToggleBtn = document.getElementById('pricelistToggleBtn');
+    if (pricelistToggleBtn) {
+        pricelistToggleBtn.addEventListener('click', () => {
+            isPricelistMode = !isPricelistMode;
+            if (isPricelistMode) {
+                pricelistToggleBtn.classList.add('active');
+                pricelistToggleBtn.innerHTML = `<i class="ri-checkbox-circle-fill"></i> <span>Pricelist Active</span>`;
+                document.getElementById('inventoryTable').classList.add('viewing-pricelist');
+                document.getElementById('locationFilter').disabled = true;
+            } else {
+                pricelistToggleBtn.classList.remove('active');
+                pricelistToggleBtn.innerHTML = `<i class="ri-money-dollar-circle-line"></i> <span>₱ Pricelist Mode</span>`;
+                document.getElementById('inventoryTable').classList.remove('viewing-pricelist');
+                document.getElementById('locationFilter').disabled = false;
+            }
+            updateCartUI();
+            renderTable(searchInput.value);
+        });
+    }
 
     // --- Quick Edit Setup ---
     fabQuickEdit.addEventListener('click', () => {
@@ -1704,8 +1717,8 @@ function updateCartUI() {
     cartCountEl.textContent = totalItems;
     cartBarTotalEl.textContent = '₱ ' + totalBill.toLocaleString();
 
-    // Show floating cart bar only if Pricelist category is active AND totalItems > 0
-    if (currentCategory === 'Pricelist' && totalItems > 0) {
+    // Show floating cart bar only if Pricelist mode is active AND totalItems > 0
+    if (isPricelistMode && totalItems > 0) {
         pricelistCartBar.classList.remove('hidden');
     } else {
         pricelistCartBar.classList.add('hidden');
