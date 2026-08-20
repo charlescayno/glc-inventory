@@ -2052,10 +2052,19 @@ function checkoutCartDeduct() {
     let receiptItems = [];
     let totalBill = 0;
 
+
     const locSelect = document.getElementById('checkoutLocationSelect');
-    const checkoutLoc = locSelect ? locSelect.value : 'booth';
+    let checkoutLoc = locSelect ? locSelect.value : 'booth';
+    let locName = '';
     const locNames = {'floor5': '5th Floor', 'floor7': '7th Floor', 'booth': 'GLC Booth'};
-    const locName = locNames[checkoutLoc] || 'GLC Booth';
+    
+    if (isCashierMode) {
+        checkoutLoc = 'booth';
+        locName = 'GLC Booth';
+    } else {
+        locName = locNames[checkoutLoc] || 'GLC Booth';
+    }
+
 
     activeEntries.forEach(([idStr, qty]) => {
         const id = parseInt(idStr);
