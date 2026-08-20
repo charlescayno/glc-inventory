@@ -996,25 +996,42 @@ function setupEventListeners() {
         });
     });
 
-    // --- Pricelist View Mode Toggle ---
-    const pricelistToggleBtn = document.getElementById('pricelistToggleBtn');
-    if (pricelistToggleBtn) {
-        pricelistToggleBtn.addEventListener('click', () => {
-            isPricelistMode = !isPricelistMode;
-            if (isPricelistMode) {
-                pricelistToggleBtn.classList.add('active');
-                pricelistToggleBtn.innerHTML = `<i class="ri-checkbox-circle-fill"></i> <span>Pricelist Active</span>`;
-                document.getElementById('inventoryTable').classList.add('viewing-pricelist');
-                document.getElementById('locationFilter').disabled = true;
+    // --- View Mode Toggle Setup (Inventory Mode <-> Pricelist Mode) ---
+    function setViewMode(mode) {
+        const isPricelist = mode === 'pricelist';
+        isPricelistMode = isPricelist;
+
+        const invBtn = document.getElementById('viewInventoryBtn');
+        const priceBtn = document.getElementById('viewPricelistBtn');
+        const table = document.getElementById('inventoryTable');
+        const locationFilter = document.getElementById('locationFilter');
+        
+        if (invBtn && priceBtn) {
+            if (isPricelist) {
+                invBtn.classList.remove('active');
+                priceBtn.classList.add('active');
+                if (table) table.classList.add('viewing-pricelist');
+                if (locationFilter) locationFilter.disabled = true;
             } else {
-                pricelistToggleBtn.classList.remove('active');
-                pricelistToggleBtn.innerHTML = `<i class="ri-money-dollar-circle-line"></i> <span>₱ Pricelist Mode</span>`;
-                document.getElementById('inventoryTable').classList.remove('viewing-pricelist');
-                document.getElementById('locationFilter').disabled = false;
+                invBtn.classList.add('active');
+                priceBtn.classList.remove('active');
+                if (table) table.classList.remove('viewing-pricelist');
+                if (locationFilter) locationFilter.disabled = false;
             }
-            updateCartUI();
-            renderTable(searchInput.value);
-        });
+        }
+
+        updateCartUI();
+        renderTable(searchInput.value);
+    }
+
+    const viewInventoryBtn = document.getElementById('viewInventoryBtn');
+    const viewPricelistBtn = document.getElementById('viewPricelistBtn');
+
+    if (viewInventoryBtn) {
+        viewInventoryBtn.addEventListener('click', () => setViewMode('inventory'));
+    }
+    if (viewPricelistBtn) {
+        viewPricelistBtn.addEventListener('click', () => setViewMode('pricelist'));
     }
 
     // --- Quick Edit Setup ---

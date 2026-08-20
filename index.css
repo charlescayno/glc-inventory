@@ -237,36 +237,47 @@ h1 {
     display: flex;
     align-items: center;
 }
-.pricelist-mode-toggle {
+.view-mode-segmented-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.15rem;
+    background-color: var(--color-bg-surface);
+    border: 1.5px solid var(--color-border);
+    border-radius: 24px;
+    padding: 3px;
+    box-shadow: var(--shadow-sm);
+    gap: 3px;
+}
+.mode-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 1rem;
     border-radius: 20px;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
     font-family: inherit;
-    border: 1.5px solid var(--color-border);
-    background-color: var(--color-bg-surface);
-    color: var(--color-text-main);
+    border: none;
+    background: transparent;
+    color: var(--color-text-muted);
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.2s ease;
-    box-shadow: var(--shadow-sm);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.pricelist-mode-toggle:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-    background-color: rgba(0, 158, 226, 0.08);
+.mode-toggle-btn:hover {
+    color: var(--color-text-main);
 }
-.pricelist-mode-toggle.active {
+.mode-toggle-btn.active[data-mode="inventory"] {
+    background-color: var(--color-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 158, 226, 0.35);
+}
+.mode-toggle-btn.active[data-mode="pricelist"] {
     background-color: #059669;
     color: #ffffff;
-    border-color: #059669;
-    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
 }
-.pricelist-mode-toggle i {
-    font-size: 1.15rem;
+.mode-toggle-btn i {
+    font-size: 1.05rem;
 }
 
 /* --- Buttons --- */
