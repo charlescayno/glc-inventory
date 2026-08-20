@@ -143,7 +143,24 @@ const cartBarTotalEl = document.getElementById('cartBarTotal');
 const clearCartQuickBtn = document.getElementById('clearCartQuickBtn');
 const openCartModalBtn = document.getElementById('openCartModalBtn');
 
-const cartModal = document.getElementById('cartModal');
+const cartModal = document.getElementById(\'cartModal\');
+
+const receiptModal = document.getElementById('receiptModal');
+const receiptPaper = document.getElementById('receiptPaper');
+const printReceiptBtn = document.getElementById('printReceiptBtn');
+const closeReceiptModalBtn = document.getElementById('closeReceiptModalBtn');
+const doneReceiptBtn = document.getElementById('doneReceiptBtn');
+
+const RECEIPTS_STORAGE_KEY = 'glc_receipts_data';
+let receiptsData = [];
+try {
+    const saved = localStorage.getItem(RECEIPTS_STORAGE_KEY);
+    receiptsData = saved ? JSON.parse(saved) : [];
+} catch(e) { receiptsData = []; }
+function saveReceipts() {
+    localStorage.setItem(RECEIPTS_STORAGE_KEY, JSON.stringify(receiptsData));
+}
+
 const closeCartModalBtn = document.getElementById('closeCartModalBtn');
 const closeCartBtn = document.getElementById('closeCartBtn');
 const clearCartModalBtn = document.getElementById('clearCartModalBtn');
@@ -1293,7 +1310,12 @@ function setupEventListeners() {
         });
     });
 
-    checkoutDeductBtn.addEventListener('click', checkoutCartDeduct);
+    checkoutDeductBtn.addEventListener(\'click\', checkoutCartDeduct);
+
+    if(closeReceiptModalBtn) closeReceiptModalBtn.addEventListener('click', () => { receiptModal.classList.add('hidden'); document.body.classList.remove('modal-open'); });
+    if(doneReceiptBtn) doneReceiptBtn.addEventListener('click', () => { receiptModal.classList.add('hidden'); document.body.classList.remove('modal-open'); });
+    if(printReceiptBtn) printReceiptBtn.addEventListener('click', () => { window.print(); });
+
 
     const checkoutLocationSelect = document.getElementById('checkoutLocationSelect');
     if (checkoutLocationSelect) {
@@ -2027,10 +2049,13 @@ function checkoutCartDeduct() {
     if (activeEntries.length === 0) return;
 
     let itemsSummary = [];
+    let receiptItems = [];
     let totalBill = 0;
 
     const locSelect = document.getElementById('checkoutLocationSelect');
     const checkoutLoc = locSelect ? locSelect.value : 'booth';
+    const locNames = {'floor5': '5th Floor', 'floor7': '7th Floor', 'booth': 'GLC Booth'};
+    const locName = locNames[checkoutLoc] || 'GLC Booth';
 
     activeEntries.forEach(([idStr, qty]) => {
         const id = parseInt(idStr);
@@ -2039,25 +2064,96 @@ function checkoutCartDeduct() {
             const item = inventoryData[itemIndex];
             const currentStock = item[checkoutLoc] || 0;
             inventoryData[itemIndex][checkoutLoc] = Math.max(0, currentStock - qty);
-            totalBill += qty * (item.price || 0);
+            
+            const itemSubtotal = qty * (item.price || 0);
+            totalBill += itemSubtotal;
             itemsSummary.push(`${qty}x ${item.desc}`);
+            receiptItems.push({ desc: item.desc, qty: qty, subtotal: itemSubtotal });
         }
     });
+
+    const cashInputVal = document.getElementById('cashReceivedInput').value;
+    const cashReceived = parseFloat(cashInputVal) || 0;
+    const changeDue = Math.max(0, cashReceived - totalBill);
 
     saveData();
     logActivity({
         type: 'sale',
-        title: 'Booth Sale Completed',
+        title: `${locName} Sale Completed`,
         items: itemsSummary,
         totalAmount: totalBill,
         totalQty: itemsSummary.length
     });
+
+    // Generate receipt
+    const receiptObj = {
+        id: 'TXN-' + Math.floor(Date.now() / 1000),
+        date: new Date().toISOString(),
+        location: locName,
+        items: receiptItems,
+        total: totalBill,
+        cash: cashReceived,
+        change: changeDue
+    };
+    receiptsData.push(receiptObj);
+    saveReceipts();
+
     clearCart();
     cartModal.classList.add('hidden');
-        document.body.classList.remove('modal-open');
+    document.body.classList.remove('modal-open');
     renderTable(searchInput.value);
-    alert('Sale finalized! Quantities have been deducted from GLC Booth stock.');
+    
+    showReceiptModal(receiptObj);
 }
+
+function showReceiptModal(receipt) {
+    let d = new Date(receipt.date);
+    let html = `
+        <h3>GLC Inventory</h3>
+        <p>Location: ${receipt.location}</p>
+        <p>Date: ${d.toLocaleString()}</p>
+        <p>TXN: ${receipt.id}</p>
+        <div class="receipt-divider"></div>
+    `;
+    
+    receipt.items.forEach(item => {
+        html += `
+            <div class="receipt-item">
+                <div class="receipt-item-name">
+                    <span class="receipt-item-qty">${item.qty}x</span>${item.desc}
+                </div>
+                <div>₱${item.subtotal.toLocaleString()}</div>
+            </div>
+        `;
+    });
+    
+    html += `
+        <div class="receipt-divider"></div>
+        <div class="receipt-totals">
+            <div class="receipt-total-row">
+                <span>TOTAL DUE</span>
+                <span>₱${receipt.total.toLocaleString()}</span>
+            </div>
+            <div class="receipt-total-row sub">
+                <span>CASH</span>
+                <span>₱${receipt.cash.toLocaleString()}</span>
+            </div>
+            <div class="receipt-total-row sub">
+                <span>CHANGE</span>
+                <span>₱${receipt.change.toLocaleString()}</span>
+            </div>
+        </div>
+        <div class="receipt-divider"></div>
+        <p>Thank you for your purchase!</p>
+    `;
+    
+    if (receiptPaper) receiptPaper.innerHTML = html;
+    if (receiptModal) {
+        receiptModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+    }
+}
+
 
 // ==========================================
 // Progressive Web App (PWA) Registration
