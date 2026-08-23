@@ -1,4 +1,4 @@
-// Initial Data Extracted from Image
+﻿// Initial Data Extracted from Image
 const initialData = [
     { id: 1, category: "GLC 1 Books (English)", desc: "GLC Book 1: One by One (NEW)", price: 50, floor5: 750, floor7: 55, booth: 202 },
     { id: 2, category: "GLC 1 Books (English)", desc: "GLC Book 1: One by One (OLD)", price: 50, floor5: 34, floor7: 0, booth: 0 },
@@ -321,7 +321,7 @@ function updateSummaries() {
     totalTypesEl.textContent = inventoryData.length;
     grandTotalEl.textContent = grandTotal.toLocaleString();
     if (totalValuationEl) {
-        totalValuationEl.textContent = '₱ ' + totalValuation.toLocaleString();
+        totalValuationEl.textContent = 'â‚± ' + totalValuation.toLocaleString();
     }
 }
 
@@ -411,7 +411,7 @@ function renderTable(searchTerm = '') {
         const cartControlsHtml = item.price > 0 ? `
             <div class="cashier-cell-content">
                 <span class="price-value">
-                    ₱ ${item.price}
+                    â‚± ${item.price}
                 </span>
                 <div class="qty-control cart-qty-control">
                     <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
@@ -1310,6 +1310,8 @@ function setupEventListeners() {
         });
     });
 
+    const checkoutComplimentaryBtn = document.getElementById('checkoutComplimentaryBtn');
+    if(checkoutComplimentaryBtn) checkoutComplimentaryBtn.addEventListener('click', checkoutComplimentary);
     checkoutDeductBtn.addEventListener('click', checkoutCartDeduct);
 
     if(closeReceiptModalBtn) closeReceiptModalBtn.addEventListener('click', () => { receiptModal.classList.add('hidden'); document.body.classList.remove('modal-open'); });
@@ -1423,7 +1425,7 @@ function parseHistoryEntry(rawItem) {
 
     // Detect / parse legacy adjust entries
     if (type === 'adjust' && (!itemDesc || field === undefined) && item.desc) {
-        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*→\s*(\d+)/i);
+        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*â†’\s*(\d+)/i);
         if (setMatch) {
             itemDesc = itemDesc || setMatch[1];
             field = field || setMatch[2];
@@ -1431,7 +1433,7 @@ function parseHistoryEntry(rawItem) {
             newVal = newVal ?? parseInt(setMatch[4]);
             qtyDiff = qtyDiff ?? (newVal - oldVal);
         } else {
-            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*→\s*(\d+)\)/i);
+            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*â†’\s*(\d+)\)/i);
             if (btnMatch) {
                 qtyDiff = qtyDiff ?? parseInt(btnMatch[1]);
                 itemDesc = itemDesc || btnMatch[2];
@@ -1457,7 +1459,7 @@ function parseHistoryEntry(rawItem) {
 
     // Detect / parse legacy sale
     if (type === 'sale' && (!items || totalAmount === undefined) && item.desc) {
-        const saleMatch = item.desc.match(/Deducted:\s*(.*?)\s*\|\s*Total:\s*₱?([\d,]+)/i);
+        const saleMatch = item.desc.match(/Deducted:\s*(.*?)\s*\|\s*Total:\s*â‚±?([\d,]+)/i);
         if (saleMatch) {
             items = items || saleMatch[1].split(',').map(s => s.trim());
             totalAmount = totalAmount ?? parseInt(saleMatch[2].replace(/,/g, ''));
@@ -1548,7 +1550,7 @@ function renderHistoryModal() {
                     <div class="history-route">
                         ${diffText ? `<span class="history-qty-pill ${isPos ? 'pos' : 'neg'}">${diffText}</span>` : ''}
                         <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field}</span>
-                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} → <strong>${item.newVal}</strong>)</span>` : ''}
+                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} â†’ <strong>${item.newVal}</strong>)</span>` : ''}
                     </div>
                 </div>
             `;
@@ -1582,7 +1584,7 @@ function renderHistoryModal() {
                         <span class="history-time">${timeFormatted}</span>
                     </div>
                     <div class="history-route" style="margin-bottom: 0.35rem;">
-                        <span class="history-qty-pill sale">₱ ${(item.totalAmount || 0).toLocaleString()}</span>
+                        <span class="history-qty-pill sale">â‚± ${(item.totalAmount || 0).toLocaleString()}</span>
                         <span class="history-loc-badge dest"><i class="ri-store-2-line"></i> GLC Booth</span>
                     </div>
                     <div class="history-sale-items">${saleItems}</div>
@@ -1873,7 +1875,7 @@ function updateCartUI() {
     });
 
     cartCountEl.textContent = totalItems;
-    cartBarTotalEl.textContent = '₱ ' + totalBill.toLocaleString();
+    cartBarTotalEl.textContent = 'â‚± ' + totalBill.toLocaleString();
 
     // Show floating cart bar only if Cashier mode is active AND totalItems > 0
     if (isCashierMode && totalItems > 0) {
@@ -1900,7 +1902,7 @@ function renderCartModal() {
 
     if (activeEntries.length === 0) {
         cartItemsContainer.innerHTML = '<div class="no-results" style="padding: 1.5rem;"><i class="ri-shopping-cart-line" style="font-size: 2rem;"></i><p>Your order is empty. Add items from the cashier.</p></div>';
-        cartGrandTotalEl.textContent = '₱ 0';
+        cartGrandTotalEl.textContent = 'â‚± 0';
         checkoutDeductBtn.disabled = true;
         updateChangeDue();
         return;
@@ -1930,19 +1932,19 @@ function renderCartModal() {
         row.innerHTML = `
             <div class="cart-item-name">
                 <div class="cart-item-title">${item.desc}</div>
-                <div class="cart-item-unit-price">₱ ${item.price} each (${locName} stock: ${item[checkoutLoc] || 0})</div>
+                <div class="cart-item-unit-price">â‚± ${item.price} each (${locName} stock: ${item[checkoutLoc] || 0})</div>
             </div>
             <div class="cart-stepper">
                 <button class="cart-step-btn" data-modal-cart-action="dec" data-id="${item.id}">-</button>
                 <input type="number" class="qty-input cart-modal-qty-input" data-id="${item.id}" value="${qty}" min="0" inputmode="numeric">
                 <button class="cart-step-btn" data-modal-cart-action="inc" data-id="${item.id}">+</button>
             </div>
-            <div class="cart-item-subtotal">₱ ${subtotal.toLocaleString()}</div>
+            <div class="cart-item-subtotal">â‚± ${subtotal.toLocaleString()}</div>
         `;
         cartItemsContainer.appendChild(row);
     });
 
-    cartGrandTotalEl.textContent = '₱ ' + grandTotal.toLocaleString();
+    cartGrandTotalEl.textContent = 'â‚± ' + grandTotal.toLocaleString();
     updateChangeDue();
 
     // Attach step listeners inside modal
@@ -1986,7 +1988,7 @@ function renderCartModal() {
                 const cItem = inventoryData.find(i => i.id === parseInt(cId));
                 if (cItem && cQty > 0) modalTotal += cQty * (cItem.price || 0);
             });
-            cartGrandTotalEl.textContent = '₱ ' + modalTotal.toLocaleString();
+            cartGrandTotalEl.textContent = 'â‚± ' + modalTotal.toLocaleString();
             updateChangeDue();
         });
         input.addEventListener('focus', function() { this.select(); });
@@ -2011,7 +2013,7 @@ function updateChangeDue() {
     const changeStatusBadge = document.getElementById('changeStatusBadge');
 
     if (cashInputVal === '') {
-        changeDueDisplay.textContent = '₱ 0';
+        changeDueDisplay.textContent = 'â‚± 0';
         changeDueDisplay.classList.remove('short');
         if (changeLabelEl) changeLabelEl.textContent = 'Change Due';
         if (changeStatusBadge) {
@@ -2025,23 +2027,94 @@ function updateChangeDue() {
     const diff = cashReceived - grandTotal;
 
     if (diff >= 0) {
-        changeDueDisplay.textContent = '₱ ' + diff.toLocaleString();
+        changeDueDisplay.textContent = 'â‚± ' + diff.toLocaleString();
         changeDueDisplay.classList.remove('short');
         if (changeLabelEl) changeLabelEl.textContent = 'Change Due';
         if (changeStatusBadge) {
-            changeStatusBadge.textContent = diff === 0 ? '✓ Exact Amount' : '✓ Change Ready';
+            changeStatusBadge.textContent = diff === 0 ? 'âœ“ Exact Amount' : 'âœ“ Change Ready';
             changeStatusBadge.className = 'change-status-pill paid';
         }
     } else {
         const shortAmt = Math.abs(diff);
-        changeDueDisplay.textContent = '- ₱ ' + shortAmt.toLocaleString();
+        changeDueDisplay.textContent = '- â‚± ' + shortAmt.toLocaleString();
         changeDueDisplay.classList.add('short');
         if (changeLabelEl) changeLabelEl.textContent = 'Short / Balance';
         if (changeStatusBadge) {
-            changeStatusBadge.textContent = `Needs ₱ ${shortAmt.toLocaleString()} more`;
+            changeStatusBadge.textContent = `Needs â‚± ${shortAmt.toLocaleString()} more`;
             changeStatusBadge.className = 'change-status-pill insufficient';
         }
     }
+}
+
+
+function checkoutComplimentary() {
+    const activeEntries = Object.entries(cartState).filter(([_, qty]) => qty > 0);
+    if (activeEntries.length === 0) return;
+
+    let itemsSummary = [];
+    let receiptItems = [];
+    let originalBill = 0;
+
+    const locSelect = document.getElementById('checkoutLocationSelect');
+    let checkoutLoc = locSelect ? locSelect.value : 'booth';
+    let locName = '';
+    const locNames = {'floor5': '5th Floor', 'floor7': '7th Floor', 'booth': 'GLC Booth'};
+    
+    if (isCashierMode) {
+        checkoutLoc = 'booth';
+        locName = 'GLC Booth';
+    } else {
+        locName = locNames[checkoutLoc] || 'GLC Booth';
+    }
+
+    activeEntries.forEach(([idStr, qty]) => {
+        const id = parseInt(idStr);
+        const itemIndex = inventoryData.findIndex(i => i.id === id);
+        if (itemIndex !== -1) {
+            const item = inventoryData[itemIndex];
+            const currentStock = item[checkoutLoc] || 0;
+            inventoryData[itemIndex][checkoutLoc] = Math.max(0, currentStock - qty);
+            
+            const itemSubtotal = qty * (item.price || 0);
+            originalBill += itemSubtotal;
+            itemsSummary.push(`x `);
+            receiptItems.push({ desc: item.desc, qty: qty, subtotal: 0 }); // Free on receipt
+        }
+    });
+
+    saveData();
+    logActivity({
+        type: 'sale',
+        title: ${locName} Sale Completed (COMPLIMENTARY),
+        items: itemsSummary,
+        totalAmount: 0,
+        totalQty: itemsSummary.length
+    });
+
+    // Generate receipt
+    const receiptObj = {
+        id: 'TXN-' + Math.floor(Date.now() / 1000) + '-COMP',
+        date: new Date().toISOString(),
+        location: locName,
+        items: receiptItems,
+        total: 0,
+        cash: 0,
+        change: 0,
+        isComplimentary: true
+    };
+    receiptsData.push(receiptObj);
+    localStorage.setItem('glcReceipts', JSON.stringify(receiptsData));
+
+    cartState = {};
+    if (cashReceivedInput) cashReceivedInput.value = '';
+    updateCartUI();
+    renderTable(searchInput.value);
+    cartModal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    showNotification('Complimentary checkout successful!', 'success');
+    renderHistory();
+    renderReceiptsList();
+    showReceiptModal(receiptObj);
 }
 
 function checkoutCartDeduct() {
@@ -2131,7 +2204,7 @@ function showReceiptModal(receipt) {
                 <div class="receipt-item-name">
                     <span class="receipt-item-qty">${item.qty}x</span>${item.desc}
                 </div>
-                <div>₱${item.subtotal.toLocaleString()}</div>
+                <div>â‚±${item.subtotal.toLocaleString()}</div>
             </div>
         `;
     });
@@ -2141,15 +2214,15 @@ function showReceiptModal(receipt) {
         <div class="receipt-totals">
             <div class="receipt-total-row">
                 <span>TOTAL DUE</span>
-                <span>₱${receipt.total.toLocaleString()}</span>
+                <span>â‚±${receipt.total.toLocaleString()}</span>
             </div>
             <div class="receipt-total-row sub">
                 <span>CASH</span>
-                <span>₱${receipt.cash.toLocaleString()}</span>
+                <span>â‚±${receipt.cash.toLocaleString()}</span>
             </div>
             <div class="receipt-total-row sub">
                 <span>CHANGE</span>
-                <span>₱${receipt.change.toLocaleString()}</span>
+                <span>â‚±${receipt.change.toLocaleString()}</span>
             </div>
         </div>
         <div class="receipt-divider"></div>
