@@ -4,6 +4,8 @@
     --color-primary: #009ee2;
     --color-primary-hover: #1d60a4;
     --color-danger: #ef4444;
+    --color-warning: #f59e0b;
+    --color-success: #10b981;
     --color-danger-hover: #dc2626;
     
     --color-bg-app: #fafafa;
@@ -1698,9 +1700,10 @@ table.viewing-cashier .col-price {
     }
     .cart-footer-actions {
         width: 100%;
+        gap: 0.25rem;
         order: 1;
         display: grid;
-        grid-template-columns: 1fr 2fr;
+        grid-template-columns: 1fr 1.5fr 2fr;
     }
 }
 
