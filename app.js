@@ -1,4 +1,4 @@
-﻿// Initial Data Extracted from Image
+// Initial Data Extracted from Image
 const initialData = [
     { id: 1, category: "GLC 1 Books (English)", desc: "GLC Book 1: One by One (NEW)", price: 50, floor5: 750, floor7: 55, booth: 202 },
     { id: 2, category: "GLC 1 Books (English)", desc: "GLC Book 1: One by One (OLD)", price: 50, floor5: 34, floor7: 0, booth: 0 },
@@ -2085,7 +2085,7 @@ function checkoutComplimentary() {
     saveData();
     logActivity({
         type: 'sale',
-        title: ${locName} Sale Completed (COMPLIMENTARY),
+        title: `${locName} Sale Completed (COMPLIMENTARY)`,
         items: itemsSummary,
         totalAmount: 0,
         totalQty: itemsSummary.length
