@@ -1621,6 +1621,7 @@ table.viewing-cashier .col-price {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.75rem;
     background-color: var(--color-bg-surface);
 }
@@ -1631,6 +1632,7 @@ table.viewing-cashier .col-price {
     gap: 0.5rem;
     flex: 1;
     justify-content: flex-end;
+    flex-wrap: wrap;
 }
 
 .btn-checkout-finalize {
