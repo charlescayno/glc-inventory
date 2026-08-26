@@ -1103,7 +1103,7 @@ function renderTable(searchTerm = '') {
 
                 </span>
 
-            </td>
+            </div></td>>
 
             <td class="col-price hidden-column" data-label="Price">
 
