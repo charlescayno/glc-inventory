@@ -1072,9 +1072,7 @@ function renderTable(searchTerm = '') {
 
         if (isLocked) tr.classList.add('locked-row');
 
-        tr.innerHTML = `
-
-                    // Auto-assign images for GLC Books if missing
+        // Auto-assign images for GLC Books if missing
         let imgUrl = item.image;
         if (!imgUrl) {
             if (item.desc.includes('Book 1:')) imgUrl = 'https://glc.ccf.org.ph/wp-content/uploads/2020/2026/Book-1.png';
@@ -1086,7 +1084,8 @@ function renderTable(searchTerm = '') {
             else imgUrl = 'https://glc.ccf.org.ph/wp-content/uploads/2020/08/GLC-LOGO-01-1-150x150.png'; // Fallback generic logo
         }
 
-<td data-label="Description">
+        tr.innerHTML = `
+            <td data-label="Description">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <img src="${imgUrl}" alt="Cover" style="width: 32px; height: 42px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; background: #fff;" onerror="this.src='https://glc.ccf.org.ph/wp-content/uploads/2020/08/GLC-LOGO-01-1-150x150.png'" />
                     <span class="desc-text" style="line-height: 1.2;">
