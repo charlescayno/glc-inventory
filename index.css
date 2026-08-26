@@ -1820,3 +1820,13 @@ body.modal-open { overflow: hidden; }
         display: none;
     }
 }
+
+
+/* Low Stock Alert */
+.low-stock-row td.col-total {
+    color: var(--color-danger);
+    font-weight: 700;
+}
+.low-stock-row {
+    background-color: #fff1f2 !important;
+}

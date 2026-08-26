@@ -16,6 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-container">
@@ -64,6 +65,10 @@
                             <button id="lockAllBtn" class="btn btn-icon btn-secondary" title="Lock All">
                                 <i class="ri-lock-fill"></i>
                                 <span id="lockAllText" class="desktop-only">Lock All</span>
+                            </button>
+                                                        <button id="dashboardBtn" class="btn btn-icon btn-secondary" title="Dashboard">
+                                <i class="ri-bar-chart-box-line"></i>
+                                <span class="desktop-only">Dashboard</span>
                             </button>
                             <button id="exportBtn" class="btn btn-icon btn-secondary" title="Export Excel">
                                 <i class="ri-file-excel-2-line"></i>
@@ -341,6 +346,34 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="cancelTransferBtn">Cancel</button>
                 <button class="btn" id="confirmTransferBtn" style="background: var(--color-primary); color: white; border: none;" disabled>Transfer Stock</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Dashboard Modal -->
+    <div id="dashboardModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2><i class="ri-bar-chart-box-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Analytics Dashboard</h2>
+                <button class="close-modal" id="closeDashboardModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto; display: flex; flex-direction: column; gap: 2rem;">
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Daily Revenue</h3>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin-bottom: 1rem; color: var(--color-text-main);">Top Selling Items</h3>
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="topItemsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeDashboardBottomBtn">Close</button>
             </div>
         </div>
     </div>
