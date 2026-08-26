@@ -1,0 +1,10 @@
+<td data-label="Description">
+                <span class="desc-text">
+                    <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
+                        <i class="${lockIcon}" style="color: ${lockColor};"></i>
+                    </button>
+                    <i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}
+                    ${badgeHtml}
+                </span>
+            </td>
+            <td class="col-price

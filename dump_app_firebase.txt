@@ -1,0 +1,30 @@
+                    Γé▒ ${item.price}
+                </span>
+                <div class="qty-control cart-qty-control">
+                    <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0" inputmode="numeric">
+                    <button class="qty-btn plus cart-qty-btn" data-id="${item.id}" data-cart-action="inc" title="Add to order"><i class="ri-add-line"></i></button>
+                </div>
+            </div>
+        ` : '<span class="price-value">-</span>';
+
+        const tr = document.createElement('tr');
+        if (isLocked) tr.classList.add('locked-row');
+        tr.innerHTML = `
+            <td data-label="Description">
+                <span class="desc-text">
+                    <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
+                        <i class="${lockIcon}" style="color: ${lockColor};"></i>
+                    </button>
+                    <i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}
+                    ${badgeHtml}
+                </span>
+            </td>
+            <td class="col-price hidden-column" data-label="Price">
+                ${cartControlsHtml}
+            </td>
+            <td class="col-location" data-label="5th Floor">
+                <div class="${controlClass}">
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor5" value="${item.floor5}" min="0" ${inputDisabled}>
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-add-line"></i></button>

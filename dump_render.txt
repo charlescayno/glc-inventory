@@ -1,0 +1,164 @@
+filteredData.forEach(item => {
+
+        const total = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+
+        
+
+        let iconClass = 'ri-file-list-line'; // default
+
+        if (item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'GLC 3 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
+
+        if (item.category === 'Booklets & Workbooks') iconClass = 'ri-book-open-line';
+
+        if (item.category === 'Tracts') iconClass = 'ri-pages-line';
+
+        if (item.category === 'Materials') iconClass = 'ri-box-3-line';
+
+
+
+        const isLocked = item.isLocked || false;
+
+        const lockIcon = isLocked ? 'ri-lock-fill' : 'ri-lock-unlock-line';
+
+        const lockColor = isLocked ? 'var(--color-primary)' : 'var(--color-text-muted)';
+
+        const controlClass = isLocked ? 'qty-control locked' : 'qty-control';
+
+        const inputDisabled = isLocked ? 'disabled' : '';
+
+
+
+        // Stock Alert Badges
+
+        let badgeHtml = '';
+
+        if (total === 0) {
+
+            badgeHtml = '<span class="badge-stock badge-out-of-stock" title="Out of Stock"><i class="ri-close-circle-line"></i> Out of Stock</span>';
+
+        } else if (total < 20) {
+
+            badgeHtml = `<span class="badge-stock badge-low-stock" title="Low Stock: ${total} left"><i class="ri-alert-line"></i> Low: ${total}</span>`;
+
+        }
+
+
+
+        // Cashier Cart Controls (Segmented control with -, input, +, calculator)
+
+        const inCartQty = cartState[item.id] || 0;
+
+        const cartControlsHtml = item.price > 0 ? `
+
+            <div class="cashier-cell-content">
+
+                <span class="price-value">
+
+                    ₱ ${item.price}
+
+                </span>
+
+                <div class="qty-control cart-qty-control">
+
+                    <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
+
+                    <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0" inputmode="numeric">
+
+                    <button class="qty-btn plus cart-qty-btn" data-id="${item.id}" data-cart-action="inc" title="Add to order"><i class="ri-add-line"></i></button>
+
+                </div>
+
+            </div>
+
+        ` : '<span class="price-value">-</span>';
+
+
+
+        const tr = document.createElement('tr');
+
+        if (isLocked) tr.classList.add('locked-row');
+
+        
+        // No external images to prevent broken icons
+        tr.innerHTML = `
+            <td data-label="Description">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
+                        <i class="${lockIcon}" style="color: ${lockColor};"></i>
+                    </button>
+                    <i class="${iconClass}" style="color: var(--color-primary); font-size: 1.25rem;"></i>
+                    <span class="desc-text" style="line-height: 1.2; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span>${item.desc}</span>
+                        ${badgeHtml}
+                    </span>
+                </div>
+            </td>
+            <td class="col-price hidden-column" data-label="Price">
+
+                ${cartControlsHtml}
+
+            </td>
+
+            <td class="col-location" data-label="5th Floor">
+
+                <div class="${controlClass}">
+
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor5" value="${item.floor5}" min="0" ${inputDisabled}>
+
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-add-line"></i></button>
+
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor5" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
+
+                </div>
+
+            </td>
+
+            <td class="col-location" data-label="7th Floor">
+
+                <div class="${controlClass}">
+
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor7" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor7" value="${item.floor7}" min="0" ${inputDisabled}>
+
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor7" ${inputDisabled}><i class="ri-add-line"></i></button>
+
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor7" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
+
+                </div>
+
+            </td>
+
+            <td class="col-location" data-label="GLC Booth">
+
+                <div class="${controlClass}">
+
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="booth" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="booth" value="${item.booth}" min="0" ${inputDisabled}>
+
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="booth" ${inputDisabled}><i class="ri-add-line"></i></button>
+
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="booth" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
+
+                </div>
+
+            </td>
+
+            <td class="col-total" data-label="Total">
+
+                <span class="total-value ${total === 0 ? 'zero' : ''}" id="total-${item.id}">
+
+                    ${total.toLocaleString()}
+
+                </span>
+
+            </td>
+
+        `;
+
+        inventoryBody.appendChild(tr);
+
+    });

@@ -1,0 +1,60 @@
+let receiptsData = [];
+
+try {
+
+    const saved = localStorage.getItem(RECEIPTS_STORAGE_KEY);
+
+    receiptsData = saved ? JSON.parse(saved) : [];
+
+} catch(e) { receiptsData = []; }
+
+function saveReceipts() {
+
+    localStorage.setItem(RECEIPTS_STORAGE_KEY, JSON.stringify(receiptsData));
+
+}
+
+
+
+const closeCartModalBtn = document.getElementById('closeCartModalBtn');
+
+const closeCartBtn = document.getElementById('closeCartBtn');
+
+const clearCartModalBtn = document.getElementById('clearCartModalBtn');
+
+const cartItemsContainer = document.getElementById('cartItemsContainer');
+
+const cartGrandTotalEl = document.getElementById('cartGrandTotal');
+
+const cashReceivedInput = document.getElementById('cashReceivedInput');
+
+const changeDueDisplay = document.getElementById('changeDueDisplay');
+
+const checkoutDeductBtn = document.getElementById('checkoutDeductBtn');
+
+
+
+let cartState = {}; // { [itemId]: quantity }
+
+
+
+// Sorting State
+
+let sortColumn = 'desc';
+
+let sortDirection = 'asc'; // 'asc' or 'desc'
+
+
+
+// Initialize Application
+
+function init() {
+
+    setupFirebaseListeners();
+
+    loadHistory();
+
+    renderTable();
+
+    updateSummaries();
+

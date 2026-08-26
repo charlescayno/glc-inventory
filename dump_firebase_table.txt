@@ -1,0 +1,40 @@
+                    Γé▒ ${item.price}
+                </span>
+                <div class="qty-control cart-qty-control">
+                    <button class="qty-btn minus cart-qty-btn" data-id="${item.id}" data-cart-action="dec" title="Decrease order"><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input cart-qty-input" data-id="${item.id}" value="${inCartQty}" min="0" inputmode="numeric">
+                    <button class="qty-btn plus cart-qty-btn" data-id="${item.id}" data-cart-action="inc" title="Add to order"><i class="ri-add-line"></i></button>
+                </div>
+            </div>
+        ` : '<span class="price-value">-</span>';
+
+        const tr = document.createElement('tr');
+        if (isLocked) tr.classList.add('locked-row');
+        tr.innerHTML = `
+            <td data-label="Description">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
+                        <i class="${lockIcon}" style="color: ${lockColor};"></i>
+                    </button>
+                    <i class="${iconClass}" style="color: var(--color-primary); font-size: 1.25rem;"></i>
+                    <span class="desc-text" style="line-height: 1.2; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span>${item.desc}</span>
+                        ${badgeHtml}
+                    </span>
+                </div>
+            </td>
+            <td class="col-price hidden-column" data-label="Price">
+                ${cartControlsHtml}
+            </td>
+            <td class="col-location" data-label="5th Floor">
+                <div class="${controlClass}">
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor5" value="${item.floor5}" min="0" ${inputDisabled}>
+                    <button class="qty-btn plus" data-id="${item.id}" data-field="floor5" ${inputDisabled}><i class="ri-add-line"></i></button>
+                    <button class="qty-btn adjust" data-id="${item.id}" data-field="floor5" title="Adjust" ${inputDisabled}><i class="ri-calculator-line"></i></button>
+                </div>
+            </td>
+            <td class="col-location" data-label="7th Floor">
+                <div class="${controlClass}">
+                    <button class="qty-btn minus" data-id="${item.id}" data-field="floor7" ${inputDisabled}><i class="ri-subtract-line"></i></button>
+                    <input type="number" class="qty-input" data-id="${item.id}" data-field="floor7" value="${item.floor7}" min="0" ${inputDisabled}>

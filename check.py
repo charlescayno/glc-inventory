@@ -1,7 +1,5 @@
-with open('app.js', 'r', encoding='utf-8') as f:
-    js = f.read()
-
-import re
-matches = re.search(r'// Auto-assign images.*?</td', js, re.DOTALL)
-if matches:
-    print(matches.group(0))
+import codecs
+f = codecs.open('app_firebase.js', 'r', 'utf-8')
+lines = f.readlines()
+for i, l in enumerate(lines[525:575]):
+    print(f"{i+525}: {l.encode('ascii', 'ignore').decode('ascii').strip()}")
