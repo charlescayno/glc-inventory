@@ -1,0 +1,345 @@
+function renderHistoryModal() {
+
+    historyListContainer.innerHTML = '';
+
+    if (historyData.length === 0) {
+
+        historyListContainer.classList.add('hidden');
+
+        historyEmpty.classList.remove('hidden');
+
+        return;
+
+    }
+
+    historyListContainer.classList.remove('hidden');
+
+    historyEmpty.classList.add('hidden');
+
+
+
+    historyData.forEach(rawItem => {
+
+        const item = parseHistoryEntry(rawItem);
+
+        const date = new Date(item.timestamp);
+
+        const timeFormatted = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' +
+
+            date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+
+
+        const div = document.createElement('div');
+
+        div.className = 'history-item';
+
+
+
+        if (item.type === 'transfer') {
+
+            const qty = item.qty || 1;
+
+            const undoButtonHtml = item.isUndone
+
+                ? `<span class="history-undone-badge"><i class="ri-check-line"></i> Undone</span>`
+
+                : `<button class="btn-undo-transfer" data-history-id="${item.id}" title="Undo and revert this stock transfer"><i class="ri-arrow-go-back-line"></i> Undo</button>`;
+
+
+
+            div.innerHTML = `
+
+                <div class="history-icon-badge history-icon-transfer">
+
+                    <i class="ri-arrow-left-right-line"></i>
+
+                </div>
+
+                <div class="history-content">
+
+                    <div class="history-header">
+
+                        <span class="history-title">${item.title || 'Stock Transfer'}</span>
+
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+
+                            ${undoButtonHtml}
+
+                            <span class="history-time">${timeFormatted}</span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="history-item-desc">${item.itemDesc}</div>
+
+                    <div class="history-route">
+
+                        <span class="history-qty-pill">${qty} ${qty === 1 ? 'unit' : 'units'}</span>
+
+                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.fromLoc}</span>
+
+                        <i class="ri-arrow-right-line history-arrow-icon"></i>
+
+                        <span class="history-loc-badge dest"><i class="ri-map-pin-fill"></i> ${item.toLoc}</span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        } else if (item.type === 'adjust') {
+
+            const isPos = item.qtyDiff >= 0;
+
+            const diffText = item.qtyDiff !== undefined ? (isPos ? `+${item.qtyDiff}` : `${item.qtyDiff}`) : '';
+
+            div.innerHTML = `
+
+                <div class="history-icon-badge history-icon-adjust">
+
+                    <i class="${isPos ? 'ri-add-line' : 'ri-subtract-line'}"></i>
+
+                </div>
+
+                <div class="history-content">
+
+                    <div class="history-header">
+
+                        <span class="history-title">${item.title || 'Stock Adjustment'}</span>
+
+                        <span class="history-time">${timeFormatted}</span>
+
+                    </div>
+
+                    <div class="history-item-desc">${item.itemDesc}</div>
+
+                    <div class="history-route">
+
+                        ${diffText ? `<span class="history-qty-pill ${isPos ? 'pos' : 'neg'}">${diffText}</span>` : ''}
+
+                        <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field}</span>
+
+                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} â†’ <strong>${item.newVal}</strong>)</span>` : ''}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        } else if (item.type === 'quickedit') {
+
+            div.innerHTML = `
+
+                <div class="history-icon-badge history-icon-adjust">
+
+                    <i class="ri-edit-2-line"></i>
+
+                </div>
+
+                <div class="history-content">
+
+                    <div class="history-header">
+
+                        <span class="history-title">${item.title || 'Quick Edit'}</span>
+
+                        <span class="history-time">${timeFormatted}</span>
+
+                    </div>
+
+                    <div class="history-item-desc">${item.itemDesc}</div>
+
+                    <div class="history-route">
+
+                        <span class="history-loc-badge">5th Floor: <strong>${item.floor5 ?? 0}</strong></span>
+
+                        <span class="history-loc-badge">7th Floor: <strong>${item.floor7 ?? 0}</strong></span>
+
+                        <span class="history-loc-badge dest">GLC Booth: <strong>${item.booth ?? 0}</strong></span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        } else if (item.type === 'sale') {
+
+            const saleItems = Array.isArray(item.items) ? item.items.join(', ') : (item.desc || '');
+
+            div.innerHTML = `
+
+                <div class="history-icon-badge history-icon-sale">
+
+                    <i class="ri-shopping-cart-2-line"></i>
+
+                </div>
+
+                <div class="history-content">
+
+                    <div class="history-header">
+
+                        <span class="history-title">${item.title || 'Booth Sale'}</span>
+
+                        <span class="history-time">${timeFormatted}</span>
+
+                    </div>
+
+                    <div class="history-route" style="margin-bottom: 0.35rem;">
+
+                        <span class="history-qty-pill sale">₱ ${(item.totalAmount || 0).toLocaleString()}</span>
+
+                        <span class="history-loc-badge dest"><i class="ri-store-2-line"></i> GLC Booth</span>
+
+                    </div>
+
+                    <div class="history-sale-items">${saleItems}</div>
+
+                </div>
+
+            `;
+
+        } else {
+
+            // Legacy / Fallback entry
+
+            div.innerHTML = `
+
+                <div class="history-icon-badge history-icon-adjust">
+
+                    <i class="ri-history-line"></i>
+
+                </div>
+
+                <div class="history-content">
+
+                    <div class="history-header">
+
+                        <span class="history-title">${item.title || 'Activity'}</span>
+
+                        <span class="history-time">${timeFormatted}</span>
+
+                    </div>
+
+                    <div class="history-desc-legacy">${item.desc || ''}</div>
+
+                </div>
+
+            `;
+
+        }
+
+
+
+        // Bind Undo Transfer buttons
+
+        div.querySelectorAll('.btn-undo-transfer').forEach(btn => {
+
+            btn.addEventListener('click', (e) => {
+
+                const hid = parseFloat(e.currentTarget.getAttribute('data-history-id')) || e.currentTarget.getAttribute('data-history-id');
+
+                undoTransfer(hid);
+
+            });
+
+        });
+
+
+
+        historyListContainer.appendChild(div);
+
+    });
+
+}
+
+
+
+function undoTransfer(historyId) {
+
+    const historyIndex = historyData.findIndex(h => h.id == historyId);
+
+    if (historyIndex === -1) return;
+
+
+
+    const rawEntry = historyData[historyIndex];
+
+    const entry = parseHistoryEntry(rawEntry);
+
+    if (entry.type !== 'transfer' || entry.isUndone) return;
+
+
+
+    // Find inventory item
+
+    let itemIndex = -1;
+
+    if (entry.itemId) {
+
+        itemIndex = inventoryData.findIndex(i => i.id === entry.itemId);
+
+    }
+
+    if (itemIndex === -1 && entry.itemDesc) {
+
+        itemIndex = inventoryData.findIndex(i => i.desc.toLowerCase() === entry.itemDesc.toLowerCase());
+
+    }
+
+
+
+    if (itemIndex === -1) {
+
+        alert("Could not find the original resource item to revert.");
+
+        return;
+
+    }
+
+
+
+    const locMap = { '5th Floor': 'floor5', '7th Floor': 'floor7', 'GLC Booth': 'booth' };
+
+    const locNames = { floor5: '5th Floor', floor7: '7th Floor', booth: 'GLC Booth' };
+
+
+
+    let fromKey = entry.fromLocKey;
+
+    let toKey = entry.toLocKey;
+
+    if (!fromKey && entry.fromLoc) fromKey = locMap[entry.fromLoc];
+
+    if (!toKey && entry.toLoc) toKey = locMap[entry.toLoc];
+
+
+
+    if (!fromKey || !toKey) {
+
+        alert("Invalid location data for undo.");
+
+        return;
+
+    }
+
+
+
+    const qty = entry.qty || 1;
+
+    const destStock = inventoryData[itemIndex][toKey] || 0;
+
+
+
+    if (destStock < qty) {
+
+        if (!confirm(`Destination (${locNames[toKey] || toKey}) currently only has ${destStock} units in stock (transferred was ${qty}). Reverting will set ${locNames[toKey] || toKey} to 0 and restore ${destStock} units to ${locNames[fromKey] || fromKey}. Proceed?`)) {
+
+            return;
+
+        }
+
+    }
