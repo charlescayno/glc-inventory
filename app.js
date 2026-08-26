@@ -1080,22 +1080,13 @@ function renderTable(searchTerm = '') {
                     <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
                         <i class="${lockIcon}" style="color: ${lockColor};"></i>
                     </button>
-                    <i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem; font-size: 1.25rem;"></i>
-                    <span class="desc-text" style="line-height: 1.2;">
-<button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
-
-                        <i class="${lockIcon}" style="color: ${lockColor};"></i>
-
-                    </button>
-
-                    <i class="${iconClass}" style="color: var(--color-primary); margin-right: 0.5rem;"></i>${item.desc}
-
-                    ${badgeHtml}
-
-                </span>
-
-            </div></td>>
-
+                    <i class="${iconClass}" style="color: var(--color-primary); font-size: 1.25rem;"></i>
+                    <span class="desc-text" style="line-height: 1.2; display: flex; flex-direction: column; gap: 0.25rem;">
+                        <span>${item.desc}</span>
+                        ${badgeHtml}
+                    </span>
+                </div>
+            </td>
             <td class="col-price hidden-column" data-label="Price">
 
                 ${cartControlsHtml}
