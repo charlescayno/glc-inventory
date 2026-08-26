@@ -1087,7 +1087,7 @@ function renderTable(searchTerm = '') {
         tr.innerHTML = `
             <td data-label="Description">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <img src="${imgUrl}" alt="Cover" style="width: 32px; height: 42px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; background: #fff;" onerror="this.src='https://glc.ccf.org.ph/wp-content/uploads/2020/08/GLC-LOGO-01-1-150x150.png'" />
+                    <img src="${imgUrl}" alt="" style="width: 32px; height: 42px; object-fit: cover; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); flex-shrink: 0; background: #fff;" />
                     <span class="desc-text" style="line-height: 1.2;">
 
                     <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
