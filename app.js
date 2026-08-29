@@ -396,6 +396,27 @@ const checkoutDeductBtn = document.getElementById('checkoutDeductBtn');
 
 let cartState = {}; // { [itemId]: quantity }
 
+// Sync Status UI Helper
+function setSyncStatus(status) {
+    const syncIndicator = document.getElementById('syncStatusIndicator');
+    const syncLabel = syncIndicator ? syncIndicator.querySelector('.sync-label') : null;
+    if (!syncIndicator || !syncLabel) return;
+    
+    syncIndicator.classList.remove('status-online', 'status-syncing', 'status-offline');
+    
+    if (status === 'online') {
+        syncIndicator.classList.add('status-online');
+        syncLabel.textContent = 'Synced';
+    } else if (status === 'syncing') {
+        syncIndicator.classList.add('status-syncing');
+        syncLabel.textContent = 'Saving...';
+    } else if (status === 'offline') {
+        syncIndicator.classList.add('status-offline');
+        syncLabel.textContent = 'Offline';
+    }
+}
+
+
 
 
 // Sorting State
@@ -457,8 +478,8 @@ function setupFirebaseListeners() {
             if (data && data.length > 0) {
 
                 inventoryData = data;
-
                 console.log('Loaded inventory from Firebase');
+                setSyncStatus('online');
 
             } else {
 
@@ -509,7 +530,7 @@ function setupFirebaseListeners() {
         }
 
     }, (error) => {
-
+        setSyncStatus('offline');
         console.error('Firebase inventory listener error (likely permissions). Falling back to local data.', error);
 
         loadData();
@@ -820,7 +841,21 @@ function saveData() {
 
     updateSummaries();
 
-    setDoc(doc(db, "inventory", "main"), { data: inventoryData }).catch(e => console.error("Error saving inventory to Firebase", e));
+
+
+    setSyncStatus('syncing');
+
+    setDoc(doc(db, "inventory", "main"), { data: inventoryData })
+
+        .then(() => setSyncStatus('online'))
+
+        .catch(e => {
+
+            console.error("Error saving inventory to Firebase", e);
+
+            setSyncStatus('offline');
+
+        });
 
 }
 
@@ -2912,11 +2947,15 @@ function loadHistory() {
 
 
 function saveHistory() {
-
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(historyData.slice(0, 100)));
-
-    setDoc(doc(db, "history", "main"), { data: historyData.slice(0, 100) }).catch(e => console.error("Error saving history to Firebase", e));
-
+    
+    setSyncStatus('syncing');
+    setDoc(doc(db, "history", "main"), { data: historyData.slice(0, 100) })
+        .then(() => setSyncStatus('online'))
+        .catch(e => {
+            console.error("Error saving history to Firebase", e);
+            setSyncStatus('offline');
+        });
 }
 
 
@@ -4455,7 +4494,13 @@ function checkoutComplimentary() {
 
     localStorage.setItem('glcReceipts', JSON.stringify(receiptsData));
 
-    setDoc(doc(db, "receipts", "main"), { data: receiptsData }).catch(e => console.error("Error saving receipts to Firebase", e));
+    setSyncStatus('syncing');
+    setDoc(doc(db, "receipts", "main"), { data: receiptsData })
+        .then(() => setSyncStatus('online'))
+        .catch(e => {
+            console.error("Error saving receipts to Firebase", e);
+            setSyncStatus('offline');
+        });
 
 
 
