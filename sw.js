@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glc-inventory-v4';
+const CACHE_NAME = 'glc-inventory-v5';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
@@ -41,40 +41,59 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch: stale-while-revalidate / cache-first with network fallback
+// Fetch strategy
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
+  const url = new URL(event.request.url);
+
+  // 1. Bypass Service Worker cache entirely for Firebase/Google APIs
+  if (url.hostname.includes('googleapis.com') || url.hostname.includes('firebase')) {
+    return; 
+  }
+
+  // 2. Network-first strategy for HTML and JS files to always get the latest code
+  if (event.request.mode === 'navigate' || url.pathname.endsWith('.js') || url.pathname.endsWith('.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request).then(cached => {
+            if (cached) return cached;
+            if (event.request.mode === 'navigate') return caches.match('./index.html');
+          });
+        })
+    );
+    return;
+  }
+
+  // 3. Cache-first strategy for images, CSS, and other static assets
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       if (cachedResponse) {
-        // Fetch in background to update cache for next time
+        // Update cache in background
         fetch(event.request).then(networkResponse => {
           if (networkResponse && networkResponse.status === 200) {
-            caches.open(CACHE_NAME).then(cache => {
-              cache.put(event.request, networkResponse);
-            });
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
           }
         }).catch(() => {});
         return cachedResponse;
       }
 
-      // Not in cache: fetch from network and cache dynamically
       return fetch(event.request).then(networkResponse => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type === 'opaque') {
           return networkResponse;
         }
         const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
         return networkResponse;
-      }).catch(() => {
-        // Fallback to offline index.html if navigating
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
+      }).catch(() => {});
     })
   );
 });
