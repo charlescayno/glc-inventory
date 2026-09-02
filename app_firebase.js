@@ -64,7 +64,9 @@ const initialData = [
     { id: 40, category: "Booklets & Workbooks", desc: "Heart Of A Champion", price: 0, floor5: 150, floor7: 10, booth: 30 },
     { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", price: 25, floor5: 300, floor7: 10, booth: 13 },
     { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", price: 25, floor5: 220, floor7: 25, booth: 66 },
-    { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", price: 100, floor5: 0, floor7: 3, booth: 21 }
+    { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", price: 100, floor5: 0, floor7: 3, booth: 21 },
+    { id: 44, category: "GLC 3 Books", desc: "GLC Book 12: Leadership Skills", price: 0, floor5: 0, floor7: 0, booth: 0 },
+    { id: 45, category: "Materials", desc: "GLC Jacket (Black)", price: 1000, floor5: 0, floor7: 0, booth: 0 }
 ];
 
 // State
@@ -451,7 +453,7 @@ function renderTable(searchTerm = '') {
         const matchesSearch = item.desc.toLowerCase().includes(term);
         let matchesCategory = false;
         if (isCashierMode) {
-            matchesCategory = (currentCategory === 'All' || item.category === currentCategory) && (item.price > 0);
+            matchesCategory = (currentCategory === 'All' || item.category === currentCategory) && (item.price > 0 || item.id === 44);
         } else {
             matchesCategory = (currentCategory === 'All' || item.category === currentCategory);
         }
@@ -1543,7 +1545,7 @@ function parseHistoryEntry(rawItem) {
 
     // Detect / parse legacy adjust entries
     if (type === 'adjust' && (!itemDesc || field === undefined) && item.desc) {
-        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*ΓåÆ\s*(\d+)/i);
+        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*(?:\\u2192|->|&rarr;)\s*(\d+)/i);
         if (setMatch) {
             itemDesc = itemDesc || setMatch[1];
             field = field || setMatch[2];
@@ -1551,7 +1553,7 @@ function parseHistoryEntry(rawItem) {
             newVal = newVal ?? parseInt(setMatch[4]);
             qtyDiff = qtyDiff ?? (newVal - oldVal);
         } else {
-            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*ΓåÆ\s*(\d+)\)/i);
+            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*(?:\\u2192|->|&rarr;)\s*(\d+)\)/i);
             if (btnMatch) {
                 qtyDiff = qtyDiff ?? parseInt(btnMatch[1]);
                 itemDesc = itemDesc || btnMatch[2];
@@ -1668,7 +1670,7 @@ function renderHistoryModal() {
                     <div class="history-route">
                         ${diffText ? `<span class="history-qty-pill ${isPos ? 'pos' : 'neg'}">${diffText}</span>` : ''}
                         <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field}</span>
-                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} ΓåÆ <strong>${item.newVal}</strong>)</span>` : ''}
+                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} &rarr; <strong>${item.newVal}</strong>)</span>` : ''}
                     </div>
                 </div>
             `;

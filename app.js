@@ -96,6 +96,8 @@ const initialData = [
     { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", price: 25, floor5: 600, floor7: 10, booth: 11 },
     { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", price: 25, floor5: 520, floor7: 25, booth: 64 },
     { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", price: 100, floor5: 500, floor7: 2, booth: 1 },
+    { id: 44, category: "GLC 3 Books", desc: "GLC Book 12: Leadership Skills", price: 0, floor5: 0, floor7: 0, booth: 0 },
+    { id: 45, category: "Materials", desc: "GLC Jacket (Black)", price: 1000, floor5: 0, floor7: 0, booth: 0 }
 ];
 
 
@@ -850,7 +852,7 @@ function renderTable(searchTerm = '') {
 
         if (isCashierMode) {
 
-            matchesCategory = (currentCategory === 'All' || item.category === currentCategory) && (item.price > 0);
+            matchesCategory = (currentCategory === 'All' || item.category === currentCategory) && (item.price > 0 || item.id === 44);
 
         } else {
 
@@ -3029,7 +3031,7 @@ function parseHistoryEntry(rawItem) {
 
     if (type === 'adjust' && (!itemDesc || field === undefined) && item.desc) {
 
-        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*â†’\s*(\d+)/i);
+        const setMatch = item.desc.match(/Set\s+"?([^"]+?)"?\s+\((.*?)\):\s*(\d+)\s*(?:\\u2192|->|&rarr;)\s*(\d+)/i);
 
         if (setMatch) {
 
@@ -3045,7 +3047,7 @@ function parseHistoryEntry(rawItem) {
 
         } else {
 
-            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*â†’\s*(\d+)\)/i);
+            const btnMatch = item.desc.match(/([+-]?\d+)\s+on\s+"?([^"]+?)"?\s+\((.*?):\s*(\d+)\s*(?:\\u2192|->|&rarr;)\s*(\d+)\)/i);
 
             if (btnMatch) {
 
@@ -3279,7 +3281,7 @@ function renderHistoryModal() {
 
                         <span class="history-loc-badge"><i class="ri-map-pin-line"></i> ${item.field}</span>
 
-                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} â†’ <strong>${item.newVal}</strong>)</span>` : ''}
+                        ${item.oldVal !== undefined && item.newVal !== undefined ? `<span class="history-stock-change">(${item.oldVal} &rarr; <strong>${item.newVal}</strong>)</span>` : ''}
 
                     </div>
 
