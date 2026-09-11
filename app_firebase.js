@@ -34,9 +34,9 @@ const initialData = [
     { id: 10, category: "GLC 2 Books", desc: "GLC Book 6: Basic Doctrine", price: 85, floor5: 250, floor7: 42, booth: 178 },
     { id: 11, category: "GLC 2 Books", desc: "GLC Book 7: The Family Life (NEW)", price: 80, floor5: 300, floor7: 15, booth: 147 },
     { id: 12, category: "GLC 2 Books", desc: "GLC Book 7: The Family Life (OLD)", price: 80, floor5: 350, floor7: 21, booth: 33 },
-    { id: 13, category: "GLC 2 Books", desc: "GLC Book 9: The Multiplier", price: 60, floor5: 282, floor7: 16, booth: 102 },
-    { id: 14, category: "Other GLC Books", desc: "GLC Book 10: Reliability of the Bible", price: 50, floor5: 250, floor7: 44, booth: 156 },
-    { id: 15, category: "Other GLC Books", desc: "GLC Book 11: Spiritual Warfare", price: 55, floor5: 400, floor7: 45, booth: 148 },
+    { id: 13, category: "GLC 3 Books", desc: "GLC Book 9: The Multiplier", price: 60, floor5: 282, floor7: 16, booth: 102 },
+    { id: 14, category: "GLC 3 Books", desc: "GLC Book 10: Reliability of the Bible", price: 50, floor5: 250, floor7: 44, booth: 156 },
+    { id: 15, category: "GLC 3 Books", desc: "GLC Book 11: Spiritual Warfare", price: 55, floor5: 400, floor7: 45, booth: 148 },
     { id: 16, category: "GLC 1 Books (Filipino)", desc: "GLC Book 1 (Filipino): One by One", price: 50, floor5: 0, floor7: 18, booth: 40 },
     { id: 17, category: "GLC 1 Books (Filipino)", desc: "GLC Book 2 (Filipino): Spiritual Disciple", price: 70, floor5: 0, floor7: 1, booth: 6 },
     { id: 18, category: "GLC 1 Books (Filipino)", desc: "GLC Book 4 (Filipino): CCF DNA", price: 55, floor5: 370, floor7: 17, booth: 62 },
@@ -230,6 +230,11 @@ function setupFirebaseListeners() {
             const data = docSnap.data().data;
             if (data && data.length > 0) {
                 inventoryData = data;
+                inventoryData.forEach(item => {
+                    if (item.desc && item.desc.match(/GLC Book (9|10|11|12)\b/)) {
+                        item.category = "GLC 3 Books";
+                    }
+                });
                 console.log('Loaded inventory from Firebase');
             } else {
                 console.log('Firebase inventory is empty, loading from localStorage/initialData');

@@ -416,6 +416,16 @@ function setupFirebaseListeners() {
 
                 inventoryData = data;
 
+                inventoryData.forEach(item => {
+
+                    if (item.desc && item.desc.match(/GLC Book (9|10|11|12)\b/)) {
+
+                        item.category = "GLC 3 Books";
+
+                    }
+
+                });
+
                 console.log('Loaded inventory from Firebase');
 
             } else {
