@@ -65,7 +65,7 @@ const initialData = [
     { id: 41, category: "Booklets & Workbooks", desc: "TLR Workbook (Participant)", price: 25, floor5: 300, floor7: 10, booth: 13 },
     { id: 42, category: "Booklets & Workbooks", desc: "TLR Workbook (Facilitator)", price: 25, floor5: 220, floor7: 25, booth: 66 },
     { id: 43, category: "Booklets & Workbooks", desc: "2Be1 Workbook", price: 100, floor5: 0, floor7: 3, booth: 21 },
-    { id: 44, category: "GLC 3 Books", desc: "GLC Book 12: Leadership Skills", price: 0, floor5: 0, floor7: 0, booth: 0 },
+    { id: 44, category: "GLC 3 Books", desc: "GLC Book 12: Leadership Skills", price: 85, floor5: 0, floor7: 0, booth: 0 },
     { id: 45, category: "Materials", desc: "GLC Jacket (Black)", price: 1000, floor5: 0, floor7: 0, booth: 0 }
 ];
 
