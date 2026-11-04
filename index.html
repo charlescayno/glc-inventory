@@ -172,6 +172,22 @@
         <i class="ri-edit-2-line"></i>
     </button>
 
+    <!-- Floating Action Button + pop-out Calculator -->
+    <button class="fab fab-tertiary" id="fabCalculator" title="Calculator">
+        <i class="ri-calculator-line"></i>
+    </button>
+    <div id="calcPanel" class="calc-panel hidden" role="dialog" aria-label="Calculator">
+        <div class="calc-header">
+            <span class="calc-title"><i class="ri-calculator-line"></i> Calculator</span>
+            <button type="button" class="calc-close" id="calcCloseBtn" title="Close"><i class="ri-close-line"></i></button>
+        </div>
+        <div class="calc-screen">
+            <div id="calcExpression" class="calc-expression"></div>
+            <div id="calcDisplay" class="calc-display">0</div>
+        </div>
+        <div id="calcKeys" class="calc-keys"></div>
+    </div>
+
     <!-- Floating Action Button for Add New Item -->
     <button class="fab fab-secondary" id="fabAddItem" title="Add New Item">
         <i class="ri-add-line"></i>
@@ -570,5 +586,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script type="module" src="app.js"></script>
+    <script src="calculator.js"></script>
 </body>
 </html>
