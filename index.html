@@ -168,6 +168,48 @@
         <i class="ri-edit-2-line"></i>
     </button>
 
+    <!-- Floating Action Button for Add New Item -->
+    <button class="fab fab-secondary" id="fabAddItem" title="Add New Item">
+        <i class="ri-add-line"></i>
+    </button>
+
+    <!-- Add / Edit Item Modal -->
+    <div id="itemModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2 id="itemModalTitle">Add New Item</h2>
+                <button class="close-modal" id="closeItemModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="item-form-group">
+                    <label for="itemNameInput">Item Name</label>
+                    <input type="text" id="itemNameInput" class="item-form-input" placeholder="e.g. GLC Book 13" autocomplete="off">
+                </div>
+                <div class="item-form-group">
+                    <label for="itemCategorySelect">Category</label>
+                    <select id="itemCategorySelect" class="item-form-input"></select>
+                </div>
+                <div class="item-form-group">
+                    <label for="itemPriceInput">Price (&#8369;)</label>
+                    <input type="number" id="itemPriceInput" class="item-form-input" min="0" step="any" inputmode="decimal" placeholder="0">
+                </div>
+                <div id="itemStockGroup">
+                    <label class="item-form-label">Starting Stock (optional)</label>
+                    <div class="item-stock-grid">
+                        <div><span>5th Floor</span><input type="number" id="itemFloor5Input" class="item-form-input" min="0" value="0"></div>
+                        <div><span>7th Floor</span><input type="number" id="itemFloor7Input" class="item-form-input" min="0" value="0"></div>
+                        <div><span>GLC Booth</span><input type="number" id="itemBoothInput" class="item-form-input" min="0" value="0"></div>
+                    </div>
+                </div>
+                <p id="itemFormError" class="item-form-error hidden"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelItemModalBtn">Cancel</button>
+                <button class="btn" id="saveItemBtn" style="background: var(--color-primary); color: white; border: none;">Save Item</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Quick Edit Modal -->
     <div id="quickEditModal" class="modal hidden">
         <div class="modal-content" style="max-width: 500px;">
@@ -192,6 +234,8 @@
                         <h3 id="qeItemDesc" style="font-size: 1.1rem; color: var(--color-text-main); margin-bottom: 0.25rem;"></h3>
                         <p id="qeItemCategory" style="font-size: 0.85rem; color: var(--color-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;"></p>
                     </div>
+
+                    <button type="button" class="btn btn-secondary" id="qeEditDetailsBtn" style="margin-bottom: 1rem;"><i class="ri-pencil-line"></i> Edit name / price / category</button>
 
                     <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center; margin-bottom: 1rem;">
                         <label style="font-weight: 500; color: var(--color-text-main);">5th Floor</label>

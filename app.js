@@ -758,7 +758,7 @@ function loadData() {
 
             const initialItem = initialData.find(i => i.id === item.id);
 
-            if (initialItem) {
+            if (initialItem && !item.price) {
 
                 item.price = initialItem.price;
 
@@ -1048,6 +1048,7 @@ function renderTable(searchTerm = '') {
                     <button class="lock-toggle-btn" data-id="${item.id}" title="Toggle Lock">
                         <i class="${lockIcon}" style="color: ${lockColor};"></i>
                     </button>
+                    <button class="edit-item-btn" data-id="${item.id}" title="${isLocked ? 'Unlock to edit details' : 'Edit name / price / category'}" ${inputDisabled}><i class="ri-pencil-line"></i></button>
                     <i class="${iconClass}" style="color: var(--color-primary); font-size: 1.25rem;"></i>
                     <span class="desc-text" style="line-height: 1.2; display: flex; flex-direction: column; gap: 0.25rem;">
                         <span>${item.desc}</span>
@@ -3261,7 +3262,7 @@ function renderHistoryModal() {
 
         } else if (item.type === 'adjust') {
 
-            const isPos = item.qtyDiff >= 0;
+            const isPos = item.qtyDiff === undefined ? true : item.qtyDiff >= 0;
 
             const diffText = item.qtyDiff !== undefined ? (isPos ? `+${item.qtyDiff}` : `${item.qtyDiff}`) : '';
 
@@ -3335,6 +3336,26 @@ function renderHistoryModal() {
 
             `;
 
+        } else if (item.type === 'itemadd' || item.type === 'itemedit') {
+            const isAdd = item.type === 'itemadd';
+            const changes = Array.isArray(item.changes) ? item.changes : [];
+            div.innerHTML = `
+                <div class="history-icon-badge history-icon-adjust">
+                    <i class="${isAdd ? 'ri-add-box-line' : 'ri-pencil-line'}"></i>
+                </div>
+                <div class="history-content">
+                    <div class="history-header">
+                        <span class="history-title">${item.title || (isAdd ? 'Item Added' : 'Item Edited')}</span>
+                        <span class="history-time">${timeFormatted}</span>
+                    </div>
+                    <div class="history-item-desc">${item.itemDesc}</div>
+                    <div class="history-route">
+                        ${isAdd
+                            ? `<span class="history-loc-badge">${item.category || ''}</span><span class="history-loc-badge dest">&#8369; ${item.price ?? 0}</span>`
+                            : changes.map(c => `<span class="history-loc-badge">${c.label}: ${c.from} &rarr; <strong>${c.to}</strong></span>`).join('')}
+                    </div>
+                </div>
+            `;
         } else if (item.type === 'sale') {
             const saleItems = Array.isArray(item.items) ? item.items.join(', ') : (item.desc || '');
             
@@ -5036,3 +5057,181 @@ function voidSale(historyId) {
     
     alert("Sale successfully voided and stock returned.");
 }
+
+
+// ==========================================================
+// Add / Edit Item (name, category, price). Deleting is intentionally not supported.
+// ==========================================================
+(function setupItemManager() {
+    const fabAddItem = document.getElementById('fabAddItem');
+    const itemModal = document.getElementById('itemModal');
+    if (!fabAddItem || !itemModal) return;
+
+    const titleEl = document.getElementById('itemModalTitle');
+    const nameInput = document.getElementById('itemNameInput');
+    const categorySelect = document.getElementById('itemCategorySelect');
+    const priceInput = document.getElementById('itemPriceInput');
+    const stockGroup = document.getElementById('itemStockGroup');
+    const floor5Input = document.getElementById('itemFloor5Input');
+    const floor7Input = document.getElementById('itemFloor7Input');
+    const boothInput = document.getElementById('itemBoothInput');
+    const errorEl = document.getElementById('itemFormError');
+    const saveBtn = document.getElementById('saveItemBtn');
+
+    let editingId = null; // null = add mode
+
+    function getCategories() {
+        const fromTabs = Array.from(document.querySelectorAll('.tab-btn[data-category]'))
+            .map(b => b.getAttribute('data-category'))
+            .filter(c => c && c !== 'All');
+        // Include any category already used by items but missing from tabs
+        inventoryData.forEach(i => { if (i.category && !fromTabs.includes(i.category)) fromTabs.push(i.category); });
+        return fromTabs;
+    }
+
+    function cleanName(s) {
+        return String(s || '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
+    }
+
+    function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.classList.remove('hidden');
+    }
+
+    function openItemModal(item) {
+        editingId = item ? item.id : null;
+        errorEl.classList.add('hidden');
+
+        categorySelect.innerHTML = '';
+        getCategories().forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            categorySelect.appendChild(opt);
+        });
+
+        if (item) {
+            titleEl.textContent = 'Edit Item Details';
+            saveBtn.textContent = 'Save Changes';
+            nameInput.value = item.desc;
+            categorySelect.value = item.category;
+            priceInput.value = item.price;
+            stockGroup.classList.add('hidden');
+        } else {
+            titleEl.textContent = 'Add New Item';
+            saveBtn.textContent = 'Add Item';
+            nameInput.value = '';
+            priceInput.value = '';
+            const active = typeof currentCategory === 'string' && currentCategory !== 'All' ? currentCategory : null;
+            if (active) categorySelect.value = active;
+            floor5Input.value = 0;
+            floor7Input.value = 0;
+            boothInput.value = 0;
+            stockGroup.classList.remove('hidden');
+        }
+
+        itemModal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        nameInput.focus();
+    }
+
+    function closeItemModal() {
+        itemModal.classList.add('hidden');
+        document.body.classList.remove('modal-open');
+        editingId = null;
+    }
+
+    function refreshAfterChange() {
+        saveData();
+        renderTable(searchInput ? searchInput.value : '');
+        if (typeof updateCartUI === 'function') updateCartUI();
+        if (typeof renderHistory === 'function') { try { renderHistory(); } catch (e) { /* history view optional */ } }
+    }
+
+    function saveItem() {
+        const name = cleanName(nameInput.value);
+        const category = categorySelect.value;
+        const priceRaw = priceInput.value.trim();
+        const price = Number(priceRaw);
+
+        if (!name) return showError('Please enter an item name.');
+        if (!category) return showError('Please choose a category.');
+        if (priceRaw === '' || !isFinite(price) || price < 0) return showError('Please enter a valid price (0 or more).');
+
+        const dup = inventoryData.some(i => i.id !== editingId && String(i.desc).trim().toLowerCase() === name.toLowerCase());
+        if (dup) return showError('An item with this name already exists.');
+
+        if (editingId === null) {
+            const stock = v => Math.max(0, parseInt(v) || 0);
+            const newItem = {
+                id: inventoryData.reduce((m, i) => Math.max(m, Number(i.id) || 0), 0) + 1,
+                category,
+                desc: name,
+                price,
+                floor5: stock(floor5Input.value),
+                floor7: stock(floor7Input.value),
+                booth: stock(boothInput.value)
+            };
+            inventoryData.push(newItem);
+            logActivity({
+                type: 'itemadd',
+                title: 'Item Added',
+                itemDesc: newItem.desc,
+                category: newItem.category,
+                price: newItem.price
+            });
+            refreshAfterChange();
+        } else {
+            const item = inventoryData.find(i => i.id === editingId);
+            if (!item) return closeItemModal();
+            const changes = [];
+            if (item.desc !== name) changes.push({ label: 'Name', from: item.desc, to: name });
+            if (item.category !== category) changes.push({ label: 'Category', from: item.category, to: category });
+            if (Number(item.price) !== price) changes.push({ label: 'Price', from: '\u20B1' + item.price, to: '\u20B1' + price });
+            if (changes.length === 0) return closeItemModal();
+
+            const oldName = item.desc;
+            item.desc = name;
+            item.category = category;
+            item.price = price;
+            logActivity({
+                type: 'itemedit',
+                title: 'Item Edited',
+                itemDesc: oldName === name ? name : oldName + ' \u2192 ' + name,
+                changes
+            });
+            refreshAfterChange();
+        }
+        closeItemModal();
+    }
+
+    fabAddItem.addEventListener('click', () => openItemModal(null));
+    document.getElementById('closeItemModalBtn').addEventListener('click', closeItemModal);
+    document.getElementById('cancelItemModalBtn').addEventListener('click', closeItemModal);
+    saveBtn.addEventListener('click', saveItem);
+    itemModal.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); saveItem(); }
+        if (e.key === 'Escape') closeItemModal();
+    });
+
+    // Per-row edit buttons (event delegation survives table re-renders)
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('.edit-item-btn');
+        if (!btn || btn.disabled) return;
+        const item = inventoryData.find(i => i.id === parseInt(btn.getAttribute('data-id')));
+        if (item) openItemModal(item);
+    });
+
+    // "Edit details" shortcut from the Quick Edit form
+    const qeEditBtn = document.getElementById('qeEditDetailsBtn');
+    if (qeEditBtn) {
+        qeEditBtn.addEventListener('click', () => {
+            const qeItem = typeof currentQuickEditItem !== 'undefined' ? currentQuickEditItem : null;
+            if (!qeItem) return;
+            const item = inventoryData.find(i => i.id === qeItem.id);
+            if (!item) return;
+            document.getElementById('quickEditModal').classList.add('hidden');
+            openItemModal(item);
+        });
+    }
+})();
