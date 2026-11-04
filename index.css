@@ -792,7 +792,27 @@ table.viewing-cashier .col-price {
 .edit-item-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* --- Inventory Summary (full page) --- */
-.summary-page-header { margin: 1.5rem 0 1.25rem; }
+.summary-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 2.5rem 3rem;
+}
+@media (max-width: 768px) {
+    .summary-page { padding: 1.25rem 1rem 2rem; }
+}
+.summary-page .summary-table-wrap {
+    background: var(--color-bg-card, var(--color-bg-app));
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 1rem 1rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+.summary-page .summary-table { font-size: 0.95rem; line-height: 1.4; }
+.summary-page .summary-table th,
+.summary-page .summary-table td { padding: 0.7rem 0.9rem; }
+.summary-page .summary-table tbody tr:nth-child(even) { background: var(--color-bg-hover); }
+.summary-page .summary-table td:nth-child(2) { min-width: 220px; }
+.summary-page-header { margin: 0 0 1.5rem; }
 .summary-page-header h1 { margin-top: 1rem; font-size: 1.5rem; color: var(--color-text-main); }
 .summary-page-date { font-style: italic; color: var(--color-text-muted); margin-top: 0.25rem; }
 .summary-table-wrap { overflow-x: auto; }
