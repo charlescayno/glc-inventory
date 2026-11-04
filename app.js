@@ -847,6 +847,7 @@ function updateSummaries() {
 // Rendering
 
 function renderTable(searchTerm = '') {
+    syncCategoryTabs();
 
     inventoryBody.innerHTML = '';
 
@@ -5077,6 +5078,15 @@ function voidSale(historyId) {
     const boothInput = document.getElementById('itemBoothInput');
     const errorEl = document.getElementById('itemFormError');
     const saveBtn = document.getElementById('saveItemBtn');
+    const newCategoryInput = document.getElementById('itemNewCategoryInput');
+    const NEW_CATEGORY_VALUE = '__new__';
+
+    function toggleNewCategoryInput() {
+        const isNew = categorySelect.value === NEW_CATEGORY_VALUE;
+        newCategoryInput.classList.toggle('hidden', !isNew);
+        if (isNew) newCategoryInput.focus();
+    }
+    categorySelect.addEventListener('change', toggleNewCategoryInput);
 
     let editingId = null; // null = add mode
 
@@ -5109,6 +5119,11 @@ function voidSale(historyId) {
             opt.textContent = cat;
             categorySelect.appendChild(opt);
         });
+        const newOpt = document.createElement('option');
+        newOpt.value = NEW_CATEGORY_VALUE;
+        newOpt.textContent = '+ New category...';
+        categorySelect.appendChild(newOpt);
+        newCategoryInput.value = '';
 
         if (item) {
             titleEl.textContent = 'Edit Item Details';
@@ -5130,9 +5145,10 @@ function voidSale(historyId) {
             stockGroup.classList.remove('hidden');
         }
 
+        toggleNewCategoryInput();
         itemModal.classList.remove('hidden');
         document.body.classList.add('modal-open');
-        nameInput.focus();
+        if (categorySelect.value !== NEW_CATEGORY_VALUE) nameInput.focus();
     }
 
     function closeItemModal() {
@@ -5150,7 +5166,13 @@ function voidSale(historyId) {
 
     function saveItem() {
         const name = cleanName(nameInput.value);
-        const category = categorySelect.value;
+        let category = categorySelect.value;
+        if (category === NEW_CATEGORY_VALUE) {
+            const typed = cleanName(newCategoryInput.value);
+            if (!typed) return showError('Please enter a name for the new category.');
+            // Reuse an existing category if the name matches (ignoring case)
+            category = getCategories().find(c => c.toLowerCase() === typed.toLowerCase()) || typed;
+        }
         const priceRaw = priceInput.value.trim();
         const price = Number(priceRaw);
 
@@ -5235,3 +5257,45 @@ function voidSale(historyId) {
         });
     }
 })();
+
+
+// ==========================================================
+// Dynamic category tabs: any category used by an item (including user-created ones)
+// gets its own filter tab, just like the built-in categories.
+// ==========================================================
+function syncCategoryTabs() {
+    const tabsEl = document.querySelector('.category-tabs');
+    if (!tabsEl || !Array.isArray(inventoryData)) return;
+
+    const staticCats = new Set(Array.from(tabsEl.querySelectorAll('.tab-btn:not([data-dynamic])')).map(b => b.getAttribute('data-category')));
+    const wanted = [];
+    inventoryData.forEach(i => {
+        if (i.category && !staticCats.has(i.category) && !wanted.includes(i.category)) wanted.push(i.category);
+    });
+    wanted.sort((a, b) => a.localeCompare(b));
+
+    const existing = Array.from(tabsEl.querySelectorAll('.tab-btn[data-dynamic]'));
+    if (existing.length === wanted.length && existing.every((b, idx) => b.getAttribute('data-category') === wanted[idx])) return;
+
+    // If the active tab is about to disappear, fall back to "All"
+    if (currentCategory !== 'All' && !staticCats.has(currentCategory) && !wanted.includes(currentCategory)) {
+        currentCategory = 'All';
+        tabsEl.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-category') === 'All'));
+    }
+
+    existing.forEach(b => b.remove());
+    wanted.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'tab-btn' + (cat === currentCategory ? ' active' : '');
+        btn.setAttribute('data-category', cat);
+        btn.setAttribute('data-dynamic', 'true');
+        btn.textContent = cat;
+        btn.addEventListener('click', () => {
+            tabsEl.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentCategory = cat;
+            renderTable(searchInput.value);
+        });
+        tabsEl.appendChild(btn);
+    });
+}
