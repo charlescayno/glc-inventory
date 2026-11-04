@@ -314,5 +314,71 @@
         if (handled) e.preventDefault();
     });
 
+    // ---------- dragging (by the title bar; mouse, touch and pen) ----------
+    const header = panel.querySelector('.calc-header');
+    const POS_KEY = 'glc_calc_pos';
+
+    function clampToViewport(left, top) {
+        const w = panel.offsetWidth, h = panel.offsetHeight;
+        return {
+            left: Math.min(Math.max(0, left), Math.max(0, window.innerWidth - w)),
+            top: Math.min(Math.max(0, top), Math.max(0, window.innerHeight - h))
+        };
+    }
+    function placeAt(left, top) {
+        const p = clampToViewport(left, top);
+        panel.style.left = p.left + 'px';
+        panel.style.top = p.top + 'px';
+        panel.style.right = 'auto';
+        panel.style.bottom = 'auto';
+        return p;
+    }
+    function restorePosition() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(POS_KEY) || 'null');
+            if (saved && isFinite(saved.left) && isFinite(saved.top)) placeAt(saved.left, saved.top);
+        } catch (e) { /* ignore bad saved position */ }
+    }
+
+    let drag = null;
+    header.addEventListener('pointerdown', e => {
+        if (e.target.closest('.calc-close')) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        const r = panel.getBoundingClientRect();
+        drag = { dx: e.clientX - r.left, dy: e.clientY - r.top, id: e.pointerId };
+        header.setPointerCapture(e.pointerId);
+        header.classList.add('dragging');
+        e.preventDefault();
+    });
+    header.addEventListener('pointermove', e => {
+        if (!drag || e.pointerId !== drag.id) return;
+        placeAt(e.clientX - drag.dx, e.clientY - drag.dy);
+    });
+    function endDrag(e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        drag = null;
+        header.classList.remove('dragging');
+        const r = panel.getBoundingClientRect();
+        try { localStorage.setItem(POS_KEY, JSON.stringify({ left: Math.round(r.left), top: Math.round(r.top) })); } catch (err) { /* storage unavailable */ }
+    }
+    header.addEventListener('pointerup', endDrag);
+    header.addEventListener('pointercancel', endDrag);
+    // Double-click the title bar to snap back to the default corner
+    header.addEventListener('dblclick', e => {
+        if (e.target.closest('.calc-close')) return;
+        panel.style.left = panel.style.top = panel.style.right = panel.style.bottom = '';
+        try { localStorage.removeItem(POS_KEY); } catch (err) { /* ignore */ }
+    });
+    // Keep the panel on screen if the window is resized / rotated
+    window.addEventListener('resize', () => {
+        if (panel.style.left) {
+            const r = panel.getBoundingClientRect();
+            placeAt(r.left, r.top);
+        }
+    });
+    // Position can only be measured/clamped once the panel is visible
+    const origOpen = open;
+    open = function () { origOpen(); restorePosition(); };
+
     render();
 })();

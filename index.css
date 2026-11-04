@@ -768,6 +768,8 @@ table.viewing-cashier .col-price {
     justify-content: space-between;
     padding: 0.25rem 0.5rem;
 }
+.calc-header { cursor: grab; touch-action: none; }
+.calc-header.dragging { cursor: grabbing; }
 .calc-title { font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
 .calc-close {
     background: none;
