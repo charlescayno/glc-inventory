@@ -791,6 +791,33 @@ table.viewing-cashier .col-price {
 .edit-item-btn:hover:not(:disabled) { color: var(--color-primary); }
 .edit-item-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
+/* --- Inventory Summary --- */
+.summary-table-wrap { overflow-x: auto; }
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+.summary-table th,
+.summary-table td {
+    border: 1px solid var(--color-border);
+    padding: 0.45rem 0.6rem;
+    color: var(--color-text-main);
+}
+.summary-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg-hover);
+    text-align: center;
+    z-index: 1;
+}
+.summary-table td:nth-child(n+3) { text-align: center; }
+.summary-table tfoot td,
+.summary-table .summary-total-row td {
+    font-weight: 700;
+    background: var(--color-bg-hover);
+}
+
 /* --- Footer --- */
 .app-footer {
     margin-top: 2rem;

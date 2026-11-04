@@ -74,6 +74,10 @@
                                 <i class="ri-bar-chart-box-line"></i>
                                 <span class="desktop-only">Dashboard</span>
                             </button>
+                            <button id="summaryBtn" class="btn btn-icon btn-secondary" title="Inventory Summary">
+                                <i class="ri-file-list-3-line"></i>
+                                <span class="desktop-only">Summary</span>
+                            </button>
                             <button id="exportBtn" class="btn btn-icon btn-secondary" title="Export Excel">
                                 <i class="ri-file-excel-2-line"></i>
                                 <span class="desktop-only">Export</span>
@@ -400,6 +404,37 @@
 
     
     <!-- Dashboard Modal -->
+    <!-- Inventory Summary Modal (on-screen version of the Excel export) -->
+    <div id="summaryModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h2><i class="ri-file-list-3-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Inventory Summary</h2>
+                <button class="close-modal" id="closeSummaryModalBtn"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+                <p id="summaryDate" style="font-style: italic; color: var(--color-text-muted); margin-bottom: 1rem;"></p>
+                <div class="summary-table-wrap">
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>5th Floor</th>
+                                <th>7th Floor</th>
+                                <th>GLC Booth</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summaryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSummaryModalBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
     <div id="dashboardModal" class="modal hidden">
         <div class="modal-content" style="max-width: 800px;">
             <div class="modal-header">
