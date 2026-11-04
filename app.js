@@ -3337,12 +3337,13 @@ function renderHistoryModal() {
 
             `;
 
-        } else if (item.type === 'itemadd' || item.type === 'itemedit') {
-            const isAdd = item.type === 'itemadd';
+        } else if (item.type === 'itemadd' || item.type === 'itemedit' || item.type === 'itemdelete') {
+            const isDel = item.type === 'itemdelete';
+            const isAdd = item.type === 'itemadd' || isDel; // add + delete both show category and price badges
             const changes = Array.isArray(item.changes) ? item.changes : [];
             div.innerHTML = `
                 <div class="history-icon-badge history-icon-adjust">
-                    <i class="${isAdd ? 'ri-add-box-line' : 'ri-pencil-line'}"></i>
+                    <i class="${isDel ? 'ri-delete-bin-line' : isAdd ? 'ri-add-box-line' : 'ri-pencil-line'}"></i>
                 </div>
                 <div class="history-content">
                     <div class="history-header">
@@ -5080,6 +5081,7 @@ function voidSale(historyId) {
     const saveBtn = document.getElementById('saveItemBtn');
     const newCategoryInput = document.getElementById('itemNewCategoryInput');
     const NEW_CATEGORY_VALUE = '__new__';
+    const deleteBtn = document.getElementById('deleteItemBtn');
 
     function toggleNewCategoryInput() {
         const isNew = categorySelect.value === NEW_CATEGORY_VALUE;
@@ -5146,6 +5148,7 @@ function voidSale(historyId) {
         }
 
         toggleNewCategoryInput();
+        deleteBtn.classList.toggle('hidden', !item); // delete only available when editing an existing item
         itemModal.classList.remove('hidden');
         document.body.classList.add('modal-open');
         if (categorySelect.value !== NEW_CATEGORY_VALUE) nameInput.focus();
@@ -5231,6 +5234,31 @@ function voidSale(historyId) {
     document.getElementById('closeItemModalBtn').addEventListener('click', closeItemModal);
     document.getElementById('cancelItemModalBtn').addEventListener('click', closeItemModal);
     saveBtn.addEventListener('click', saveItem);
+
+    function deleteItem() {
+        if (editingId === null) return;
+        const item = inventoryData.find(i => i.id === editingId);
+        if (!item) return closeItemModal();
+        if (inventoryData.length <= 1) return showError('The last remaining item cannot be deleted.');
+        const stock = (item.floor5 || 0) + (item.floor7 || 0) + (item.booth || 0);
+        const msg = 'Delete "' + item.desc + '"?' +
+            (stock > 0 ? '\n\nIt still has ' + stock + ' in stock across all locations.' : '') +
+            '\n\nThis cannot be undone. Past sales and history keep their records.';
+        if (!window.confirm(msg)) return;
+
+        inventoryData = inventoryData.filter(i => i.id !== item.id);
+        if (typeof cartState === 'object' && cartState) delete cartState[item.id];
+        logActivity({
+            type: 'itemdelete',
+            title: 'Item Deleted',
+            itemDesc: item.desc,
+            category: item.category,
+            price: item.price
+        });
+        refreshAfterChange();
+        closeItemModal();
+    }
+    deleteBtn.addEventListener('click', deleteItem);
     itemModal.addEventListener('keydown', e => {
         if (e.key === 'Enter' && e.target.tagName === 'INPUT') { e.preventDefault(); saveItem(); }
         if (e.key === 'Escape') closeItemModal();
