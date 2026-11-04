@@ -1,9 +1,11 @@
-const CACHE_NAME = 'glc-inventory-v9';
+const CACHE_NAME = 'glc-inventory-v10';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
   './index.css',
   './app.js',
+  './summary.html',
+  './summary.js',
   './manifest.json',
   './glc-logo.png',
   './icons/icon-192.png',

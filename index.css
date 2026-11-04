@@ -791,7 +791,10 @@ table.viewing-cashier .col-price {
 .edit-item-btn:hover:not(:disabled) { color: var(--color-primary); }
 .edit-item-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* --- Inventory Summary --- */
+/* --- Inventory Summary (full page) --- */
+.summary-page-header { margin: 1.5rem 0 1.25rem; }
+.summary-page-header h1 { margin-top: 1rem; font-size: 1.5rem; color: var(--color-text-main); }
+.summary-page-date { font-style: italic; color: var(--color-text-muted); margin-top: 0.25rem; }
 .summary-table-wrap { overflow-x: auto; }
 .summary-table {
     width: 100%;

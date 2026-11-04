@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Summary - GLC Resource Inventory</title>
+    <link rel="icon" type="image/png" href="./icons/favicon-32.png">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#009ee2">
+    <link rel="stylesheet" href="index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="summary-page-header">
+            <a href="index.html" class="btn btn-secondary" style="text-decoration: none;"><i class="ri-arrow-left-line"></i> Back to Inventory</a>
+            <h1><i class="ri-file-list-3-line" style="color: var(--color-primary); margin-right: 0.5rem;"></i>Inventory Summary</h1>
+            <p id="summaryDate" class="summary-page-date"></p>
+        </header>
+
+        <main>
+            <div class="summary-table-wrap">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>5th Floor</th>
+                            <th>7th Floor</th>
+                            <th>GLC Booth</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTableBody">
+                        <tr><td colspan="6" style="text-align: center;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="summary.js"></script>
+</body>
+</html>
