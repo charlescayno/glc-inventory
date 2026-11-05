@@ -745,6 +745,24 @@ table.viewing-cashier .col-price {
 }
 .fab-tertiary.active { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35); }
 
+/* --- Featured (highlighted) rows, e.g. Motivate Book --- */
+tr.featured-row > td {
+    background-color: rgba(245, 158, 11, 0.14);
+}
+tr.featured-row > td:first-child {
+    box-shadow: inset 4px 0 0 #f59e0b;
+}
+tr.featured-row:hover > td {
+    background-color: rgba(245, 158, 11, 0.22);
+}
+.featured-star {
+    color: #f59e0b;
+    margin-right: 0.15rem;
+}
+[data-theme="dark"] tr.featured-row > td {
+    background-color: rgba(245, 158, 11, 0.18);
+}
+
 /* --- Pop-out Calculator --- */
 .calc-panel {
     position: fixed;

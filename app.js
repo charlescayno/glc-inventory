@@ -418,7 +418,7 @@ function setupFirebaseListeners() {
 
                 inventoryData.forEach(item => {
 
-                    if (item.desc && item.desc.match(/GLC Book (9|10|11|12)\b/)) {
+                    if (item.desc && item.desc.match(/GLC Book (9|10|11|12)\b/) && /^(GLC Books|Other GLC Books)$/.test(item.category)) { // legacy names only; migrateCategories() then moves them to Books
 
                         item.category = "GLC 3 Books";
 
@@ -847,6 +847,7 @@ function updateSummaries() {
 // Rendering
 
 function renderTable(searchTerm = '') {
+    if (migrateCategories()) saveData();
     syncCategoryTabs();
 
     inventoryBody.innerHTML = '';
@@ -969,13 +970,17 @@ function renderTable(searchTerm = '') {
 
         let iconClass = 'ri-file-list-line'; // default
 
-        if (item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'GLC 3 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
+        if (item.category === 'Books' || item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'GLC 3 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
 
         if (item.category === 'Booklets & Workbooks') iconClass = 'ri-book-open-line';
 
         if (item.category === 'Tracts') iconClass = 'ri-pages-line';
 
-        if (item.category === 'Materials') iconClass = 'ri-box-3-line';
+        if (item.category === 'Materials' || item.category === 'Other Materials') iconClass = 'ri-box-3-line';
+
+        if (item.category === 'Discipleship Materials') iconClass = 'ri-hand-heart-line';
+
+        if (item.category === 'Merch') iconClass = 'ri-t-shirt-line';
 
 
 
@@ -1041,6 +1046,8 @@ function renderTable(searchTerm = '') {
 
         if (isLocked) tr.classList.add('locked-row');
 
+        if (/^Motivate Book/i.test(item.desc)) tr.classList.add('featured-row');
+
         
         // No external images to prevent broken icons
         tr.innerHTML = `
@@ -1052,7 +1059,7 @@ function renderTable(searchTerm = '') {
                     <button class="edit-item-btn" data-id="${item.id}" title="${isLocked ? 'Unlock to edit details' : 'Edit name / price / category'}" ${inputDisabled}><i class="ri-pencil-line"></i></button>
                     <i class="${iconClass}" style="color: var(--color-primary); font-size: 1.25rem;"></i>
                     <span class="desc-text" style="line-height: 1.2; display: flex; flex-direction: column; gap: 0.25rem;">
-                        <span>${item.desc}</span>
+                        <span>${/^Motivate Book/i.test(item.desc) ? '<i class="ri-star-fill featured-star" title="Featured"></i> ' : ''}${item.desc}</span>
                         ${badgeHtml}
                     </span>
                 </div>
@@ -5326,4 +5333,43 @@ function syncCategoryTabs() {
         });
         tabsEl.appendChild(btn);
     });
+}
+
+// ==========================================================
+// One-time category migration:
+//   old GLC book tabs + Booklets & Workbooks -> "Books"
+//   old "Materials" -> Books (Motivate) / Discipleship Materials / Merch / Other Materials
+// Only acts on items still carrying an old category name, so it never repeats or overrides later edits.
+// Returns true if anything changed (caller persists).
+// ==========================================================
+const OLD_BOOK_CATEGORIES = ['GLC Books', 'GLC 1 Books', 'GLC 1 Books (English)', 'GLC 1 Books (Filipino)', 'GLC 2 Books', 'GLC 3 Books', 'Other GLC Books', 'Booklets & Workbooks'];
+
+function migrateCategories() {
+    if (!Array.isArray(inventoryData) || inventoryData.length === 0) return false;
+    let changed = false;
+    let movedFromMaterials = false;
+
+    inventoryData.forEach(item => {
+        if (OLD_BOOK_CATEGORIES.includes(item.category)) {
+            item.category = 'Books';
+            changed = true;
+        } else if (item.category === 'Materials') {
+            const d = String(item.desc || '');
+            if (/^Motivate Book/i.test(d)) item.category = 'Books';
+            else if (/(covenant card|accountability card|pcs card|pcs bookmark)/i.test(d)) item.category = 'Discipleship Materials';
+            else if (/(shirt|polo|jacket)/i.test(d) && !/TLR/i.test(d)) item.category = 'Merch';
+            else item.category = 'Other Materials';
+            changed = true;
+            movedFromMaterials = true;
+        }
+    });
+
+    // Merch placeholders (price and stock to be filled in via Edit), only during the migration itself
+    if (movedFromMaterials && !inventoryData.some(i => /(shirt|polo)/i.test(String(i.desc || '')))) {
+        let nextId = inventoryData.reduce((m, i) => Math.max(m, Number(i.id) || 0), 0);
+        ['GLC T-Shirt', 'GLC Polo'].forEach(name => {
+            inventoryData.push({ id: ++nextId, category: 'Merch', desc: name, price: 0, floor5: 0, floor7: 0, booth: 0 });
+        });
+    }
+    return changed;
 }

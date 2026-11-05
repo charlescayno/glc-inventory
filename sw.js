@@ -1,4 +1,4 @@
-const CACHE_NAME = 'glc-inventory-v15';
+const CACHE_NAME = 'glc-inventory-v17';
 const PRECACHE_ASSETS = [
   './',
   './index.html',
