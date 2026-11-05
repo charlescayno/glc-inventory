@@ -1059,7 +1059,7 @@ function renderTable(searchTerm = '') {
                     <button class="edit-item-btn" data-id="${item.id}" title="${isLocked ? 'Unlock to edit details' : 'Edit name / price / category'}" ${inputDisabled}><i class="ri-pencil-line"></i></button>
                     <i class="${iconClass}" style="color: var(--color-primary); font-size: 1.25rem;"></i>
                     <span class="desc-text" style="line-height: 1.2; display: flex; flex-direction: column; gap: 0.25rem;">
-                        <span>${/^Motivate Book/i.test(item.desc) ? '<i class="ri-star-fill featured-star" title="Featured"></i> ' : ''}${item.desc}</span>
+                        <span class="item-name" style="${getItemColorStyle(item.desc)}">${/^Motivate Book/i.test(item.desc) ? '<i class="ri-star-fill featured-star" title="Featured"></i> ' : ''}${item.desc}</span>
                         ${badgeHtml}
                     </span>
                 </div>
@@ -5372,4 +5372,29 @@ function migrateCategories() {
         });
     }
     return changed;
+}
+
+// ==========================================================
+// Item name font colors (per book / series). Light mode uses the exact hex;
+// dark mode lightens it (see .item-name in index.css) so dark colors stay readable.
+// ==========================================================
+const ITEM_COLORS = [
+    { test: /GLC Book 1\b/i,  color: '#C9A21B' }, // Book 1 (also the Filipino edition)
+    { test: /GLC Book 2\b/i,  color: '#5E9A27' },
+    { test: /GLC Book 3\b/i,  color: '#A8174F' },
+    { test: /GLC Book 4\b/i,  color: '#0A6CB8' },
+    { test: /GLC Book 5\b/i,  color: '#D9701E' },
+    { test: /GLC Book 6\b/i,  color: '#4A2D63' },
+    { test: /GLC Book 7\b/i,  color: '#11788A' },
+    { test: /GLC Book 9\b/i,  color: '#0B7A5C' },
+    { test: /GLC Book 10\b/i, color: '#A85A10' },
+    { test: /GLC Book 11\b/i, color: '#5A1818' },
+    { test: /GLC Book 12\b/i, color: '#12304F' },
+    { test: /^Gospel Tract (English|Tagalog)\b/i, color: '#1B8EA0' },
+    { test: /^Life Goals/i,   color: '#6B7280' }
+];
+
+function getItemColorStyle(desc) {
+    const hit = ITEM_COLORS.find(c => c.test.test(String(desc || '')));
+    return hit ? '--item-color: ' + hit.color + ';' : '';
 }

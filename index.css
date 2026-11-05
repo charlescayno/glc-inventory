@@ -745,6 +745,15 @@ table.viewing-cashier .col-price {
 }
 .fab-tertiary.active { box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.35); }
 
+/* --- Item name colors (set per item via --item-color) --- */
+.item-name[style*="--item-color"] {
+    color: var(--item-color);
+    font-weight: 600;
+}
+[data-theme="dark"] .item-name[style*="--item-color"] {
+    color: color-mix(in srgb, var(--item-color) 45%, white);
+}
+
 /* --- Featured (highlighted) rows, e.g. Motivate Book --- */
 tr.featured-row > td {
     background-color: rgba(245, 158, 11, 0.14);
