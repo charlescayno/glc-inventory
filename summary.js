@@ -27,10 +27,8 @@ function addCell(tr, text) {
 }
 
 function render(inventoryData) {
-    const rows = [...inventoryData].sort((a, b) => {
-        if (a.category !== b.category) return a.category.localeCompare(b.category);
-        return a.desc.localeCompare(b.desc);
-    });
+    // Same order as the main inventory table (the "proper order" layout), not alphabetical
+    const rows = [...inventoryData];
     const totals = { floor5: 0, floor7: 0, booth: 0, total: 0 };
 
     body.innerHTML = '';

@@ -358,7 +358,7 @@ let cartState = {}; // { [itemId]: quantity }
 
 // Sorting State
 
-let sortColumn = 'desc';
+let sortColumn = 'order'; // default: keep the inventory's "proper order"; clicking a header sorts by that column
 
 let sortDirection = 'asc'; // 'asc' or 'desc'
 
@@ -418,7 +418,7 @@ function setupFirebaseListeners() {
 
                 inventoryData.forEach(item => {
 
-                    if (item.desc && item.desc.match(/GLC Book (9|10|11|12)\b/) && /^(GLC Books|Other GLC Books)$/.test(item.category)) { // legacy names only; migrateCategories() then moves them to Books
+                    if (item.desc && item.desc.match(/GLC Book (9|10|11|12)\b/) && item.category === "Other GLC Books") { // legacy names only; migrateCategories() then moves them to Books
 
                         item.category = "GLC 3 Books";
 
@@ -720,7 +720,7 @@ function loadData() {
 
             
 
-            if (item.category === "GLC Books" || item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
+            if (item.category === "GLC 1 Books" || item.category === "GLC 2 Books" || item.category === "GLC 3 Books" || item.category === "Other GLC Books") {
 
                 const desc = item.desc;
 
@@ -847,7 +847,7 @@ function updateSummaries() {
 // Rendering
 
 function renderTable(searchTerm = '') {
-    if (migrateCategories()) saveData();
+    if (runCategoryMigrations()) saveData();
     syncCategoryTabs();
 
     inventoryBody.innerHTML = '';
@@ -970,11 +970,11 @@ function renderTable(searchTerm = '') {
 
         let iconClass = 'ri-file-list-line'; // default
 
-        if (item.category === 'Books' || item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'GLC 3 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
+        if (item.category === 'GLC Books' || item.category === 'Books' || item.category === 'GLC 1 Books (English)' || item.category === 'GLC 1 Books (Filipino)' || item.category === 'GLC 2 Books' || item.category === 'GLC 3 Books' || item.category === 'Other GLC Books') iconClass = 'ri-book-3-line';
 
         if (item.category === 'Booklets & Workbooks') iconClass = 'ri-book-open-line';
 
-        if (item.category === 'Tracts') iconClass = 'ri-pages-line';
+        if (item.category === 'Tracts' || item.category === 'Gospel Tracts') iconClass = 'ri-pages-line';
 
         if (item.category === 'Materials' || item.category === 'Other Materials') iconClass = 'ri-box-3-line';
 
@@ -5342,7 +5342,7 @@ function syncCategoryTabs() {
 // Only acts on items still carrying an old category name, so it never repeats or overrides later edits.
 // Returns true if anything changed (caller persists).
 // ==========================================================
-const OLD_BOOK_CATEGORIES = ['GLC Books', 'GLC 1 Books', 'GLC 1 Books (English)', 'GLC 1 Books (Filipino)', 'GLC 2 Books', 'GLC 3 Books', 'Other GLC Books', 'Booklets & Workbooks'];
+const OLD_BOOK_CATEGORIES = ['GLC 1 Books', 'GLC 1 Books (English)', 'GLC 1 Books (Filipino)', 'GLC 2 Books', 'GLC 3 Books', 'Other GLC Books', 'Booklets & Workbooks'];
 
 function migrateCategories() {
     if (!Array.isArray(inventoryData) || inventoryData.length === 0) return false;
@@ -5397,4 +5397,84 @@ const ITEM_COLORS = [
 function getItemColorStyle(desc) {
     const hit = ITEM_COLORS.find(c => c.test.test(String(desc || '')));
     return hit ? '--item-color: ' + hit.color + ';' : '';
+}
+
+// ==========================================================
+// "Proper order" layout (from PROPER ORDER OF GLC ITEMS FOR WEBSITE.xlsx):
+// 4 categories, exact item order, and size-by-size Merch / TLR shirt items.
+// One-time migration: only runs while legacy category names (Books / Tracts / Other Materials) exist,
+// so it never repeats or overrides later edits.
+// ==========================================================
+const sizesOf = (prefix, sizes) => sizes.map(s => prefix + ' - ' + s);
+const SHEET_LAYOUT = [].concat(
+    [
+        'GLC Book 1: One by One (NEW)', 'GLC Book 1: One by One (OLD)',
+        'GLC Book 2: Spiritual Disciplines (NEW)', 'GLC Book 2: Spiritual Disciplines (OLD)',
+        'GLC Book 3: The Holy Spirit',
+        'GLC Book 4: CCF DNA (NEW)', 'GLC Book 4: CCF DNA (OLD)',
+        'GLC Book 5: Starting Point for small group (NEW)', 'GLC Book 5: Starting Point for small group (OLD)',
+        'GLC Book 6: Basic Doctrine',
+        'GLC Book 7: The Family Life (NEW)', 'GLC Book 7: The Family Life (OLD)',
+        'GLC Book 9: The Multiplier', 'GLC Book 10: Reliability of the Bible', 'GLC Book 11: Spiritual Warfare', 'GLC Book 12: Leadership Skills',
+        'GLC Book 1 (Filipino): One by One', 'GLC Book 2 (Filipino): Spiritual Disciple', 'GLC Book 4 (Filipino): CCF DNA'
+    ].map(d => ['GLC Books', d]),
+    ['Gospel Tract (Elevate/LMMR)', 'Gospel Tract English', 'Gospel Tract Tagalog'].map(d => ['Gospel Tracts', d]),
+    [
+        'PCS Bookmark', 'PCS Card', 'Holy Spirit Booklet', 'Life Goals Magazine', 'Memory Verse Booklet (Volume 2)', 'Real Talk Booklet',
+        'Heart Of A Champion', 'Dgroup Kit', '70X7 Workbook', '70X7 USB', 'Accountability Card', 'Discipleship Covenant Card', 'DJ Passport',
+        'Motivate Book (Chinese)', 'Motivate Book (English)', 'Dare 2 Share', 'Superbook Workbook', '2Be1 Workbook',
+        'TLR Workbook (Facilitator)', 'TLR Workbook (Participant)'
+    ].concat(sizesOf('TLR Shirt', ['Small', 'Medium', 'Large', 'XL', '2XL', '3XL'])).map(d => ['Discipleship Materials', d]),
+    [].concat(
+        sizesOf('BLACK GLC Jacket', ['Small', 'Medium', 'Large', 'XL', '2XL', '3XL', '4XL']),
+        sizesOf('GRAY GLC Polo Shirt', ['Small', 'Medium', 'Large', 'XL', '2XL', '3XL']),
+        sizesOf('GREEN GLC Polo Shirt', ['Small', 'Medium', 'Large', 'XL', '2XL', '3XL']),
+        sizesOf('BLUE GLC T SHIRT', ['Small', 'Medium', 'Large', 'XL'])
+    ).map(d => ['Merch', d])
+);
+
+function migrateToSheetLayout() {
+    if (!Array.isArray(inventoryData) || inventoryData.length === 0) return false;
+    const LEGACY = ['Books', 'Tracts', 'Other Materials'];
+    if (!inventoryData.some(i => LEGACY.includes(i.category))) return false;
+
+    const key = s => String(s || '').toLowerCase().replace(/\s+/g, ' ').trim();
+    const stockOf = i => (i.floor5 || 0) + (i.floor7 || 0) + (i.booth || 0);
+    const pos = new Map(SHEET_LAYOUT.map(([cat, desc], idx) => [key(desc), { cat, idx }]));
+    const OLD_MERCH = new Set(['glc jacket (black)', 'glc t-shirt', 'glc polo']);
+
+    // 1) Drop the old single-size Merch placeholders (only if they hold no stock; the sized items replace them)
+    inventoryData = inventoryData.filter(i => !(OLD_MERCH.has(key(i.desc)) && stockOf(i) === 0));
+
+    // 2) Categories: by name from the sheet, otherwise map the legacy names
+    inventoryData.forEach(item => {
+        const hit = pos.get(key(item.desc));
+        if (hit) item.category = hit.cat;
+        else if (item.category === 'Books') item.category = 'GLC Books';
+        else if (item.category === 'Tracts') item.category = 'Gospel Tracts';
+        else if (item.category === 'Other Materials') item.category = 'Discipleship Materials';
+    });
+
+    // 3) Add sheet items that do not exist yet (sized shirts, jackets, polos...). Jackets keep the old price of 1000.
+    const have = new Set(inventoryData.map(i => key(i.desc)));
+    let nextId = inventoryData.reduce((m, i) => Math.max(m, Number(i.id) || 0), 0);
+    SHEET_LAYOUT.forEach(([cat, desc]) => {
+        if (have.has(key(desc))) return;
+        inventoryData.push({ id: ++nextId, category: cat, desc, price: /jacket/i.test(desc) ? 1000 : 0, floor5: 0, floor7: 0, booth: 0 });
+    });
+
+    // 4) Put everything in the sheet's order; items not in the sheet keep their relative order at the end
+    const ranked = inventoryData.map((item, idx) => {
+        const hit = pos.get(key(item.desc));
+        return { item, rank: hit ? hit.idx : SHEET_LAYOUT.length + idx };
+    });
+    ranked.sort((a, b) => a.rank - b.rank);
+    inventoryData = ranked.map(r => r.item);
+    return true;
+}
+
+function runCategoryMigrations() {
+    const first = migrateCategories();   // older layout (Books / Discipleship / Merch / Other Materials)
+    const second = migrateToSheetLayout(); // current layout from the spreadsheet
+    return first || second;
 }
